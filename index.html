@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Rayakan.my.id — Digital Invitation Platform | Setiap Momen Layak Dirayakan</title>
+  
+  <meta name="description" content="Platform jasa pembuatan website undangan digital premium untuk pernikahan, pesta, ulang tahun, dan setiap momen spesial. Desain eksklusif, sinematik, dan elegan." />
+  <meta name="keywords" content="undangan digital, website pernikahan, wedding invitation, undangan online, undangan ulang tahun, rayakan" />
+  <meta name="author" content="Rayakan.my.id" />
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://rayakan.my.id/" />
+  <meta property="og:title" content="Rayakan — Digital Invitation Platform" />
+  <meta property="og:description" content="Setiap Momen Layak Dirayakan. Website undangan digital elegan, eksklusif & interaktif." />
+  <meta property="og:image" content="assets/images/hero-bg.jpg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
+  <link rel="apple-touch-icon" href="assets/images/logo.png" />
+
+  <!-- Google Fonts: Instrument Serif & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="h-full w-full overflow-hidden">
+
+  <!-- ======================================================================
+       BACKGROUND AMBIENCE & OVERLAYS
+       ====================================================================== -->
+  <div class="hero-backdrop-container" aria-hidden="true">
+    <!-- Cinematic Backdrop Image -->
+    <img src="assets/images/hero-bg.jpg" alt="Rayakan Atmospheric Wedding Background" class="hero-bg-image" />
+    
+    <!-- Multi-Tone Gradients -->
+    <div class="hero-tone-overlay"></div>
+    <div class="hero-contrast-overlay"></div>
+
+    <!-- Cordially Subtle Dot Grid Matrix -->
+    <div class="hero-dot-grid"></div>
+
+    <!-- Glowing Vector Curved Journey Lines -->
+    <svg class="journey-svg-lines" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+      <path d="M1050 -40 C 960 120 820 220 710 370 C 600 520 630 660 810 700 C 990 740 1130 630 1160 430 C 1190 240 1090 150 990 250"
+            stroke="#fcf7ed" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.32" />
+      <path d="M1080 -40 C 980 130 840 235 730 385 C 620 535 650 675 830 715 C 1010 755 1150 645 1180 445"
+            stroke="#fcf7ed" stroke-width="1.8" opacity="0.65" />
+    </svg>
+  </div>
+
+  <!-- ======================================================================
+       TOP NAVIGATION BAR
+       ====================================================================== -->
+  <header class="landing-header">
+    <div class="header-blur-wash" aria-hidden="true"></div>
+    
+    <nav class="nav-container" aria-label="Navigasi Utama">
+      <!-- Brand Logo & Title -->
+      <a href="/" class="brand-wrapper" aria-label="Rayakan.my.id Beranda">
+        <img src="assets/images/logo.png" alt="Rayakan Logo" class="brand-logo-img" />
+        <div class="brand-text-col">
+          <span class="brand-wordmark">Rayakan</span>
+          <span class="brand-tag-small">Digital Invitation Platform</span>
+        </div>
+      </a>
+
+      <!-- Center Nav Links (Desktop) -->
+      <div class="nav-links-center">
+        <button type="button" class="nav-link-item" data-modal-target="featuresModal">Fitur</button>
+        <button type="button" class="nav-link-item" data-modal-target="reviewsModal">Testimoni</button>
+        <button type="button" class="nav-link-item" data-modal-target="faqModal">FAQ</button>
+      </div>
+
+      <!-- Right Nav Actions -->
+      <div class="nav-actions-right">
+        <!-- Lihat Template Button -->
+        <a href="https://wedding.afdalrdh.com" target="_blank" rel="noopener noreferrer" class="btn-glass-pill" aria-label="Lihat Template Undangan">
+          <span>Lihat Template</span>
+        </a>
+
+        <!-- Currency / Region Selector -->
+        <div class="relative" style="position: relative;">
+          <button type="button" id="currencySelectorBtn" class="btn-glass-pill" aria-label="Pilih Mata Uang">
+            <span id="selectedCurrencyFlag">🇮🇩</span>
+            <span id="selectedCurrencyLabel">IDR</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; opacity: 0.65;">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown Popover -->
+          <div id="currencyPopover" class="hidden" style="position: absolute; right: 0; top: 115%; width: 10rem; background: #1c1518; border: 1px solid rgba(255,255,255,0.18); border-radius: 1rem; padding: 0.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.6); z-index: 100; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.45); padding: 0.4rem 0.6rem;">Mata Uang</div>
+            <button type="button" class="currency-opt" data-code="IDR" data-flag="🇮🇩" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.45rem 0.6rem; border-radius: 0.5rem; background: none; border: none; color: white; font-size: 0.8125rem; cursor: pointer; text-align: left; font-family: inherit;">
+              <span>🇮🇩 IDR (Rupiah)</span>
+              <span style="font-size: 10px; opacity: 0.5;">Rp</span>
+            </button>
+            <button type="button" class="currency-opt" data-code="USD" data-flag="🇺🇸" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.45rem 0.6rem; border-radius: 0.5rem; background: none; border: none; color: white; font-size: 0.8125rem; cursor: pointer; text-align: left; font-family: inherit;">
+              <span>🇺🇸 USD (Dollar)</span>
+              <span style="font-size: 10px; opacity: 0.5;">$</span>
+            </button>
+            <button type="button" class="currency-opt" data-code="MYR" data-flag="🇲🇾" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.45rem 0.6rem; border-radius: 0.5rem; background: none; border: none; color: white; font-size: 0.8125rem; cursor: pointer; text-align: left; font-family: inherit;">
+              <span>🇲🇾 MYR (Ringgit)</span>
+              <span style="font-size: 10px; opacity: 0.5;">RM</span>
+            </button>
+            <button type="button" class="currency-opt" data-code="SGD" data-flag="🇸🇬" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0.45rem 0.6rem; border-radius: 0.5rem; background: none; border: none; color: white; font-size: 0.8125rem; cursor: pointer; text-align: left; font-family: inherit;">
+              <span>🇸🇬 SGD (Sing dollar)</span>
+              <span style="font-size: 10px; opacity: 0.5;">S$</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Pesan Sekarang Button (Directs to Instagram) -->
+        <a href="https://instagram.com/rayakan.my.id" target="_blank" rel="noopener noreferrer" class="btn-ivory-primary" aria-label="Pesan Sekarang via Instagram">
+          <span>Pesan Sekarang</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ======================================================================
+       HERO FULLPAGE BANNER (Strictly Non-Scrollable & Fully Responsive)
+       ====================================================================== -->
+  <main class="hero-viewport-stage">
+    
+    <div class="hero-main-grid">
+      <!-- ------------------------------------------------------------------
+           LEFT COLUMN: Copywriting & CTAs
+           ------------------------------------------------------------------ -->
+      <div class="hero-copy-column">
+        
+        <!-- Social Proof Rating Badge -->
+        <div class="reveal-item reveal-delay-0">
+          <div class="rating-pill-badge" role="status">
+            <span class="star-group" aria-hidden="true">
+              <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+              <svg class="star-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+            </span>
+            <span>4.9 stars</span>
+            <span class="badge-divider" aria-hidden="true"></span>
+            <span class="badge-social-proof" data-i18n-id="ratingProof">Dipercaya 100+ Momen Bahagia</span>
+          </div>
+        </div>
+
+        <!-- Service Category Title -->
+        <p class="hero-category-label reveal-item reveal-delay-1">DIGITAL INVITATION PLATFORM</p>
+
+        <!-- Main Headline (Instrument Serif Display) -->
+        <h1 class="hero-display-headline reveal-item reveal-delay-2" data-i18n-id="tagline">
+          Setiap Momen<br />
+          <span class="italic-accent">Layak Dirayakan.</span>
+        </h1>
+
+        <!-- Supporting Paragraph -->
+        <p class="hero-subtitle-desc reveal-item reveal-delay-3" data-i18n-id="subdesc">
+          Bukan sekadar website undangan biasa. Rayakan menghadirkan karya digital yang elegan, sinematik, dan berkesan mendalam untuk pernikahan, pesta, ulang tahun, hingga momen istimewa Anda sejak klik pertama.
+        </p>
+
+        <!-- CTAs & Microcopy -->
+        <div class="hero-cta-group reveal-item reveal-delay-4">
+          <div class="hero-cta-buttons-row">
+            <!-- Pesan Sekarang -> instagram.com/rayakan.my.id -->
+            <a href="https://instagram.com/rayakan.my.id" target="_blank" rel="noopener noreferrer" class="hero-btn-primary" aria-label="Pesan Sekarang">
+              <span data-i18n-id="orderNow">Pesan Sekarang</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </a>
+
+            <!-- Lihat Template -> wedding.afdalrdh.com -->
+            <a href="https://wedding.afdalrdh.com" target="_blank" rel="noopener noreferrer" class="hero-btn-secondary" aria-label="Lihat Template Undangan">
+              <span data-i18n-id="viewTemplates">Lihat Template</span>
+            </a>
+          </div>
+
+          <!-- Microcopy Link -->
+          <div class="cta-microcopy-row">
+            <span>Sudah memiliki konsep sendiri?</span>
+            <a href="https://instagram.com/rayakan.my.id" target="_blank" rel="noopener noreferrer" class="cta-microcopy-link" data-i18n-id="consultLink">Konsultasi Gratis di Instagram</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ------------------------------------------------------------------
+           RIGHT COLUMN: 3D Interactive Device Showcase (Cordially Replica)
+           ------------------------------------------------------------------ -->
+      <div class="hero-showcase-column reveal-item reveal-delay-device">
+        
+        <!-- 3D Perspective Stage -->
+        <div id="deviceStage" class="device-stage-3d phone-focus">
+          
+          <!-- Mockup 1: Desktop Browser Window -->
+          <div id="desktopCard" class="mockup-desktop-card" role="button" tabindex="0" aria-label="Pratinjau Website Desktop Rayakan">
+            <div class="desktop-browser-header">
+              <span class="window-dot red"></span>
+              <span class="window-dot yellow"></span>
+              <span class="window-dot green"></span>
+              <div class="desktop-url-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>sarah-dan-dimas.rayakan.my.id</span>
+              </div>
+            </div>
+            
+            <div class="desktop-screen-content">
+              <img src="assets/images/desktop-envelope.jpg" alt="Rayakan Luxury Digital Envelope Preview" class="desktop-screen-img" />
+              <div class="desktop-seal-interactive-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"></circle></svg>
+                <span>Buka Undangan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mockup 2: Smartphone Bezel Mockup -->
+          <div id="phoneCard" class="mockup-phone-card" role="button" tabindex="0" aria-label="Pratinjau Mobile Website Rayakan">
+            <div class="phone-inner-screen">
+              <img src="assets/images/phone-couple.jpg" alt="Rayakan Mobile Screen Invitation Couple" class="phone-screen-img" />
+              <div class="phone-gradient-overlay"></div>
+              
+              <!-- Phone Top Bar Inside Mockup -->
+              <div class="phone-top-bar">
+                <span class="phone-monogram">S & D</span>
+                <span class="phone-rsvp-badge">Kirim RSVP</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              </div>
+
+              <!-- Phone Bottom Floating Typography -->
+              <div class="phone-bottom-caption">
+                <div class="phone-couple-names">Sarah & Dimas</div>
+                <div class="phone-scroll-prompt">
+                  <span>Scroll to Explore</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ⇆ Device View Swap Button (Cordially Style) -->
+        <button type="button" id="btnDeviceSwap" class="btn-device-swap" aria-label="Tukar Posisi Pratinjau Desktop dan Mobile" title="Ganti Tampilan Device">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 3 21 3 21 8"></polyline>
+            <line x1="4" y1="20" x2="21" y2="3"></line>
+            <polyline points="21 16 21 21 16 21"></polyline>
+            <line x1="15" y1="15" x2="21" y2="21"></line>
+            <line x1="4" y1="4" x2="9" y2="9"></line>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------------------------
+         BOTTOM FOOTER FEATURES (3 Key Highlights)
+         -------------------------------------------------------------------- -->
+    <footer class="hero-footer-features reveal-item reveal-delay-5">
+      <div class="feature-bullet-item">
+        <span class="feature-dot"></span>
+        <span data-i18n-id="customEnvelope">Amplop Digital Mewah & Wax Seal 3D</span>
+      </div>
+      <div class="feature-bullet-item">
+        <span class="feature-dot"></span>
+        <span data-i18n-id="customDesign">Kustomisasi Desain & Musik Penuh</span>
+      </div>
+      <div class="feature-bullet-item">
+        <span class="feature-dot"></span>
+        <span data-i18n-id="guestRsvp">RSVP Tamu & Buku Ucapan Interaktif</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- ======================================================================
+       FLOATING CONTROLS (Bottom Right: Ambient Sound & Language)
+       ====================================================================== -->
+  <aside class="floating-bottom-controls" aria-label="Pengaturan Laman">
+    <!-- Ambient Sound Toggle -->
+    <button type="button" id="ambientAudioBtn" class="btn-round-control" aria-label="Putar Musik Latar Studio" title="Putar Musik Latar">
+      <svg id="audioIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+      </svg>
+    </button>
+
+    <!-- Language Toggle (ID / EN) -->
+    <button type="button" id="langToggleBtn" class="btn-round-control" aria-label="Ganti Bahasa (ID / EN)" title="Ganti Bahasa">
+      <span id="currentLangLabel" style="font-size: 11px; font-weight: 700; letter-spacing: 0.05em;">ID</span>
+    </button>
+  </aside>
+
+  <!-- ======================================================================
+       MODALS (For Fitur, Testimoni, FAQ without vertical scroll on main page)
+       ====================================================================== -->
+  
+  <!-- Fitur Modal -->
+  <div id="featuresModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="featuresModalTitle">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" aria-label="Tutup Modal">&times;</button>
+      <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--gold-accent); margin-bottom: 0.5rem;">Eksklusif & Interaktif</p>
+      <h2 id="featuresModalTitle" class="font-display" style="font-size: 2.25rem; line-height: 1.1; margin-bottom: 1.25rem;">Fitur Unggulan Rayakan</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; font-size: 0.875rem;">
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.4rem;">💌 Amplop Digital & Wax Seal</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Sensasi membuka amplop nyata dengan animasi wax seal 3D berkelas dan nama tamu khusus.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.4rem;">🎶 Musik Latar Sinematik</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Pilih lagu favorit Anda untuk mengiringi tamu saat menjelajahi cerita cinta dan jadwal acara.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.4rem;">✅ Manajemen RSVP & Hadiah</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Konfirmasi kehadiran otomatis, buku ucapan live, QR code check-in, dan amplop digital transfer.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.4rem;">🌐 Domain Kustom</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Gunakan subdomain unik seperti <i>namakalian.rayakan.my.id</i> atau domain eksklusif .com pilihan Anda.</p>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <a href="https://instagram.com/rayakan.my.id" target="_blank" rel="noopener noreferrer" class="btn-ivory-primary" style="display: inline-flex;">Konsultasikan Acara Anda</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimoni Modal -->
+  <div id="reviewsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="reviewsModalTitle">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" aria-label="Tutup Modal">&times;</button>
+      <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--gold-accent); margin-bottom: 0.5rem;">Kisah Kebahagiaan</p>
+      <h2 id="reviewsModalTitle" class="font-display" style="font-size: 2.25rem; line-height: 1.1; margin-bottom: 1.25rem;">Apa Kata Mereka Tentang Rayakan</h2>
+      <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem;">
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <strong style="color: #fff;">Sarah & Dimas — Pernikahan di Bandung</strong>
+            <span style="color: var(--gold-accent);">★★★★★ 5.0</span>
+          </div>
+          <p style="color: rgba(255,255,255,0.75); line-height: 1.5;">"Semua tamu memuji website undangan kami! Animasinya halus banget seperti website luar negeri, buka amplopnya kerasa mewah banget. Pelayanannya cepat dan ramah!"</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <strong style="color: #fff;">Clarissa & Kevin — Engagement & Gala</strong>
+            <span style="color: var(--gold-accent);">★★★★★ 5.0</span>
+          </div>
+          <p style="color: rgba(255,255,255,0.75); line-height: 1.5;">"Desainnya bener-bener beda dari undangan digital pada umumnya yang pasaran. Sangat elegan, timeless, dan RSVP tamu langsung tercatat rapi!"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Modal -->
+  <div id="faqModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="faqModalTitle">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" aria-label="Tutup Modal">&times;</button>
+      <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--gold-accent); margin-bottom: 0.5rem;">Bantuan & Informasi</p>
+      <h2 id="faqModalTitle" class="font-display" style="font-size: 2.25rem; line-height: 1.1; margin-bottom: 1.25rem;">Pertanyaan yang Sering Diajukan</h2>
+      <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem;">
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.35rem;">Berapa lama proses pembuatan undangan?</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Proses pengerjaan berkisar antara 1 hingga 3 hari kerja setelah data, foto, dan konsep selesai dikonfirmasi.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.35rem;">Apakah melayani acara selain pernikahan?</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Tentu saja! Rayakan melayani segala perayaan: ulang tahun, sweet 17, syukuran aqiqah, wisuda, corporate event, hingga peluncuran produk.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem;">
+          <h3 style="font-weight: 600; color: #fff; margin-bottom: 0.35rem;">Bagaimana cara pemesanan?</h3>
+          <p style="color: rgba(255,255,255,0.7); line-height: 1.5;">Klik tombol "Pesan Sekarang" untuk langsung terhubung dengan admin kami via Direct Message Instagram <a href="https://instagram.com/rayakan.my.id" target="_blank" style="color: var(--gold-accent); text-decoration: underline;">@rayakan.my.id</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Envelope Preview Modal -->
+  <div id="envelopePreviewModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="envelopeModalTitle">
+    <div class="modal-card" style="text-align: center; max-width: 32rem;">
+      <button type="button" class="modal-close-btn" aria-label="Tutup Modal">&times;</button>
+      <img src="assets/images/logo.png" alt="Rayakan Golden Emblem" style="width: 48px; height: 48px; margin: 0 auto 1rem auto; filter: drop-shadow(0 2px 10px rgba(243,216,167,0.5));" />
+      <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.28em; color: var(--gold-accent); margin-bottom: 0.5rem;">Spesial Untuk Tamu Anda</p>
+      <h2 id="envelopeModalTitle" class="font-display" style="font-size: 2.25rem; line-height: 1.1; margin-bottom: 1rem;">Animasi Wax Seal & Amplop 3D</h2>
+      <p style="color: rgba(255,255,255,0.75); font-size: 0.925rem; line-height: 1.6; margin-bottom: 1.5rem;">
+        Setiap tamu yang membuka link undangan akan disambut dengan amplop eksklusif bertuliskan nama mereka, lengkap dengan efek stempel lilin (wax seal) yang dapat dibuka secara interaktif.
+      </p>
+      <a href="https://wedding.afdalrdh.com" target="_blank" rel="noopener noreferrer" class="btn-ivory-primary">
+        Buka Demo Undangan Nyata
+      </a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
