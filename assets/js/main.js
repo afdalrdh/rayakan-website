@@ -18,41 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
    -------------------------------------------------------------------------- */
 function initDeviceSwitcher() {
   const stage = document.getElementById('deviceStage');
-  const swapBtn = document.getElementById('btnDeviceSwap');
   const desktopCard = document.getElementById('desktopCard');
   const phoneCard = document.getElementById('phoneCard');
 
-  if (!stage || !swapBtn) return;
+  if (!stage) return;
 
-  function toggleFocus(e) {
-    if (e) e.stopPropagation();
-    if (stage.classList.contains('phone-focus')) {
-      stage.classList.remove('phone-focus');
-      stage.classList.add('desktop-focus');
-    } else {
-      stage.classList.remove('desktop-focus');
-      stage.classList.add('phone-focus');
-    }
-  }
-
-  swapBtn.addEventListener('click', toggleFocus);
-
-  // Clicking the unfocused background card brings it to front
   if (desktopCard) {
     desktopCard.addEventListener('click', (e) => {
-      if (stage.classList.contains('phone-focus')) {
-        stage.classList.remove('phone-focus');
-        stage.classList.add('desktop-focus');
-      }
+      e.stopPropagation();
+      stage.classList.remove('phone-focus');
+      stage.classList.add('desktop-focus');
     });
   }
 
   if (phoneCard) {
     phoneCard.addEventListener('click', (e) => {
-      if (stage.classList.contains('desktop-focus')) {
-        stage.classList.remove('desktop-focus');
-        stage.classList.add('phone-focus');
-      }
+      e.stopPropagation();
+      stage.classList.remove('desktop-focus');
+      stage.classList.add('phone-focus');
     });
   }
 }

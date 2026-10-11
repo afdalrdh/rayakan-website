@@ -674,7 +674,7 @@ html, body {
 .desktop-screen-content {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10.5;
+  aspect-ratio: 16 / 9;
   background-color: #171214;
   overflow: hidden;
 }
@@ -736,7 +736,7 @@ html, body {
 .phone-inner-screen {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 402 / 878;
   border-radius: 1.5rem;
   overflow: hidden;
   background-color: #171214;
@@ -746,7 +746,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
 }
 
 .phone-gradient-overlay {
