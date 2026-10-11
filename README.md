@@ -3,7 +3,8 @@
 > **"Setiap Momen Layak Dirayakan"**  
 > Platform jasa pembuatan website undangan digital eksklusif, elegan, dan sinematik untuk pernikahan, pesta, ulang tahun, dan setiap momen spesial.  
 > 
-> 🌐 **Live Demo Vercel**: [https://rayakan-website.vercel.app](https://rayakan-website.vercel.app)
+> 🌐 **Domain Resmi**: [https://rayakan.my.id](https://rayakan.my.id)  
+> ⚡ **Vercel Mirror**: [https://rayakan-website.vercel.app](https://rayakan-website.vercel.app)
 
 ---
 
