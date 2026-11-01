@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, Plus } from "lucide-react";
+import { ArrowRight, Check, Plus } from "lucide-react";
 import { contactHref, Eyebrow, GENERAL_ENQUIRY, LandingFooter, LandingNav, portfolioCards, Title } from "@/components/landing/chrome";
-import { DeviceShowcase } from "@/components/landing/DeviceShowcase";
+import { Hero } from "@/components/landing/Hero";
+import { Envelope, Rings, Sparkle, Sprig } from "@/components/landing/illustrations";
 import { Features } from "@/components/landing/Features";
-import { BlurInTitle, FadeUp } from "@/components/landing/motion";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
 import { Reveal } from "@/components/landing/Reveal";
 import { activeLabel, rupiah, THEMES, type Plan } from "@/lib/content";
@@ -23,14 +23,6 @@ export const metadata: Metadata = {
     locale: "id_ID",
     type: "website",
   },
-};
-
-/** The sample invitation used across the landing page. */
-const SAMPLE = {
-  url: "rayakan.my.id/afdal-putri",
-  desktop: { src: "/landing/afdal-desktop-long.webp", width: 1200, height: 7517 },
-  mobile: { src: "/landing/afdal-mobile-long.webp", width: 600, height: 15844 },
-  backdrop: "/demo/afdal/hero.webp",
 };
 
 const SECTIONS = [
@@ -64,7 +56,7 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
   return (
     <div className={`relative aspect-[390/844] overflow-hidden rounded-[32px] bg-[#0d0b0a] p-[6px] shadow-[0_30px_60px_-30px_rgba(60,40,20,0.55)] ${className}`}>
       <div className="relative h-full w-full overflow-hidden rounded-[26px] bg-white">
-        <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 200px, 60vw" className="object-cover object-top" />
+        <Image src={src} alt={alt} fill unoptimized className="object-cover object-top" />
       </div>
       <span className="absolute left-1/2 top-[13px] h-[16px] w-[64px] -translate-x-1/2 rounded-full bg-black" />
     </div>
@@ -81,42 +73,18 @@ export default async function Landing() {
 
   return (
     <div className="overflow-x-clip bg-rk-paper font-rk-sans text-rk-ink selection:bg-rk-sand selection:text-rk-ink">
-      <LandingNav orderHref={order()} />
+      <LandingNav orderHref={order()} overlay />
 
-      {/* ------------------------------ Hero ------------------------------ */}
-      <section className="relative px-4 pt-28 sm:px-6 md:pt-36">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_60%_at_50%_0%,rgba(214,186,140,0.28),transparent_70%)]" />
-        <div className="relative mx-auto max-w-[900px] text-center">
-          <FadeUp>
-            <span className="inline-flex items-center gap-2 rounded-full border border-rk-line bg-white/70 px-4 py-1.5 text-[12px] font-medium text-rk-ink/70">
-              <span className="h-1.5 w-1.5 rounded-full bg-rk-bronze" /> Website undangan pernikahan
-            </span>
-          </FadeUp>
-          <BlurInTitle lines={["Desain premium", "untuk momen *bahagiamu.*"]} className="mt-6 font-rk-display text-[clamp(48px,9vw,112px)] font-light leading-[0.98] tracking-[-0.03em]" />
-          <FadeUp delay={0.55}>
-            <p className="mx-auto mt-6 max-w-[560px] text-[16px] leading-relaxed text-rk-ink/65 sm:text-[17px]">
-              Undangan yang tidak terlihat seperti template, dan bisa kamu ubah sendiri dari HP. Kirim ke setiap tamu dengan namanya.
-            </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link href="/tema/afdal" className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-rk-ink px-7 text-[15px] font-semibold text-white transition hover:bg-rk-plum">
-                Lihat contoh undangan <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
-              <Link href="/demo/admin?tema=afdal" className="inline-flex h-12 items-center justify-center rounded-full border border-rk-ink/15 bg-white px-7 text-[15px] font-semibold transition hover:border-rk-ink/40">
-                Coba editornya gratis
-              </Link>
-            </div>
-            <p className="mt-5 text-[13px] text-rk-mute">Mulai {rupiah(cheapest)} · tanpa aplikasi · bisa diubah kapan saja</p>
-          </FadeUp>
-        </div>
-        <div className="relative mx-auto mt-12 max-w-[1200px] md:mt-16">
-          <DeviceShowcase {...SAMPLE} />
-        </div>
-      </section>
+      <Hero orderHref={order()} consultHref={order()} priceFrom={rupiah(cheapest)} />
 
       {/* ------------------------------ Features ------------------------------ */}
-      <section id="fitur" className="scroll-mt-16 px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto max-w-[1200px]">
-          <Reveal className="max-w-[720px]">
+      <section id="fitur" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+        <div className="rk-parallax pointer-events-none absolute -right-4 top-16 hidden text-rk-bronze/45 md:block">
+          <Sprig className="rk-sway h-[220px] w-auto" />
+        </div>
+        <Sparkle className="rk-twinkle pointer-events-none absolute right-[22%] top-24 hidden h-6 w-6 text-rk-bronze/60 md:block" delay={0.8} />
+        <div className="relative mx-auto max-w-[1200px]">
+          <Reveal variant="blur" className="max-w-[720px]">
             <Eyebrow>Semua yang dibutuhkan</Eyebrow>
             <Title className="mt-4 text-[clamp(40px,6vw,76px)]">
               Dari undangan pertama sampai ucapan terakhir, <em className="text-rk-bronze">semua terhubung.</em>
@@ -131,7 +99,7 @@ export default async function Landing() {
       {/* ------------------------------ Sections ------------------------------ */}
       <section className="border-y border-rk-line/70 bg-[#fbf8f2] py-24 lg:py-32">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-          <Reveal className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <Reveal variant="blur" className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
               <Eyebrow>Bukan template biasa</Eyebrow>
               <Title className="mt-4 max-w-[640px] text-[clamp(40px,5.5vw,68px)]">Setiap bagian dirancang seperti majalah.</Title>
@@ -141,7 +109,7 @@ export default async function Landing() {
         </div>
         <div className="no-scrollbar mt-14 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 sm:px-6 lg:mx-auto lg:grid lg:max-w-[1200px] lg:grid-cols-6 lg:overflow-visible">
           {SECTIONS.map((s, i) => (
-            <Reveal key={s.src} delay={i * 70} className="w-[58vw] max-w-[240px] shrink-0 snap-start lg:w-auto">
+            <Reveal key={s.src} delay={i * 80} variant="scale" className={`w-[58vw] max-w-[240px] shrink-0 snap-start lg:w-auto ${i % 2 ? "lg:mt-10" : ""}`}>
               <Phone src={s.src} alt={s.label} />
               <p className="mt-4 text-center text-[13px] text-rk-ink/60">{s.label}</p>
             </Reveal>
@@ -152,7 +120,7 @@ export default async function Landing() {
       {/* ------------------------------ Themes ------------------------------ */}
       <section id="tema" className="scroll-mt-16 px-4 py-24 sm:px-6 lg:py-32">
         <div className="mx-auto max-w-[1200px]">
-          <Reveal className="text-center">
+          <Reveal variant="blur" className="text-center">
             <Eyebrow>Pilihan tema</Eyebrow>
             <Title className="mx-auto mt-4 max-w-[680px] text-[clamp(40px,5.5vw,68px)]">Dua karakter, satu isi.</Title>
             <p className="mx-auto mt-4 max-w-[460px] text-[15px] text-rk-ink/60">Ganti tema kapan saja tanpa mengisi ulang. Pemilik paket Eksklusif otomatis mendapat setiap tema baru.</p>
@@ -161,7 +129,7 @@ export default async function Landing() {
             {Object.values(THEMES).map((t, i) => (
               <Reveal key={t.id} delay={i * 120} className="group overflow-hidden rounded-[28px] border border-rk-line/80 bg-[#fffdf9]">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image src={t.preview.desktop} alt={`Tema ${t.name}`} fill sizes="(min-width: 768px) 580px, 92vw" className="object-cover object-top transition duration-[1200ms] ease-out group-hover:scale-[1.03]" />
+                  <Image src={t.preview.desktop} alt={`Tema ${t.name}`} fill sizes="(min-width: 768px) 580px, 92vw" unoptimized className="rk-zoom-in object-cover object-top" />
                 </div>
                 <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
@@ -175,7 +143,7 @@ export default async function Landing() {
                       ))}
                     </div>
                   </div>
-                  <Link href={`/tema/${t.id}`} className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-rk-ink px-5 text-[13px] font-semibold text-white">
+                  <Link prefetch={false} href={`/tema/${t.id}`} className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-rk-ink px-5 text-[13px] font-semibold text-white">
                     Lihat demo <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -186,16 +154,19 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ Portfolio ------------------------------ */}
-      <section id="portofolio" className="scroll-mt-16 bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto max-w-[1200px]">
-          <Reveal className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <section id="portofolio" className="relative scroll-mt-16 overflow-hidden bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
+        <div className="rk-parallax pointer-events-none absolute left-[42%] top-14 hidden text-rk-bronze/45 lg:block">
+          <Rings className="rk-float h-[110px] w-auto" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px]">
+          <Reveal variant="blur" className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
               <Eyebrow>Portofolio</Eyebrow>
               <Title className="mt-4 text-[clamp(44px,6.5vw,84px)]">
                 Momen bahagia, <em className="text-rk-bronze">dirayakan.</em>
               </Title>
             </div>
-            <Link href="/portofolio" className="inline-flex h-11 items-center gap-2 self-start rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40 md:self-auto">
+            <Link prefetch={false} href="/portofolio" className="inline-flex h-11 items-center gap-2 self-start rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40 md:self-auto">
               Lihat semua <ArrowRight className="h-4 w-4" />
             </Link>
           </Reveal>
@@ -206,7 +177,7 @@ export default async function Landing() {
       {/* ------------------------------ Editor ------------------------------ */}
       <section className="px-4 py-24 sm:px-6 lg:py-32">
         <div className="mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-[1fr_0.8fr]">
-          <Reveal>
+          <Reveal variant="left">
             <Eyebrow>Edit dari HP</Eyebrow>
             <Title className="mt-4 text-[clamp(40px,5.5vw,68px)]">Ketuk bagian yang ingin diubah. Selesai.</Title>
             <ol className="mt-10 space-y-7">
@@ -225,11 +196,11 @@ export default async function Landing() {
                 </li>
               ))}
             </ol>
-            <Link href="/demo/admin?tema=afdal" className="mt-10 inline-flex h-12 items-center gap-2 rounded-full bg-rk-ink px-6 text-[14px] font-semibold text-white">
+            <Link prefetch={false} href="/demo/admin?tema=afdal" className="mt-10 inline-flex h-12 items-center gap-2 rounded-full bg-rk-ink px-6 text-[14px] font-semibold text-white">
               Coba editornya sekarang <ArrowRight className="h-4 w-4" />
             </Link>
           </Reveal>
-          <Reveal delay={150} className="mx-auto w-full max-w-[320px]">
+          <Reveal variant="right" delay={150} className="mx-auto w-full max-w-[320px]">
             <Phone src="/landing/editor-mobile.webp" alt="Editor undangan di HP" />
           </Reveal>
         </div>
@@ -238,7 +209,7 @@ export default async function Landing() {
       {/* ------------------------------ Guests ------------------------------ */}
       <section className="border-y border-rk-line/70 bg-[#fbf8f2] px-4 py-24 sm:px-6 lg:py-32">
         <div className="mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-2">
-          <Reveal className="order-2 lg:order-1">
+          <Reveal variant="left" className="order-2 lg:order-1">
             <div className="mx-auto max-w-[420px] rounded-[28px] bg-[#e9e2d6] p-5">
               <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-rk-mute">WhatsApp</p>
               <div className="ml-auto mt-4 max-w-[330px] rounded-2xl rounded-tr-sm bg-[#d9fdd3] p-1.5 shadow-sm">
@@ -263,7 +234,7 @@ export default async function Landing() {
               </div>
             </div>
           </Reveal>
-          <Reveal delay={120} className="order-1 lg:order-2">
+          <Reveal variant="right" delay={120} className="order-1 lg:order-2">
             <Eyebrow>Kelola tamu</Eyebrow>
             <Title className="mt-4 text-[clamp(40px,5.5vw,68px)]">Setiap tamu disapa dengan namanya.</Title>
             <ul className="mt-9 space-y-4 text-[15px]">
@@ -284,9 +255,12 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ Steps ------------------------------ */}
-      <section className="px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto max-w-[1200px]">
-          <Reveal>
+      <section className="relative overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+        <div className="rk-parallax pointer-events-none absolute right-[6%] top-20 hidden text-rk-bronze/45 md:block">
+          <Envelope className="rk-float h-[120px] w-auto" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px]">
+          <Reveal variant="blur">
             <Eyebrow>Cara pesan</Eyebrow>
             <Title className="mt-4 max-w-[640px] text-[clamp(40px,5.5vw,68px)]">Tiga langkah, undangan siap dibagikan.</Title>
           </Reveal>
@@ -309,7 +283,7 @@ export default async function Landing() {
       {/* ------------------------------ Pricing ------------------------------ */}
       <section id="harga" className="scroll-mt-16 bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
         <div className="mx-auto max-w-[1200px]">
-          <Reveal className="text-center">
+          <Reveal variant="blur" className="text-center">
             {promoActive && settings.promoLabel && (
               <p className="mx-auto inline-flex rounded-full bg-rk-ink px-4 py-1.5 text-[12px] font-semibold text-rk-sand">
                 {settings.promoLabel}
@@ -351,7 +325,7 @@ export default async function Landing() {
           </div>
           <p className="mt-10 text-center text-[13px] text-rk-mute">
             Pembayaran via transfer bank / e-wallet. Ingin lihat dulu?{" "}
-            <Link href="/demo/admin?tema=afdal" className="font-semibold text-rk-ink underline underline-offset-4">
+            <Link prefetch={false} href="/demo/admin?tema=afdal" className="font-semibold text-rk-ink underline underline-offset-4">
               Coba editornya gratis
             </Link>
             .
@@ -360,9 +334,12 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ FAQ ------------------------------ */}
-      <section id="faq" className="scroll-mt-16 px-4 py-24 sm:px-6 lg:py-32">
+      <section id="faq" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+        <div className="rk-parallax pointer-events-none absolute -left-6 bottom-10 hidden -scale-x-100 text-rk-bronze/40 lg:block">
+          <Sprig className="rk-sway h-[200px] w-auto" delay={0.2} />
+        </div>
         <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <Reveal>
+          <Reveal variant="blur">
             <Eyebrow>Pertanyaan</Eyebrow>
             <Title className="mt-4 text-[clamp(40px,5.5vw,68px)]">Yang sering ditanyakan.</Title>
             <p className="mt-5 max-w-[340px] text-[15px] leading-relaxed text-rk-ink/60">
@@ -389,17 +366,17 @@ export default async function Landing() {
 
       {/* ------------------------------ CTA + footer ------------------------------ */}
       <section className="px-4 sm:px-6">
-        <Reveal className="relative mx-auto max-w-[1200px] overflow-hidden rounded-[32px]">
-          <Image src="/demo/afdal/closing.webp" alt="" fill sizes="1200px" className="object-cover object-[center_40%]" />
+        <Reveal variant="scale" className="relative mx-auto max-w-[1200px] overflow-hidden rounded-[32px]">
+          <Image src="/demo/afdal/closing.webp" alt="" fill sizes="1200px" className="rk-zoom-in object-cover object-[center_40%]" />
           <div className="absolute inset-0 bg-[#1d1714]/65" />
           <div className="relative px-6 py-20 text-center text-white sm:py-28">
-            <h2 className="mx-auto max-w-[760px] font-rk-display text-[clamp(42px,6.5vw,84px)] font-light leading-[1] tracking-[-0.02em]">Setiap momen layak dirayakan.</h2>
+            <h2 className="mx-auto max-w-[760px] font-rk-display text-[clamp(42px,6.5vw,84px)] font-light leading-[1] tracking-[-0.02em]">Siap merayakan momen kalian?</h2>
             <p className="mx-auto mt-5 max-w-[440px] text-[15px] text-white/75">Buat undangan yang akan diingat tamu, dan tetap mudah kamu kelola sendiri.</p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
               <a href={order()} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-[15px] font-semibold text-rk-ink">
                 Pesan via WhatsApp
               </a>
-              <Link href="/tema/afdal" className="inline-flex h-12 items-center justify-center rounded-full border border-white/35 px-7 text-[15px] font-semibold">
+              <Link prefetch={false} href="/tema/afdal" className="inline-flex h-12 items-center justify-center rounded-full border border-white/35 px-7 text-[15px] font-semibold">
                 Lihat contoh
               </Link>
             </div>

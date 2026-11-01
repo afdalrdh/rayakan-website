@@ -6,6 +6,7 @@ import "./globals.css";
 const sourceSerif = localFont({
   variable: "--font-source-serif",
   display: "swap",
+  preload: false, // only used inside themes / editor, not worth delaying the landing page
   src: [
     { path: "./fonts/source-serif-4-latin-wght-normal.woff2", weight: "200 900", style: "normal" },
     { path: "./fonts/source-serif-4-latin-wght-italic.woff2", weight: "200 900", style: "italic" },
@@ -14,6 +15,7 @@ const sourceSerif = localFont({
 const instrument = localFont({
   variable: "--font-instrument",
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/instrument-serif-latin-400-normal.woff2", weight: "400", style: "normal" },
     { path: "./fonts/instrument-serif-latin-400-italic.woff2", weight: "400", style: "italic" },
