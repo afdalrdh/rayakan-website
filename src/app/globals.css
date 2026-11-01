@@ -24,9 +24,12 @@
   --color-rk-gold: #e9bf4a;
   --color-rk-sand: #f3d8a7;
   --color-rk-mute: #7d7068;
+  --color-rk-paper: #f7f2ea;
+  --color-rk-bronze: #8b6b43;
 
   --font-display: "Bebas Neue", "Arial Narrow", Impact, sans-serif;
   --font-cormorant: "Cormorant Garamond", Georgia, serif;
+  --font-rk-display: var(--font-landing), "Instrument Serif", Georgia, serif;
   --font-rk-serif: var(--font-instrument), "Instrument Serif", Georgia, serif;
   --font-rk-sans: var(--font-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
@@ -54,4 +57,14 @@ body { -webkit-font-smoothing: antialiased; }
 
 @media (prefers-reduced-motion: reduce) {
   .rk-sheet-in, .rk-fade-in { animation: none; }
+}
+
+/* Landing: tall screenshots that slowly scroll inside a device frame (parent sets container-type: size). */
+@keyframes rk-autoscroll {
+  0%, 8% { transform: translateY(0); }
+  92%, 100% { transform: translateY(calc(-100% + 100cqh)); }
+}
+.rk-autoscroll { animation: rk-autoscroll 46s ease-in-out infinite alternate; will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .rk-autoscroll { animation: none; }
 }

@@ -61,7 +61,7 @@ export interface WishRecord {
 
 /** Slugs that can never be a client address. */
 export const RESERVED_SLUGS = new Set([
-  "studio", "demo", "coba", "api", "admin", "canvas", "login", "masuk", "harga", "tema", "bantuan",
+  "studio", "demo", "coba", "portofolio", "portfolio", "api", "admin", "canvas", "login", "masuk", "harga", "tema", "bantuan",
   "_next", "favicon.ico", "robots.txt", "sitemap.xml", "brand", "fonts", "music", "themes", "uploads",
 ]);
 export const RESERVED_GUEST_SLUGS = new Set(["admin", "preview", "opengraph-image"]);

@@ -50,7 +50,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     defaultPalette: "emas",
     storyPhotos: 1,
     defaultTrack: "arya-background",
-    preview: { desktop: "/landing/hero-desktop.webp", mobile: "/landing/hero-mobile.webp" },
+    preview: { desktop: "/landing/arya-desktop.webp", mobile: "/landing/arya-mobile.webp" },
     palettes: {
       emas: { name: "Emas Malam", bg: "#0B0C0E", alt: "#141315", card: "#141518", input: "#1A1B1F", accent: "#E5C07B", muted: "#C5A059" },
       sage: { name: "Sage", bg: "#0C0F0D", alt: "#121714", card: "#151A17", input: "#1B211D", accent: "#CBD7B4", muted: "#9DB08A" },

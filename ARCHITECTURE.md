@@ -14,7 +14,8 @@ Panduan singkat agar menambah fitur atau tema tidak perlu membaca seluruh kode.
 ```
 src/
 ├─ app/                       Routing (Next.js App Router)
-│  ├─ page.tsx                Landing page
+│  ├─ page.tsx                Landing page (bagian-bagiannya di components/landing/)
+│  ├─ portofolio/             Daftar semua portofolio
 │  ├─ tema/[id]/              Contoh asli tiap tema (statis), mis. /tema/afdal
 │  ├─ demo/ · demo/admin/     Sandbox: editor & hasilnya, disimpan di browser
 │  ├─ studio/                 Dashboard pemilik
@@ -72,6 +73,14 @@ TypeScript akan menandai setiap tempat yang belum lengkap karena `Record<ThemeId
 2. Buat form di `components/editor/blocks/` dan daftarkan di `BLOCK_FORMS`.
 3. Render di tiap tema, dibungkus `<Block id="key">`, dan hormati `content.hidden`.
 4. Jika hanya untuk paket tertentu, kunci lewat `locked` pada paket di Studio.
+
+### Menambah portofolio
+
+Tambahkan satu entri di `src/lib/portfolio.ts` (nama pasangan, tanggal, lokasi, tema, foto sampul, dua tangkapan layar). Landing page menampilkan 3 terbaru, halaman `/portofolio` menampilkan semuanya. Kartu membuka popup detail, bukan website aslinya, jadi tidak ada undangan yang perlu tetap aktif.
+
+### Landing page
+
+`src/app/page.tsx` menyusun bagian-bagian dari `src/components/landing/`: `chrome.tsx` (nav, footer, judul), `DeviceShowcase.tsx` (laptop + HP di hero, klik untuk ganti fokus), `Features.tsx`, `Portfolio.tsx`, `motion.tsx` (animasi judul). Tangkapan layar ada di `public/landing/`; contoh undangan yang dipakai adalah Afdal & Putri.
 
 ### Mengubah harga atau benefit paket
 
