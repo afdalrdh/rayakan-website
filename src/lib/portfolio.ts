@@ -14,7 +14,7 @@ export interface PortfolioItem {
   venue: string;
   theme: ThemeId;
   palette: string;
-  /** Portrait photo for the card. */
+  /** Photo for the card (landscape works best; it is cropped to fit). */
   cover: string;
   /** Screenshots shown in the detail popup. */
   desktop: string;
@@ -32,7 +32,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     venue: "Bale Pancaniti",
     theme: "arya",
     palette: "Emas Malam",
-    cover: "/demo/arya/hero-mobile.png",
+    cover: "/demo/arya/hero-desktop.jpg",
     desktop: "/landing/arya-desktop.webp",
     mobile: "/landing/arya-mobile.webp",
     note: "Nuansa sinematik dengan aksen emas, kisah cinta bergambar, dan galeri 25 foto.",
@@ -45,7 +45,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     venue: "Marsoeta Coffee & Eatery",
     theme: "afdal",
     palette: "Marun Klasik",
-    cover: "/demo/afdal/g-p3.webp",
+    cover: "/demo/afdal/hero.webp",
     desktop: "/landing/afdal-desktop.webp",
     mobile: "/landing/afdal-mobile.webp",
     note: "Kisah cinta lima babak yang bergulir saat di-scroll, video prewedding, dan daftar hadiah.",

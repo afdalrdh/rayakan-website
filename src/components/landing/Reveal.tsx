@@ -2,8 +2,19 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-/** Fades content up once when it scrolls into view. No motion for reduced-motion users. */
-export function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
+const HIDDEN = {
+  up: "translate-y-6 opacity-0",
+  blur: "translate-y-4 opacity-0 blur-[10px]",
+  scale: "scale-[0.96] opacity-0",
+  left: "-translate-x-8 opacity-0",
+  right: "translate-x-8 opacity-0",
+} as const;
+
+/**
+ * Plays an entrance once the element scrolls into view (CSS transition, no JS animation loop).
+ * Reduced-motion users get the content immediately.
+ */
+export function Reveal({ children, delay = 0, className = "", variant = "up" }: { children: ReactNode; delay?: number; className?: string; variant?: keyof typeof HIDDEN }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -16,7 +27,7 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
           io.disconnect();
         }
       },
-      { rootMargin: "0px 0px -10% 0px" },
+      { rootMargin: "0px 0px -8% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -25,7 +36,7 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] ${shown ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"} motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none ${className}`}
+      className={`transition-[opacity,transform,filter] duration-[1000ms] ease-[cubic-bezier(.2,.7,.2,1)] ${shown ? "translate-x-0 translate-y-0 scale-100 opacity-100 blur-none" : HIDDEN[variant]} motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-none motion-reduce:transition-none ${className}`}
     >
       {children}
     </div>

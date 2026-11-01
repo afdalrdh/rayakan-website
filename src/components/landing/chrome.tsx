@@ -12,36 +12,7 @@ export function contactHref(settings: Pick<AppSettings, "adminWhatsapp" | "insta
 
 export const GENERAL_ENQUIRY = "Halo Rayakan.my.id, saya ingin tanya-tanya soal undangan digital.";
 
-const LINKS = [
-  ["/#tema", "Tema"],
-  ["/portofolio", "Portofolio"],
-  ["/#fitur", "Fitur"],
-  ["/#harga", "Harga"],
-  ["/#faq", "FAQ"],
-] as const;
-
-export function LandingNav({ orderHref }: { orderHref: string }) {
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-rk-line/70 bg-rk-paper/80 backdrop-blur-xl">
-      <nav className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/brand/logo.png" alt="" width={30} height={24} className="h-6 w-auto" priority />
-          <span className="font-rk-display text-[22px] leading-none tracking-[-0.01em]">Rayakan.my.id</span>
-        </Link>
-        <div className="ml-auto hidden items-center gap-7 text-[14px] text-rk-ink/65 md:flex">
-          {LINKS.map(([href, label]) => (
-            <Link key={href} href={href} className="transition hover:text-rk-ink">
-              {label}
-            </Link>
-          ))}
-        </div>
-        <a href={orderHref} target="_blank" rel="noreferrer" className="ml-auto rounded-full border border-rk-ink/15 bg-white px-4 py-2 text-[13px] font-semibold text-rk-ink shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:border-rk-ink/40 md:ml-0">
-          Pesan sekarang
-        </a>
-      </nav>
-    </header>
-  );
-}
+export { LandingNav } from "./Nav";
 
 export function LandingFooter({ settings, orderHref }: { settings: Pick<AppSettings, "instagram">; orderHref: string }) {
   return (

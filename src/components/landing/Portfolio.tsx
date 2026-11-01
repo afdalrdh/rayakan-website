@@ -23,7 +23,7 @@ export function PortfolioGrid({ items, className = "" }: { items: PortfolioCard[
 
   return (
     <>
-      <div className={`grid gap-5 sm:grid-cols-2 ${items.length > 2 ? "lg:grid-cols-3" : "mx-auto max-w-[880px]"} ${className}`}>
+      <div className={`grid gap-5 sm:grid-cols-2 ${items.length > 2 ? "lg:grid-cols-3" : ""} ${className}`}>
         {items.map((p, i) => (
           <motion.button
             key={p.id}
@@ -33,9 +33,9 @@ export function PortfolioGrid({ items, className = "" }: { items: PortfolioCard[
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.8, delay: i * 0.1, ease: EASE }}
-            className="group relative block aspect-[4/5] overflow-hidden rounded-[28px] text-left"
+            className={`group relative block aspect-[4/5] overflow-hidden rounded-[28px] text-left ${items.length > 2 ? "" : "sm:aspect-[4/3]"}`}
           >
-            <Image src={p.cover} alt={p.couple} fill sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 92vw" className="object-cover transition duration-[1200ms] ease-out group-hover:scale-[1.04]" />
+            <Image src={p.cover} alt={p.couple} fill sizes="(min-width: 1024px) 600px, (min-width: 640px) 50vw, 92vw" className="object-cover transition duration-[1200ms] ease-out group-hover:scale-[1.04]" />
             <span className="absolute inset-0 bg-linear-to-t from-black/75 via-black/15 to-transparent" />
             <span className="absolute inset-x-0 bottom-0 p-6">
               <span className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[1.5px] text-white backdrop-blur-md">Tema {p.themeName}</span>
@@ -84,10 +84,10 @@ function PortfolioModal({ item: p, onClose }: { item: PortfolioCard; onClose: ()
           <X className="h-5 w-5" />
         </button>
         <div className="grid md:grid-cols-[1.15fr_1fr]">
-          {/* previews */}
-          <div className="relative overflow-hidden bg-[#1d1714] p-6 pb-10 sm:p-8 md:rounded-l-[28px]">
-            <Image src={p.cover} alt="" fill sizes="560px" className="scale-110 object-cover opacity-45 blur-[6px]" />
-            <div className="relative">
+          {/* previews: laptop centred in the pane, phone tucked into its lower-right corner */}
+          <div className="relative flex items-center justify-center overflow-hidden bg-[#1d1714] px-6 py-10 sm:px-10 md:min-h-[480px] md:rounded-l-[28px]">
+            <Image src={p.cover} alt="" fill sizes="560px" className="scale-110 object-cover opacity-40 blur-[6px]" />
+            <div className="relative w-full max-w-[470px] pb-[9%] pr-[9%]">
               <div className="overflow-hidden rounded-[10px] bg-[#211b19] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)] ring-1 ring-white/10">
                 <div className="flex h-6 items-center gap-1.5 px-3">
                   <span className="h-2 w-2 rounded-full bg-[#ec6a5e]" />
@@ -95,12 +95,12 @@ function PortfolioModal({ item: p, onClose }: { item: PortfolioCard; onClose: ()
                   <span className="h-2 w-2 rounded-full bg-[#61c554]" />
                 </div>
                 <div className="relative aspect-[16/10]">
-                  <Image src={p.desktop} alt={`Undangan ${p.couple} di laptop`} fill sizes="540px" className="object-cover object-top" />
+                  <Image src={p.desktop} alt={`Undangan ${p.couple} di laptop`} fill unoptimized className="object-cover object-top" />
                 </div>
               </div>
-              <div className="absolute -bottom-4 right-3 w-[30%] rounded-[18px] bg-[#0d0b0a] p-[4px] shadow-[0_30px_50px_-15px_rgba(0,0,0,0.9)] ring-1 ring-white/15 sm:right-5">
-                <div className="relative aspect-[390/844] overflow-hidden rounded-[14px]">
-                  <Image src={p.mobile} alt={`Undangan ${p.couple} di HP`} fill sizes="170px" className="object-cover object-top" />
+              <div className="absolute bottom-0 right-0 w-[27%] rounded-[16px] bg-[#0d0b0a] p-[4px] shadow-[0_30px_50px_-15px_rgba(0,0,0,0.9)] ring-1 ring-white/15">
+                <div className="relative aspect-[390/844] overflow-hidden rounded-[12px]">
+                  <Image src={p.mobile} alt={`Undangan ${p.couple} di HP`} fill unoptimized className="object-cover object-top" />
                 </div>
               </div>
             </div>
