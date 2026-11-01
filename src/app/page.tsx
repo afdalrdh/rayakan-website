@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowRight, Check, Plus } from "lucide-react";
 import { contactHref, Eyebrow, GENERAL_ENQUIRY, LandingFooter, LandingNav, portfolioCards, Title } from "@/components/landing/chrome";
 import { Hero } from "@/components/landing/Hero";
-import { Envelope, Rings, Sparkle, Sprig } from "@/components/landing/illustrations";
+import { DeviceDuo, DuoStage } from "@/components/landing/DeviceDuo";
+import { Envelope, Rings, Sprig } from "@/components/landing/illustrations";
 import { Features } from "@/components/landing/Features";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
 import { Reveal } from "@/components/landing/Reveal";
@@ -26,12 +27,12 @@ export const metadata: Metadata = {
 };
 
 const SECTIONS = [
-  { src: "/landing/sec-couple.webp", label: "Profil mempelai" },
-  { src: "/landing/sec-story.webp", label: "Kisah cinta" },
-  { src: "/landing/sec-venue.webp", label: "Lokasi & jadwal" },
-  { src: "/landing/sec-memories.webp", label: "Galeri foto" },
-  { src: "/landing/sec-rsvp.webp", label: "RSVP & ucapan" },
-  { src: "/landing/sec-gift.webp", label: "Amplop digital" },
+  { src: "/landing/sec-arya-invitation.webp", label: "Profil mempelai" },
+  { src: "/landing/sec-arya-story.webp", label: "Kisah cinta" },
+  { src: "/landing/sec-arya-date.webp", label: "Hitung mundur" },
+  { src: "/landing/sec-arya-venue.webp", label: "Lokasi & jadwal" },
+  { src: "/landing/sec-arya-memories.webp", label: "Galeri foto" },
+  { src: "/landing/sec-arya-gift.webp", label: "Amplop digital" },
 ];
 
 const FAQ = [
@@ -69,7 +70,7 @@ export default async function Landing() {
   const promoEnds = promoEnd(settings.promoEndsAt);
   const promoActive = isPromoActive(promoEnds);
   const order = (p?: Plan) => contactHref(settings, p ? `Halo Rayakan.my.id, saya tertarik paket ${p.name} (${rupiah(p.price)}). Boleh dibantu?` : GENERAL_ENQUIRY);
-  const portfolio = portfolioCards(settings).slice(0, 3);
+  const portfolio = portfolioCards(settings).slice(0, 4);
 
   return (
     <div className="overflow-x-clip bg-rk-paper font-rk-sans text-rk-ink selection:bg-rk-sand selection:text-rk-ink">
@@ -77,24 +78,7 @@ export default async function Landing() {
 
       <Hero orderHref={order()} consultHref={order()} priceFrom={rupiah(cheapest)} />
 
-      {/* ------------------------------ Features ------------------------------ */}
-      <section id="fitur" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
-        <div className="rk-parallax pointer-events-none absolute -right-4 top-16 hidden text-rk-bronze/45 md:block">
-          <Sprig className="rk-sway h-[220px] w-auto" />
-        </div>
-        <Sparkle className="rk-twinkle pointer-events-none absolute right-[22%] top-24 hidden h-6 w-6 text-rk-bronze/60 md:block" delay={0.8} />
-        <div className="relative mx-auto max-w-[1200px]">
-          <Reveal variant="blur" className="max-w-[720px]">
-            <Eyebrow>Semua yang dibutuhkan</Eyebrow>
-            <Title className="mt-4 text-[clamp(40px,6vw,76px)]">
-              Dari undangan pertama sampai ucapan terakhir, <em className="text-rk-bronze">semua terhubung.</em>
-            </Title>
-          </Reveal>
-          <div className="mt-14">
-            <Features />
-          </div>
-        </div>
-      </section>
+      <Features />
 
       {/* ------------------------------ Sections ------------------------------ */}
       <section className="border-y border-rk-line/70 bg-[#fbf8f2] py-24 lg:py-32">
@@ -128,9 +112,9 @@ export default async function Landing() {
           <div className="mt-14 grid gap-5 md:grid-cols-2">
             {Object.values(THEMES).map((t, i) => (
               <Reveal key={t.id} delay={i * 120} className="group overflow-hidden rounded-[28px] border border-rk-line/80 bg-[#fffdf9]">
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image src={t.preview.desktop} alt={`Tema ${t.name}`} fill sizes="(min-width: 768px) 580px, 92vw" unoptimized className="rk-zoom-in object-cover object-top" />
-                </div>
+                <DuoStage backdrop={t.preview.backdrop} className="aspect-[16/11] px-8 py-8 sm:px-12">
+                  <DeviceDuo desktop={t.preview.desktop} mobile={t.preview.mobile} alt={`Tema ${t.name}`} className="transition duration-700 group-hover:scale-[1.02]" />
+                </DuoStage>
                 <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <p className="font-rk-display text-[34px] font-light leading-none tracking-[-0.02em]">{t.name}</p>
@@ -170,7 +154,7 @@ export default async function Landing() {
               Lihat semua <ArrowRight className="h-4 w-4" />
             </Link>
           </Reveal>
-          <PortfolioGrid items={portfolio} className="mt-12" />
+          <PortfolioGrid items={portfolio} fillTo={4} ctaHref={order()} className="mt-14" />
         </div>
       </section>
 
@@ -201,7 +185,7 @@ export default async function Landing() {
             </Link>
           </Reveal>
           <Reveal variant="right" delay={150} className="mx-auto w-full max-w-[320px]">
-            <Phone src="/landing/editor-mobile.webp" alt="Editor undangan di HP" />
+            <Phone src="/landing/editor-arya.webp" alt="Editor undangan di HP" />
           </Reveal>
         </div>
       </section>

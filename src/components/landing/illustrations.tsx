@@ -79,3 +79,61 @@ export function Sparkle({ className = "", delay = 0 }: Props) {
     </svg>
   );
 }
+
+const PETALS = [
+  { r: -160, s: 0.92, back: true },
+  { r: -100, s: 1, back: true },
+  { r: -40, s: 0.95, back: true },
+  { r: -130, s: 1.05, back: false },
+  { r: -70, s: 1.1, back: false },
+  { r: -10, s: 1, back: false },
+];
+
+/** Soft-painted lily (pure SVG gradients, ~2 KB). Sways gently via .rk-sway. */
+export function Lily({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 300 300" className={className} aria-hidden="true">
+      <defs>
+        <linearGradient id="lily-petal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fffaf0" />
+          <stop offset="70%" stopColor="#f6ead3" />
+          <stop offset="100%" stopColor="#e9d2a8" />
+        </linearGradient>
+        <linearGradient id="lily-back" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f3e6cc" />
+          <stop offset="100%" stopColor="#dcc391" />
+        </linearGradient>
+        <linearGradient id="lily-leaf" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#cfc68f" />
+          <stop offset="100%" stopColor="#9c9558" />
+        </linearGradient>
+      </defs>
+      {/* stem + leaves */}
+      <path d="M150 120 C 175 170, 215 225, 275 292" fill="none" stroke="#a89f62" strokeWidth="3" strokeLinecap="round" />
+      <path d="M190 182 C 160 175, 120 190, 92 225 C 130 222, 170 208, 190 182 Z" fill="url(#lily-leaf)" opacity="0.9" />
+      <path d="M215 212 C 240 175, 262 150, 290 140 C 282 175, 255 205, 215 212 Z" fill="url(#lily-leaf)" opacity="0.85" />
+      <path d="M232 238 C 205 245, 180 268, 168 296 C 200 285, 225 262, 232 238 Z" fill="url(#lily-leaf)" opacity="0.75" />
+      <path d="M168 150 C 200 120, 240 108, 268 112 C 245 135, 205 150, 168 150 Z" fill="url(#lily-leaf)" opacity="0.8" />
+      {/* bud */}
+      <path d="M118 118 C 98 96, 74 72, 58 40 C 82 52, 104 80, 120 112 Z" fill="url(#lily-back)" opacity="0.9" />
+      <path d="M150 120 C 140 118, 128 116, 120 112" fill="none" stroke="#a89f62" strokeWidth="2" />
+      {/* petals */}
+      <g transform="translate(150 118)">
+        {PETALS.map((p) => (
+          <g key={p.r} transform={`rotate(${p.r + 90}) scale(${p.s})`}>
+            <path d="M0 0 C -20 -26, -27 -68, -4 -104 C 6 -96, 12 -90, 10 -84 C 26 -62, 22 -26, 0 0 Z" fill={p.back ? "url(#lily-back)" : "url(#lily-petal)"} stroke="#e3cc9f" strokeWidth="0.8" />
+            <path d="M0 -6 C -4 -36, -4 -64, -3 -92" fill="none" stroke="#d9bd88" strokeWidth="0.7" opacity="0.7" />
+            {!p.back && <circle cx="-3" cy="-30" r="1.3" fill="#c48a5a" opacity="0.6" />}
+          </g>
+        ))}
+        {/* stamens */}
+        {[-150, -120, -95, -70, -45, -20].map((a, i) => (
+          <g key={a} transform={`rotate(${a + 90})`}>
+            <path d={`M0 0 C 2 -18, ${i % 2 ? -3 : 3} -34, 0 -${44 + (i % 3) * 5}`} fill="none" stroke="#c9b27a" strokeWidth="0.9" />
+            <ellipse cx="0" cy={-(46 + (i % 3) * 5)} rx="2.4" ry="5" fill="#9a5a34" />
+          </g>
+        ))}
+      </g>
+    </svg>
+  );
+}

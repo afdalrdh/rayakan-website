@@ -1,113 +1,181 @@
-import { CalendarHeart, Check, Globe2, MessageCircleHeart, Music2, Palette, Send, Smartphone, Users } from "lucide-react";
+import { CalendarDays, Heart, Lock, MessageCircleHeart, Palette, Play, Send, Smartphone, User, Users, Globe2 } from "lucide-react";
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { THEMES } from "@/lib/content";
-import { Reveal } from "./Reveal";
+import { Eyebrow, Title } from "./chrome";
+import { Lily } from "./illustrations";
+import { InView, Reveal } from "./Reveal";
 
-function Card({ icon, title, body, children, delay }: { icon: ReactNode; title: string; body: string; children: ReactNode; delay: number }) {
+/*
+ * "Fitur" section. Each card pairs copy with a small illustration built from
+ * HTML/CSS (no images except one reused screenshot), animated with CSS only:
+ * elements settle in when the card enters the viewport (group-data-[in=true])
+ * and keep a gentle idle motion. Cheap to load, smooth to scroll.
+ */
+
+const ease = "transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)]";
+
+function Card({ icon, title, body, art, delay }: { icon: ReactNode; title: string; body: string; art: ReactNode; delay: number }) {
   return (
-    <Reveal delay={delay} className="flex flex-col overflow-hidden rounded-[26px] border border-rk-line/80 bg-[#fffdf9] p-6 shadow-[0_1px_0_rgba(0,0,0,0.02),0_20px_40px_-30px_rgba(60,40,20,0.25)] sm:p-7">
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rk-line bg-rk-paper text-rk-bronze">{icon}</span>
-        <h3 className="font-rk-display text-[26px] font-light leading-[1.05] tracking-[-0.02em]">{title}</h3>
-      </div>
-      <p className="mt-4 text-[14.5px] leading-relaxed text-rk-ink/65">{body}</p>
-      <div className="mt-6 flex-1">{children}</div>
+    <Reveal delay={delay} className="h-full">
+      <InView className="relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-[#efe2cf] bg-linear-to-br from-[#fffdf9] to-[#fbf3e8] p-6 shadow-[0_24px_50px_-36px_rgba(120,80,40,0.35)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(120,80,40,0.4)] sm:flex-row sm:items-center sm:p-7">
+        <div className="relative z-10 sm:w-[50%] sm:shrink-0">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">{icon}</span>
+          <h3 className="mt-5 font-rk-display text-[26px] font-light leading-[1.05] tracking-[-0.02em]">{title}</h3>
+          <p className="mt-3 text-[14.5px] leading-relaxed text-rk-ink/65">{body}</p>
+        </div>
+        <div className="relative flex min-h-[170px] flex-1 items-center justify-center">
+          <span className="absolute h-[150px] w-[150px] rounded-full bg-[radial-gradient(circle,#f6e6cf,transparent_70%)]" />
+          {art}
+        </div>
+      </InView>
     </Reveal>
   );
 }
 
-const pill = "flex items-center gap-3 rounded-2xl border border-rk-line/80 bg-rk-paper/60 px-3.5 py-2.5 text-[13px]";
+/* ---------- illustrations ---------- */
 
-/** "Fitur" grid: each card carries a tiny illustration of the feature. */
-export function Features() {
-  const afdal = THEMES.afdal;
+function PhoneArt() {
   return (
-    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Ketuk bagian undangan, ganti foto atau teks di panel kecil. Tersimpan otomatis, tanpa aplikasi.">
-        <div className="space-y-2">
-          {["Foto utama", "Profil mempelai", "Galeri foto"].map((t) => (
-            <div key={t} className={pill}>
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white">
-                <Check className="h-3 w-3" />
-              </span>
-              {t}
-              <span className="ml-auto text-[11px] text-rk-mute">Lengkap</span>
-            </div>
-          ))}
+    <div className={`${ease} relative w-[110px] rotate-[10deg] translate-y-6 opacity-0 group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+      <div className="rk-float rounded-[22px] bg-[#1d1714] p-[4px] shadow-[0_24px_40px_-14px_rgba(60,40,20,0.55)]">
+        <div className="relative aspect-[390/844] overflow-hidden rounded-[18px]">
+          <Image src="/landing/afdal-mobile.webp" alt="" fill unoptimized className="object-cover object-top" />
         </div>
-      </Card>
-
-      <Card delay={80} icon={<Users className="h-5 w-5" />} title="Link nama per tamu" body="Import daftar tamu dari Excel, lalu kirim lewat WhatsApp sekali ketuk. Nama tamu tampil di sampul.">
-        <div className="space-y-2">
-          {[
-            ["Keluarga Wijaya", "Terkirim"],
-            ["Rina & Bagus", "Terkirim"],
-            ["Budi Santoso", "Kirim"],
-          ].map(([n, s], i) => (
-            <div key={n} className={pill}>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rk-cream text-[11px] font-semibold text-rk-bronze">{i + 1}</span>
-              {n}
-              <span className={`ml-auto flex items-center gap-1 text-[11px] font-semibold ${s === "Kirim" ? "text-rk-ink" : "text-emerald-700"}`}>
-                {s === "Kirim" && <Send className="h-3 w-3" />}
-                {s}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card delay={160} icon={<CalendarHeart className="h-5 w-5" />} title="Acara tersusun rapi" body="Jadwal akad dan resepsi, lokasi dengan tombol Maps, dan catatan untuk tamu, semua di satu halaman.">
-        <ol className="relative ml-1.5 space-y-4 border-l border-rk-line pl-5">
-          {[
-            ["08.00 WIB", "Akad Nikah"],
-            ["11.00 WIB", "Resepsi"],
-            ["Marsoeta Coffee & Eatery", "Lihat di Maps"],
-          ].map(([a, b]) => (
-            <li key={a} className="relative">
-              <span className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-rk-bronze" />
-              <p className="text-[11px] uppercase tracking-[2px] text-rk-mute">{a}</p>
-              <p className="text-[15px] font-semibold">{b}</p>
-            </li>
-          ))}
-        </ol>
-      </Card>
-
-      <Card delay={0} icon={<MessageCircleHeart className="h-5 w-5" />} title="RSVP & ucapan" body="Tamu konfirmasi kehadiran dan menulis doa. Rekapnya langsung muncul di dashboard kalian.">
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-2xl border border-rk-line/80 bg-rk-paper/60 p-4">
-            <p className="font-rk-display text-[40px] font-light leading-none">128</p>
-            <p className="mt-1 text-[12px] text-rk-mute">Akan hadir</p>
-          </div>
-          <div className="rounded-2xl border border-rk-line/80 bg-rk-paper/60 p-4">
-            <p className="font-rk-display text-[40px] font-light leading-none">96</p>
-            <p className="mt-1 text-[12px] text-rk-mute">Ucapan & doa</p>
-          </div>
-          <p className="col-span-2 rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-[13px] italic leading-relaxed text-rk-ink/75 shadow-sm">“Selamat menempuh hidup baru, semoga sakinah, mawaddah, warahmah.”</p>
-        </div>
-        <p className="mt-2 text-[11px] text-rk-mute">Contoh tampilan</p>
-      </Card>
-
-      <Card delay={80} icon={<Globe2 className="h-5 w-5" />} title="Alamat atas nama kalian" body="Satu link yang mudah diingat dan dibagikan, lengkap dengan gambar pratinjau saat dikirim di WhatsApp.">
-        <div className="relative overflow-hidden rounded-2xl bg-[#211b19] p-4 text-white">
-          <div className="rounded-full bg-white/10 px-4 py-2 text-[13px] text-white/80">rayakan.my.id/afdal-putri</div>
-          <p className="mt-6 font-rk-display text-[30px] font-light italic leading-none text-[#e6d3b3]">Afdal & Putri</p>
-          <p className="mt-1 text-[12px] text-white/50">Sabtu, 4 Juli 2026</p>
-        </div>
-      </Card>
-
-      <Card delay={160} icon={<Palette className="h-5 w-5" />} title="Warna & lagu pilihan" body="Pilih palet warna yang serasi dengan busana kalian, pasang logo inisial, dan lagu latar favorit.">
-        <div className="flex flex-wrap gap-2">
-          {Object.values(afdal.palettes).map((p) => (
-            <span key={p.name} className="flex items-center gap-2 rounded-full border border-rk-line/80 bg-rk-paper/60 py-1.5 pl-1.5 pr-3 text-[12px]">
-              <span className="h-5 w-5 rounded-full" style={{ background: p.accent }} />
-              {p.name}
-            </span>
-          ))}
-        </div>
-        <div className={`${pill} mt-3`}>
-          <Music2 className="h-4 w-4 text-rk-bronze" /> Lagu latar diputar saat undangan dibuka
-        </div>
-      </Card>
+      </div>
     </div>
+  );
+}
+
+function GuestsArt() {
+  const rows = ["Keluarga Wijaya", "Rina & Bagus", "Budi Santoso"];
+  return (
+    <div className="relative w-full max-w-[220px] space-y-2.5">
+      <span className="rk-twinkle absolute -right-1 -top-5 text-[#c9a46a]">✦</span>
+      {rows.map((r, i) => (
+        <div
+          key={r}
+          style={{ transitionDelay: `${150 + i * 140}ms` }}
+          className={`${ease} flex translate-x-8 items-center gap-2.5 rounded-full border border-[#efe2cf] bg-white px-3 py-2 text-[12.5px] opacity-0 shadow-[0_10px_20px_-14px_rgba(80,50,20,0.4)] group-data-[in=true]:translate-x-0 group-data-[in=true]:opacity-100 ${i === 0 ? "-rotate-2" : ""}`}
+        >
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">
+            <User className="h-3.5 w-3.5" />
+          </span>
+          {r}
+          {i === 0 && <Send className="ml-auto h-3.5 w-3.5 text-[#8b6b43]" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ScheduleArt() {
+  return (
+    <div className={`${ease} w-[170px] translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+      <ol className="relative space-y-4 border-l border-[#d8c3a2] pl-4">
+        {[
+          ["08.00 WIB", "Akad Nikah"],
+          ["11.00 WIB", "Resepsi"],
+        ].map(([t, n], i) => (
+          <li key={t} className="relative" style={{ transitionDelay: `${300 + i * 200}ms` }}>
+            <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-[#8b6b43] ring-4 ring-[#f6e9d6]" />
+            <p className="text-[10.5px] tracking-wide text-rk-mute">{t}</p>
+            <p className="text-[14px] font-semibold">{n}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function RsvpArt() {
+  return (
+    <div className="relative">
+      <div className={`${ease} w-[190px] -rotate-3 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f6e9d6]">
+            <Heart className="h-3.5 w-3.5 fill-[#c08a5b] text-[#c08a5b]" />
+          </span>
+          <span className="h-2 flex-1 rounded-full bg-[#eadfcf]" />
+        </div>
+        <span className="mt-3 block h-2 w-[85%] rounded-full bg-[#f0e7da]" />
+        <span className="mt-2 block h-2 w-[60%] rounded-full bg-[#f0e7da]" />
+        <span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Hadir</span>
+      </div>
+      {[0, 1, 2].map((i) => (
+        <Heart key={i} className="rk-rise absolute h-3.5 w-3.5 fill-[#d79a8a] text-[#d79a8a]" style={{ right: `${-6 + i * 18}px`, bottom: "6px", animationDelay: `${i * 1.1}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function UrlArt() {
+  return (
+    <div className={`${ease} w-full max-w-[230px] translate-y-6 overflow-hidden rounded-2xl border border-[#efe2cf] bg-[#fbf5ec] opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+      <div className="flex items-center gap-1.5 px-3 py-2.5">
+        <span className="h-2 w-2 rounded-full bg-[#e6a57e]" />
+        <span className="h-2 w-2 rounded-full bg-[#e8cf7d]" />
+        <span className="h-2 w-2 rounded-full bg-[#a9c08a]" />
+      </div>
+      <div className="mx-3 mb-3 flex items-center gap-2 rounded-xl bg-white px-2.5 py-2.5 text-[11px] font-medium shadow-sm">
+        <Lock className="h-3 w-3 shrink-0 text-[#8b6b43]" />
+        <span className="w-0 overflow-hidden whitespace-nowrap border-r border-rk-ink/60 pr-0.5 group-data-[in=true]:rk-type">rayakan.my.id/afdal-putri</span>
+      </div>
+    </div>
+  );
+}
+
+function PaletteArt() {
+  const sw = ["#6b2f2f", "#5d6340", "#ecd9b8"];
+  return (
+    <div className="flex w-full max-w-[220px] flex-col items-center gap-4">
+      <div className="relative h-[70px] w-[170px]">
+        {sw.map((c, i) => (
+          <span
+            key={c}
+            style={{ background: c, transitionDelay: `${200 + i * 120}ms`, left: `${i * 52}px` }}
+            className={`${ease} absolute top-2 h-[54px] w-[62px] rounded-[16px] border-4 border-white shadow-[0_12px_22px_-12px_rgba(60,40,20,0.6)] ${["group-data-[in=true]:-rotate-12", "group-data-[in=true]:-translate-y-2", "group-data-[in=true]:rotate-12"][i]}`}
+          />
+        ))}
+      </div>
+      <div className="flex w-full items-center gap-3 rounded-full border border-[#efe2cf] bg-white px-3 py-2 shadow-sm">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#6b2f2f] text-white">
+          <Play className="h-3 w-3 fill-white" />
+        </span>
+        <span className="flex h-6 flex-1 items-center gap-[3px]">
+          {Array.from({ length: 18 }).map((_, i) => (
+            <span key={i} className="rk-eq w-[3px] flex-1 rounded-full bg-[#c9ab7c]" style={{ animationDelay: `${(i * 137) % 900}ms`, height: `${30 + ((i * 37) % 70)}%` }} />
+          ))}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- section ---------- */
+
+export function Features() {
+  return (
+    <section id="fitur" className="relative scroll-mt-16 overflow-hidden bg-[radial-gradient(70%_50%_at_85%_0%,#f8e9d8,transparent_70%),linear-gradient(#fbf6ef,#f7efe4)] px-4 py-24 sm:px-6 lg:py-32">
+      <div className="pointer-events-none absolute -right-4 top-20 w-[140px] opacity-95 sm:w-[230px] lg:right-[5%] lg:top-16 lg:w-[290px]">
+        <Lily className="rk-sway h-auto w-full" />
+      </div>
+      <div className="relative mx-auto max-w-[1360px]">
+        <Reveal variant="blur" className="max-w-[760px] pr-20 sm:pr-40 lg:pr-0">
+          <Eyebrow>Fitur lengkap</Eyebrow>
+          <Title className="mt-4 text-[clamp(40px,5.6vw,72px)]">
+            Semua kebutuhan undanganmu, <em className="text-rk-bronze">terhubung</em> dengan indah.
+          </Title>
+          <p className="mt-5 max-w-[560px] text-[16px] leading-relaxed text-rk-ink/65">Dari kelola undangan, daftar tamu, hingga detail acara. Semua dirancang agar momen spesialmu lebih mudah, rapi, dan berkesan.</p>
+        </Reveal>
+        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Kelola undangan, ganti foto, dan teks langsung dari ponsel." art={<PhoneArt />} />
+          <Card delay={80} icon={<Users className="h-5 w-5" />} title="Link nama per tamu" body="Buat link undangan personal dari daftar tamu, kirim lewat WhatsApp." art={<GuestsArt />} />
+          <Card delay={160} icon={<CalendarDays className="h-5 w-5" />} title="Acara tersusun rapi" body="Atur jadwal, lokasi, dan catatan acara dalam satu halaman." art={<ScheduleArt />} />
+          <Card delay={0} icon={<MessageCircleHeart className="h-5 w-5" />} title="RSVP & ucapan" body="Terima konfirmasi kehadiran dan doa dari para tamu." art={<RsvpArt />} />
+          <Card delay={80} icon={<Globe2 className="h-5 w-5" />} title="Alamat atas nama kalian" body="Link yang mudah diingat dan bisa dibagikan ke siapa saja." art={<UrlArt />} />
+          <Card delay={160} icon={<Palette className="h-5 w-5" />} title="Warna & lagu pilihan" body="Pilih palet warna, logo inisial, dan lagu latar favorit." art={<PaletteArt />} />
+        </div>
+      </div>
+    </section>
   );
 }

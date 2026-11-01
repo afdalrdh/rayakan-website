@@ -38,7 +38,8 @@ export interface ThemeMeta {
   storyPhotos: 1 | 4;
   /** Library track used when a site is created with this theme. */
   defaultTrack: string;
-  preview: { desktop: string; mobile: string };
+  /** Screenshots for the landing page, plus a photo used as their blurred backdrop. */
+  preview: { desktop: string; mobile: string; backdrop: string };
 }
 
 export const THEMES: Record<ThemeId, ThemeMeta> = {
@@ -50,7 +51,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     defaultPalette: "emas",
     storyPhotos: 1,
     defaultTrack: "arya-background",
-    preview: { desktop: "/landing/arya-desktop.webp", mobile: "/landing/arya-mobile.webp" },
+    preview: { desktop: "/landing/arya-desktop.webp", mobile: "/landing/arya-mobile.webp", backdrop: "/demo/arya/hero-desktop.jpg" },
     palettes: {
       emas: { name: "Emas Malam", bg: "#0B0C0E", alt: "#141315", card: "#141518", input: "#1A1B1F", accent: "#E5C07B", muted: "#C5A059" },
       sage: { name: "Sage", bg: "#0C0F0D", alt: "#121714", card: "#151A17", input: "#1B211D", accent: "#CBD7B4", muted: "#9DB08A" },
@@ -68,7 +69,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     defaultPalette: "maroon",
     storyPhotos: 4,
     defaultTrack: "afdal-background",
-    preview: { desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp" },
+    preview: { desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp", backdrop: "/demo/afdal/hero.webp" },
     palettes: {
       maroon: { name: "Marun Klasik", bg: "#FFFFFF", alt: "#FBFAF7", card: "#FBFBF9", input: "#F3F1F0", accent: "#4A0E0E", muted: "#877270" },
       zaitun: { name: "Hijau Zaitun", bg: "#FFFFFF", alt: "#F9FAF6", card: "#F8F9F4", input: "#EFF1EA", accent: "#3D4A2A", muted: "#7A8270" },

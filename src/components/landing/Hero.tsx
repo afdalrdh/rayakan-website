@@ -26,7 +26,7 @@ function Devices({ url, desktop, mobile }: { url: string; desktop: string; mobil
 
   return (
     <div className="relative">
-      <div className="rk-float relative aspect-[10/9] w-full">
+      <div className="rk-float relative aspect-[100/76] w-full">
         <motion.button
           type="button"
           aria-label={focus === "desktop" ? "Tampilan laptop" : "Tampilkan versi laptop"}
@@ -63,7 +63,7 @@ function Devices({ url, desktop, mobile }: { url: string; desktop: string; mobil
         </motion.button>
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-3 md:mt-1">
+      <div className="mt-2 flex items-center justify-center gap-3">
         <button
           type="button"
           onClick={() => setFocus(focus === "desktop" ? "mobile" : "desktop")}
@@ -99,7 +99,7 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
       </div>
 
       {/* hand-drawn curve behind the devices */}
-      <svg viewBox="0 0 800 800" className="pointer-events-none absolute -right-[10%] top-[6%] -z-[5] hidden h-[105%] w-auto text-[#e8d5b5] md:block" aria-hidden="true">
+      <svg viewBox="0 0 800 800" className="pointer-events-none absolute -right-[8%] -top-[4%] -z-[5] hidden h-[80%] w-auto text-[#e8d5b5] md:block" aria-hidden="true">
         <motion.path
           d="M 690 40 C 470 230, 210 380, 230 560 C 250 740, 560 760, 700 600"
           fill="none"
@@ -113,7 +113,7 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
         <path d="M 640 120 C 440 300, 250 420, 280 580 C 310 720, 560 720, 650 560" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" strokeDasharray="2 7" className="rk-march" />
       </svg>
       <Sparkle className="rk-twinkle pointer-events-none absolute left-[46%] top-[22%] hidden h-5 w-5 text-[#e8d5b5] md:block" delay={1.2} />
-      <Sparkle className="rk-twinkle pointer-events-none absolute right-[6%] top-[70%] hidden h-4 w-4 text-[#e8d5b5] [animation-delay:1.5s] md:block" delay={1.6} />
+      <Sparkle className="rk-twinkle pointer-events-none absolute right-[9%] top-[58%] hidden h-4 w-4 text-[#e8d5b5] [animation-delay:1.5s] md:block" delay={1.6} />
 
       <div className="mx-auto grid min-h-[100svh] max-w-[1240px] items-center gap-10 px-5 pb-28 pt-28 sm:px-8 md:grid-cols-[1fr_1.05fr] md:gap-6 md:pt-24">
         <div>

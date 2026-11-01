@@ -24,11 +24,11 @@ export default async function PortfolioPage() {
         <FadeUp>
           <Eyebrow>Portofolio · {items.length} undangan</Eyebrow>
         </FadeUp>
-        <BlurInTitle lines={["Momen bahagia,", "*dirayakan.*"]} className="mt-5 font-rk-display text-[clamp(52px,9vw,112px)] font-light leading-[0.98] tracking-[-0.03em]" />
+        <BlurInTitle lines={["Momen bahagia, *dirayakan.*"]} className="mt-5 font-rk-display text-[clamp(48px,6.6vw,92px)] font-light leading-[0.98] tracking-[-0.03em]" />
         <FadeUp delay={0.4}>
-          <p className="mt-6 max-w-[520px] text-[16px] leading-relaxed text-rk-ink/65">Kumpulan undangan yang sudah kami rayakan bersama para pasangan. Ketuk salah satu untuk melihat detailnya.</p>
+          <p className="mt-5 text-[16px] leading-relaxed text-rk-ink/65">Undangan yang sudah kami rayakan bersama para pasangan. Ketuk untuk melihat detail.</p>
         </FadeUp>
-        <PortfolioGrid items={items} className="mt-14" />
+        <PortfolioGrid items={items} fillTo={4} ctaHref={orderHref} className="mt-14" />
       </main>
       <LandingFooter settings={settings} orderHref={orderHref} />
     </div>
