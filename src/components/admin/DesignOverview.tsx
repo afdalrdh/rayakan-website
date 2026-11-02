@@ -45,7 +45,7 @@ export function DesignOverview({ content: c }: { content: WeddingContent }) {
             ))}
           </div>
         </div>
-        <div className="flex h-[min(78dvh,760px)] flex-col">
+        <div className={`flex flex-col ${device === "laptop" ? "h-[min(62dvh,540px)]" : "h-[min(78dvh,760px)]"}`}>
           <Canvas readOnly device={device} content={c} media={{}} plan={plan} selected={null} onSelect={() => {}} />
         </div>
       </section>

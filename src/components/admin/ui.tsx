@@ -37,12 +37,12 @@ export const card = "rounded-2xl border border-rk-line bg-white";
 export function StatCard({ label, value, icon, tone = "ink" }: { label: string; value: ReactNode; icon: ReactNode; tone?: "ink" | "green" | "mute" | "gold" }) {
   const toneCls = { ink: "bg-rk-cream text-rk-ink", green: "bg-emerald-50 text-emerald-700", mute: "bg-rk-ivory text-rk-mute", gold: "bg-[#fbf1d4] text-rk-bronze" }[tone];
   return (
-    <div className={`${card} p-3 sm:p-4`}>
-      <p className="text-[11px] font-medium text-rk-mute sm:text-[12px]">{label}</p>
-      <div className="mt-1.5 flex items-center justify-between gap-2">
-        <span className="text-[20px] font-bold leading-none tabular-nums tracking-tight sm:text-[24px]">{value}</span>
-        <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8 ${toneCls}`}>{icon}</span>
+    <div className={`${card} flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3`}>
+      <div className="min-w-0">
+        <p className="truncate text-[11px] font-medium text-rk-mute sm:text-[12px]">{label}</p>
+        <p className="mt-1 text-[19px] font-bold leading-none tabular-nums tracking-tight sm:text-[22px]">{value}</p>
       </div>
+      <span className={`hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:flex ${toneCls}`}>{icon}</span>
     </div>
   );
 }

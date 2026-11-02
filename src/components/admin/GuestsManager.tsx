@@ -411,7 +411,6 @@ export function GuestsManager({ initialGuests, waTemplate }: { initialGuests: Gu
     }
   };
 
-  const limitText = plan.guestLimit === null ? "tanpa batas" : `maks. ${plan.guestLimit}`;
   const openMenu = (e: React.MouseEvent<HTMLButtonElement>, g: GuestRecord) => {
     e.stopPropagation();
     if (menu?.g.id === g.id) return setMenu(null);
@@ -429,7 +428,7 @@ export function GuestsManager({ initialGuests, waTemplate }: { initialGuests: Gu
       )}
 
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
-        <StatCard label={`Total · ${limitText}`} value={stats.total} icon={<Users className="h-4 w-4" />} />
+        <StatCard label="Total" value={plan.guestLimit === null ? stats.total : `${stats.total}/${plan.guestLimit}`} icon={<Users className="h-4 w-4" />} />
         <StatCard label="Sudah dikirim" value={stats.sent} icon={<CheckCheck className="h-4 w-4" />} tone="green" />
         <StatCard label="Belum dikirim" value={stats.unsent} icon={<Send className="h-4 w-4" />} tone="mute" />
       </div>
@@ -643,7 +642,7 @@ export function GuestsManager({ initialGuests, waTemplate }: { initialGuests: Gu
               </div>
             </>
           ) : (
-            <div className="mt-4 flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-rk-line bg-rk-ivory px-6 py-10 text-center">
+            <div className="mt-4 flex min-h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-rk-line bg-rk-ivory px-6 py-8 text-center">
               <EmptyIllustration searching={guests.length > 0} />
               <h3 className="mt-4 text-[14px] font-bold">{guests.length ? "Tidak ada tamu yang cocok" : "Belum ada tamu"}</h3>
               <p className="mt-1 max-w-[320px] text-[12px] leading-[18px] text-rk-mute">{guests.length ? "Coba kata kunci lain atau ubah filter status." : "Tambahkan tamu pertama atau impor daftar tamu sekaligus dari Excel."}</p>

@@ -67,9 +67,12 @@ export function Canvas({
   let style: React.CSSProperties;
   let wrap: React.CSSProperties;
   if (device === "laptop") {
+    // A real laptop screen: 1280×800 (16:10), scaled to fit both the width and the height.
     const vw = 1280;
-    const s = Math.min(1, (size.w - (isDesktopUi ? 48 : 16)) / vw);
-    const h = (size.h - (isDesktopUi ? 48 : 16)) / s;
+    const vh = 800;
+    const pad = isDesktopUi ? 48 : 16;
+    const s = Math.min(1, (size.w - pad) / vw, (size.h - pad) / vh);
+    const h = vh;
     style = { width: vw, height: h, transform: `scale(${s})`, transformOrigin: "top left" };
     wrap = { width: vw * s, height: h * s };
   } else if (isDesktopUi) {

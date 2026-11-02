@@ -223,20 +223,194 @@ export const DEMO_AFDAL: WeddingContent = {
   },
 };
 
-/** Presets without their own sample couple reuse one of the two real sites. */
-function presetDemo(theme: ThemeId, from: WeddingContent): WeddingContent {
-  const c = structuredClone(from);
-  c.theme = theme;
-  c.style = { ...THEMES[theme].style, accent: "" };
-  c.layouts = { ...THEMES[theme].layouts };
-  return c;
-}
+/** Photos for one fictional sample couple (AI-generated, see public/demo/<folder>). */
+const demoPhotos = (folder: string, names: string[]) => names.map((n) => ({ id: `${folder}-${n}`, src: `/demo/${folder}/${n}.webp` }));
+
+/** Sample content for the "Taman Sage" theme — fictional couple, garden wedding. */
+export const DEMO_SAGE: WeddingContent = {
+  version: 1,
+  theme: "sage",
+  style: { ...THEMES.sage.style, accent: "" },
+  layouts: { ...THEMES.sage.layouts },
+  logo: { mode: "monogram", image: "" },
+  music: { mode: "library", trackId: THEMES.sage.defaultTrack, upload: "", uploadName: "" },
+  order: [...SECTION_KEYS],
+  hidden: [],
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  hero: {
+    firstName: "Raka",
+    secondName: "Nadia",
+    imageDesktop: "/demo/sage/hero-desktop.webp",
+    imageMobile: "/demo/sage/hero-mobile.webp",
+    imageCutout: "",
+    ogImage: "/demo/sage/hero-desktop.webp",
+    namePosition: "top",
+    showHeart: true,
+    heartSize: "m",
+    scrollLabel: "Jelajahi Kisah Kami",
+  },
+  couple: {
+    showBismillah: true,
+    headline: "Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan pernikahan kami",
+    quote: DEMO_ARYA.couple.quote,
+    first: {
+      fullName: "Nadia Kirana Putri, S.Ds.",
+      parents: "Putri kedua dari Bapak Hendra Wijaya dan Ibu Sri Lestari",
+      instagram: "nadiakirana",
+      photo: "/demo/sage/bride.webp",
+    },
+    second: {
+      fullName: "Raka Pratama Aditya, S.T.",
+      parents: "Putra pertama dari Bapak Bambang Setiawan dan Ibu Dewi Anggraeni",
+      instagram: "rakapratama",
+      photo: "/demo/sage/groom.webp",
+    },
+    videoUrl: "",
+    videoThumb: "",
+  },
+  story: {
+    eyebrow: "Our Story",
+    title: "Tumbuh Bersama",
+    items: [
+      { id: "s1", date: "Mei 2021", title: "Bertemu di Antara Tanaman", body: "Kami bertemu tanpa sengaja di sebuah toko tanaman kecil di Lembang. Nadia mencari pakis, Raka salah mengira dia pegawai toko. Tawa hari itu menjadi awal dari percakapan panjang yang tidak pernah selesai.", image: "/demo/sage/story-1.webp", moreImages: [] },
+      { id: "s2", date: "2022 – 2024", title: "Akhir Pekan yang Sederhana", body: "Piknik di taman, buku yang dibaca bergantian, dan obrolan sampai sore. Dari hal-hal kecil itu kami belajar bahwa bahagia tidak harus rumit.", image: "/demo/sage/story-2.webp", moreImages: [] },
+      { id: "s3", date: "2025", title: "Melangkah ke Arah yang Sama", body: "Di tengah kabut kebun teh, kami sepakat untuk terus berjalan bersama — melewati jalan yang mudah maupun yang menanjak.", image: "/demo/sage/story-3.webp", moreImages: [] },
+      { id: "s4", date: "8 Februari 2026", title: "Lamaran", body: "Dengan restu kedua keluarga, cincin itu akhirnya tersemat. Hari itu dua keluarga dipertemukan oleh niat baik dan harapan yang sama.", image: "/demo/sage/story-4.webp", moreImages: [] },
+    ],
+  },
+  event: { eyebrow: "Save The Date", date: "2026-12-12", time: "09:00", timezone: "WIB" },
+  venue: {
+    eyebrow: "Location",
+    name: "Taman Kaca Dago",
+    address: "Jl. Ir. H. Juanda, Dago, Kec. Coblong, Kota Bandung, Jawa Barat",
+    mapsUrl: "https://maps.google.com/?q=Dago+Bandung",
+    image: "/demo/sage/venue.webp",
+    schedules: [
+      { id: "j1", label: "Akad Nikah", time: "09.00 – 10.30 WIB" },
+      { id: "j2", label: "Resepsi Taman", time: "11.00 – 14.00 WIB" },
+    ],
+    note: "Acara diadakan di area terbuka. Disarankan memakai alas kaki yang nyaman untuk rumput.",
+  },
+  gallery: {
+    eyebrow: "Our Memories",
+    title: "Kenangan yang kami abadikan",
+    photos: demoPhotos("sage", ["g-2", "g-1", "hero-desktop", "story-3", "bride", "groom", "g-3", "story-2", "closing", "story-1", "hero-mobile", "story-4"]),
+  },
+  rsvp: { eyebrow: "Wedding Wishes", title: "Ucapan & Doa", askCity: true },
+  gift: {
+    eyebrow: "Wedding Gift",
+    title: "Berbagi Kebahagiaan",
+    body: DEMO_ARYA.gift.body,
+    accounts: [
+      { id: "b1", bank: "bca", number: "1234 5678 90", holder: "NADIA KIRANA PUTRI" },
+      { id: "b2", bank: "mandiri", number: "1300 0123 4567 8", holder: "RAKA PRATAMA ADITYA" },
+    ],
+    registry: { title: "", body: "", url: "", image: "" },
+  },
+  closing: {
+    eyebrow: "See You On Our Big Day",
+    quote: "Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami",
+    displayName: "Raka & Nadia",
+    hashtag: "#RakaNadiaBersemi",
+    image: "/demo/sage/closing.webp",
+  },
+};
+
+/** Sample content for the "Navy Mewah" theme — fictional couple, night ballroom wedding. */
+export const DEMO_NAVY: WeddingContent = {
+  version: 1,
+  theme: "navy",
+  style: { ...THEMES.navy.style, accent: "" },
+  layouts: { ...THEMES.navy.layouts },
+  logo: { mode: "monogram", image: "" },
+  music: { mode: "library", trackId: THEMES.navy.defaultTrack, upload: "", uploadName: "" },
+  order: [...SECTION_KEYS],
+  hidden: [],
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  hero: {
+    firstName: "Bima",
+    secondName: "Kirana",
+    imageDesktop: "/demo/navy/hero-desktop.webp",
+    imageMobile: "/demo/navy/hero-mobile.webp",
+    imageCutout: "",
+    ogImage: "/demo/navy/hero-desktop.webp",
+    namePosition: "top",
+    showHeart: true,
+    heartSize: "m",
+    scrollLabel: "Jelajahi Kisah Kami",
+  },
+  couple: {
+    showBismillah: true,
+    headline: "Dengan penuh rasa syukur, kami mengundang Anda untuk merayakan hari pernikahan kami",
+    quote: DEMO_ARYA.couple.quote,
+    first: {
+      fullName: "Kirana Ayu Maheswari, S.E.",
+      parents: "Putri pertama dari Bapak Arief Rahman dan Ibu Maya Sari",
+      instagram: "kiranamaheswari",
+      photo: "/demo/navy/bride.webp",
+    },
+    second: {
+      fullName: "Bima Satria Nugraha, M.M.",
+      parents: "Putra kedua dari Bapak Teguh Santoso dan Ibu Ratna Dewi",
+      instagram: "bimasatria",
+      photo: "/demo/navy/groom.webp",
+    },
+    videoUrl: "",
+    videoThumb: "",
+  },
+  story: {
+    eyebrow: "Our Story",
+    title: "Babak Kisah Kami",
+    items: [
+      { id: "s1", date: "Agustus 2020", title: "Satu Lagu, Satu Meja", body: "Malam itu sebuah klub jazz kecil di Jakarta penuh sesak, dan satu-satunya kursi kosong ada di meja Kirana. Satu lagu berubah menjadi tiga jam percakapan.", image: "/demo/navy/story-1.webp", moreImages: [] },
+      { id: "s2", date: "2021 – 2023", title: "Hujan di Kota", body: "Pulang kantor di bawah satu payung, kopi larut malam, dan jalanan basah yang memantulkan lampu kota. Di tengah kesibukan, kami selalu menemukan waktu untuk satu sama lain.", image: "/demo/navy/story-2.webp", moreImages: [] },
+      { id: "s3", date: "Juni 2024", title: "Senja di Labuan Bajo", body: "Perjalanan pertama kami ke timur Indonesia. Di haluan kapal, menatap pulau-pulau di bawah langit biru tua, kami tahu ingin melihat lebih banyak senja bersama.", image: "/demo/navy/story-3.webp", moreImages: [] },
+      { id: "s4", date: "14 Februari 2026", title: "Sebuah Pertanyaan", body: "Di antara ratusan lilin dan lampu kota, Bima berlutut dan bertanya. Jawabannya, tentu saja, ya.", image: "/demo/navy/story-4.webp", moreImages: [] },
+    ],
+  },
+  event: { eyebrow: "Save The Date", date: "2027-01-23", time: "18:30", timezone: "WIB" },
+  venue: {
+    eyebrow: "Location",
+    name: "The Grand Ballroom",
+    address: "Jl. Jend. Sudirman, Senayan, Kec. Kebayoran Baru, Jakarta Selatan",
+    mapsUrl: "https://maps.google.com/?q=Senayan+Jakarta",
+    image: "/demo/navy/venue.webp",
+    schedules: [
+      { id: "j1", label: "Pemberkatan / Akad", time: "16.00 – 17.30 WIB" },
+      { id: "j2", label: "Resepsi Malam", time: "18.30 – 21.30 WIB" },
+    ],
+    note: "Dress code: Black Tie / formal dengan nuansa biru tua.",
+  },
+  gallery: {
+    eyebrow: "Our Memories",
+    title: "Kenangan yang kami abadikan",
+    photos: demoPhotos("navy", ["g-1", "g-2", "hero-desktop", "g-3", "bride", "groom", "story-3", "closing", "hero-mobile", "story-2", "story-4", "story-1"]),
+  },
+  rsvp: { eyebrow: "Wedding Wishes", title: "Ucapan & Doa", askCity: true },
+  gift: {
+    eyebrow: "Wedding Gift",
+    title: "Tanda Kasih",
+    body: DEMO_ARYA.gift.body,
+    accounts: [
+      { id: "b1", bank: "bca", number: "0987 6543 21", holder: "KIRANA AYU MAHESWARI" },
+      { id: "b2", bank: "bri", number: "0123 0101 2345 678", holder: "BIMA SATRIA NUGRAHA" },
+    ],
+    registry: { title: "", body: "", url: "", image: "" },
+  },
+  closing: {
+    eyebrow: "See You On Our Big Night",
+    quote: "Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami",
+    displayName: "Bima & Kirana",
+    hashtag: "#BimaKiranaForever",
+    image: "/demo/navy/closing.webp",
+  },
+};
 
 export const DEMO_BY_THEME: Record<ThemeId, WeddingContent> = {
   arya: DEMO_ARYA,
   afdal: DEMO_AFDAL,
-  sage: presetDemo("sage", DEMO_AFDAL),
-  navy: presetDemo("navy", DEMO_ARYA),
+  sage: DEMO_SAGE,
+  navy: DEMO_NAVY,
 };
 
 export function demoContent(theme: ThemeId = "arya"): WeddingContent {

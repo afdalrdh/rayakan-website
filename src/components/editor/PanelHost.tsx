@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { BLOCK_LABELS, type BlockKey } from "@/lib/content";
+import { BLOCK_LABELS, SECTION_KEYS, type BlockKey, type SectionKey } from "@/lib/content";
 import { SITE_HOST } from "@/lib/messages";
 import { BLOCK_FORMS } from "./blocks";
 import { useEditor } from "./context";
+import { Toggle } from "./fields";
 import { LayoutCard } from "./LayoutPicker";
 import { ChecklistPanel, MusicPanel, OrderPanel, PublishPanel, ThemePanel } from "./panels";
 
@@ -37,8 +38,22 @@ function PanelBody({ panel, openBlock }: { panel: Panel; openBlock: (k: BlockKey
   return <ChecklistPanel onOpen={openBlock} />;
 }
 
+/** On/off switch for optional sections (cover, hero and closing are always shown). */
+function SectionSwitch({ blockKey }: { blockKey: SectionKey }) {
+  const { content: c, update } = useEditor();
+  const shown = !c.hidden.includes(blockKey);
+  return (
+    <Toggle
+      checked={shown}
+      onChange={(on) => update((d) => void (d.hidden = on ? d.hidden.filter((x) => x !== blockKey) : [...d.hidden, blockKey]))}
+      label="Tampilkan bagian ini"
+      hint={shown ? "Matikan jika bagian ini tidak dipakai. Isinya tetap tersimpan." : "Bagian ini disembunyikan dari undangan. Isinya tetap tersimpan."}
+    />
+  );
+}
+
 function BlockBody({ blockKey, Form }: { blockKey: BlockKey; Form: () => React.JSX.Element }) {
-  const { plan, adminWhatsapp, slug } = useEditor();
+  const { plan, adminWhatsapp, slug, content: c } = useEditor();
   const lockedIn = (plan.locked as BlockKey[]).includes(blockKey);
   if (lockedIn) {
     return (
@@ -51,10 +66,15 @@ function BlockBody({ blockKey, Form }: { blockKey: BlockKey; Form: () => React.J
       </div>
     );
   }
+  const optional = (SECTION_KEYS as readonly string[]).includes(blockKey);
+  const hidden = optional && c.hidden.includes(blockKey as SectionKey);
   return (
     <div className="space-y-7">
-      <LayoutCard block={blockKey} />
-      <Form />
+      {optional && <SectionSwitch blockKey={blockKey as SectionKey} />}
+      <div className={`space-y-7 transition ${hidden ? "pointer-events-none select-none opacity-40" : ""}`} aria-disabled={hidden}>
+        <LayoutCard block={blockKey} />
+        <Form />
+      </div>
     </div>
   );
 }

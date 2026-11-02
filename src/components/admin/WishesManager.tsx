@@ -189,7 +189,7 @@ export function WishesManager({ initial }: { initial: WishRecord[] }) {
             </div>
           </>
         ) : (
-          <div className="mt-4 flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-rk-line bg-rk-ivory px-6 py-10 text-center">
+          <div className="mt-4 flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-rk-line bg-rk-ivory px-6 py-8 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-rk-cream text-rk-bronze">
               <MessageCircleHeart className="h-6 w-6" />
             </span>

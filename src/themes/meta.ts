@@ -55,7 +55,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     style: { mode: "light", palette: "sage", fonts: "romantis" },
     layouts: { cover: "lengkung", hero: "lengkung", couple: "bulat", story: "zigzag", event: "kalender", venue: "tengah", gallery: "masonry", rsvp: "tengah", gift: "daftar", closing: "lengkung" },
     defaultTrack: "afdal-background",
-    preview: { desktop: "/landing/sage-desktop.webp", mobile: "/landing/sage-mobile.webp", backdrop: "/demo/afdal/story-2.webp" },
+    preview: { desktop: "/landing/sage-desktop.webp", mobile: "/landing/sage-mobile.webp", backdrop: "/demo/sage/venue.webp" },
   },
   navy: {
     id: "navy",
@@ -64,7 +64,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     style: { mode: "dark", palette: "navy", fonts: "mewah" },
     layouts: { cover: "sinema", hero: "editorial", couple: "editorial", story: "geser", event: "angka", venue: "linimasa", gallery: "geser", rsvp: "tab", gift: "amplop", closing: "belah" },
     defaultTrack: "arya-background",
-    preview: { desktop: "/landing/navy-desktop.webp", mobile: "/landing/navy-mobile.webp", backdrop: "/demo/arya/g-8705.jpg" },
+    preview: { desktop: "/landing/navy-desktop.webp", mobile: "/landing/navy-mobile.webp", backdrop: "/demo/navy/venue.webp" },
   },
 };
 

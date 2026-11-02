@@ -47,10 +47,13 @@ export const CONTAINER = "mx-auto w-full max-w-[1120px]";
 
 /** Every section: same anchor, padding and background rules. */
 export function Section({ block, tone = "bg", className = "", pad = true, children, sectionRef, style }: { block: SectionKey; tone?: "bg" | "alt" | "none"; className?: string; pad?: boolean; children: ReactNode; sectionRef?: React.Ref<HTMLElement>; style?: React.CSSProperties }) {
+  const { mode } = useTheme();
   const colors = tone === "none" ? "" : tone === "alt" ? "bg-t-alt text-t-fg" : "bg-t-bg text-t-fg";
+  // Layout thumbnails keep less air around the content so the layout itself fills the preview.
+  const padding = !pad ? "" : mode === "thumb" ? "px-5 py-12 md:px-8 md:py-16" : "px-5 py-20 md:px-8 md:py-28 lg:py-32";
   return (
     <Block id={block}>
-      <section ref={sectionRef} style={style} id={SECTION_ANCHORS[block]} className={`relative ${colors} ${pad ? "px-5 py-20 md:px-8 md:py-28 lg:py-32" : ""} ${className}`}>
+      <section ref={sectionRef} style={style} id={SECTION_ANCHORS[block]} className={`relative ${colors} ${padding} ${className}`}>
         {children}
       </section>
     </Block>

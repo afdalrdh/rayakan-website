@@ -91,7 +91,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
         <div className="px-5 pb-4">
           <p className="text-[11px] font-bold uppercase tracking-[1.4px] text-rk-mute">{isOwner ? "Admin (pemilik)" : "Admin undangan"}</p>
-          <p className="mt-1 truncate font-rk-serif text-[24px] leading-tight">{title}</p>
+          <span className="mt-2 inline-flex max-w-full truncate rounded-full bg-rk-cream px-3 py-1.5 text-[12px] font-bold">{title}</span>
         </div>
         <div className="flex-1 overflow-y-auto px-3">
           <Nav base={base} active={active} />
@@ -119,7 +119,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="mt-2 px-2 font-rk-serif text-[22px] leading-tight">{title}</p>
+            <span className="mx-2 mt-2 inline-flex max-w-full self-start truncate rounded-full bg-rk-cream px-3 py-1.5 text-[12px] font-bold">{title}</span>
             <div className="mt-4 flex-1 overflow-y-auto">
               <Nav base={base} active={active} onNavigate={() => setOpen(false)} />
             </div>
@@ -129,10 +129,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
       )}
 
       <main className="min-w-0 flex-1">
-        <div className="mx-auto w-full max-w-[1320px] px-4 pb-24 pt-5 sm:px-6 lg:px-8 lg:pt-8">
-          <header className="mb-5 hidden lg:block">
-            <h1 className="font-rk-serif text-[36px] leading-none">{current.title}</h1>
-            <p className="mt-2 text-[14px] text-rk-mute">{current.subtitle}</p>
+        <div className="mx-auto w-full max-w-[1320px] px-4 pb-10 pt-5 sm:px-6 lg:px-8 lg:pt-6">
+          <header className="mb-4 hidden lg:block">
+            <h1 className="font-rk-serif text-[30px] leading-none">{current.title}</h1>
+            <p className="mt-1.5 text-[13px] text-rk-mute">{current.subtitle}</p>
           </header>
           {children}
         </div>

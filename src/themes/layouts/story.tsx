@@ -30,9 +30,9 @@ function ChapterPhoto({ item, sizes, className = "" }: { item: StoryItem; sizes:
 
 /** "Linimasa" (from Malam Emas): vertical timeline, alternating sides on desktop. */
 const Linimasa: Story = () => {
-  const { content: c } = useTheme();
+  const { content: c, mode } = useTheme();
   const [open, setOpen] = useState<StoryItem | null>(null);
-  const items = c.story.items;
+  const items = mode === "thumb" ? c.story.items.slice(0, 2) : c.story.items;
   const card = (item: StoryItem, align: "left" | "right") => (
     <div className={`flex flex-col ${align === "right" ? "items-end text-right" : "items-start text-left"}`}>
       <span className="inline-flex items-center rounded-full border border-t-muted/40 bg-t-card px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[2px] text-t-accent md:text-[12px]">
