@@ -4,6 +4,14 @@ import { useState } from "react";
 import { ArrowDownIcon, Block, CloseIcon, CoupleLogo, EmptyPhoto, Img, MenuIcon, useNavLinks, useTheme } from "../shared";
 
 /**
+ * A full-height `object-cover` photo on a portrait phone is far wider than the
+ * screen (a 16:9 photo at 844px tall is ~1500px wide). Telling the browser
+ * "100vw" made it download a ~1000px file and stretch the cropped middle, which
+ * looked blurry. Size by viewport height on phones instead.
+ */
+const COVER_SIZES = "(max-width: 767px) 180vh, 100vw";
+
+/**
  * Full-screen photo with huge condensed names, a heart outline and an optional
  * cut-out of the couple layered on top for depth.
  */
@@ -22,10 +30,10 @@ export function Hero() {
     <Block id="hero">
       <section id="welcome" className="relative isolate h-[100svh] min-h-[700px] overflow-hidden bg-neutral-950 text-white">
         <div className="absolute inset-0 z-0 hidden md:block">
-          {h.imageDesktop ? <Img src={h.imageDesktop} alt={`${h.firstName} dan ${h.secondName}`} fill priority sizes="100vw" className="object-cover object-center" /> : <EmptyPhoto label="Tambah foto layar lebar" />}
+          {h.imageDesktop ? <Img src={h.imageDesktop} alt={`${h.firstName} dan ${h.secondName}`} fill priority quality={90} sizes="100vw" className="object-cover object-center" /> : <EmptyPhoto label="Tambah foto layar lebar" />}
         </div>
         <div className="absolute inset-0 z-0 md:hidden">
-          {h.imageMobile ? <Img src={h.imageMobile} alt={`${h.firstName} dan ${h.secondName}`} fill priority sizes="100vw" className="object-cover object-center" /> : <EmptyPhoto label="Tambah foto layar HP" />}
+          {h.imageMobile ? <Img src={h.imageMobile} alt={`${h.firstName} dan ${h.secondName}`} fill priority quality={90} sizes={COVER_SIZES} className="object-cover object-center" /> : <EmptyPhoto label="Tambah foto layar HP" />}
         </div>
         <div className="absolute inset-0 z-10 bg-black/20" />
         <div className="absolute inset-x-0 top-0 z-10 h-[28%] bg-linear-to-b from-black/25 to-transparent" />
@@ -87,7 +95,7 @@ export function Hero() {
 
         {h.imageCutout && (
           <div className="pointer-events-none absolute inset-0 z-40">
-            <Img src={h.imageCutout} alt="" fill priority sizes="100vw" className="object-cover object-center" />
+            <Img src={h.imageCutout} alt="" fill priority quality={90} sizes={COVER_SIZES} className="object-cover object-center" />
           </div>
         )}
 

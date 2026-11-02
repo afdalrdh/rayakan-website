@@ -11,20 +11,19 @@ export function EventDate() {
   const left = useCountdown(c.event);
   return (
     <Block id="event">
-      <section id="date" className="flex min-h-[100svh] items-center justify-center bg-t-bg px-4 py-20 text-center text-t-accent md:px-8 md:py-28">
+      <section id="date" className="flex min-h-[80svh] items-center justify-center bg-t-bg px-5 py-20 text-center text-t-accent md:px-8 md:py-28 lg:py-32">
         <div className="mx-auto w-full max-w-[980px]">
           <Reveal>
-            <div className="mx-auto h-px w-[58px] bg-t-muted/40" />
-            <p className="mt-16 font-sans text-[13px] font-semibold uppercase leading-[18px] tracking-[2px] text-t-muted md:text-[18px] md:tracking-[2.4px]">{c.event.eyebrow}</p>
+            <p className="font-sans text-[12px] font-medium uppercase leading-none tracking-[0.24em] text-t-muted md:text-[13px]">{c.event.eyebrow}</p>
           </Reveal>
           <Reveal delay={0.1}>
-            <p className="mt-14 font-serif text-[40px] leading-none tracking-[1px] sm:text-[60px] md:text-[88px]">{formatEventDate(c.event.date)}</p>
+            <p className="mt-6 font-serif text-[40px] leading-[1.05] sm:text-[60px] md:mt-8 md:text-[84px]">{formatEventDate(c.event.date)}</p>
           </Reveal>
-          <Reveal delay={0.18} className="mx-auto mt-12 grid max-w-[560px] grid-cols-4 gap-2 sm:gap-4 md:mt-20 md:gap-5">
+          <Reveal delay={0.18} className="mx-auto mt-10 grid max-w-[520px] grid-cols-4 gap-2.5 sm:gap-4 md:mt-14 md:gap-5">
             {COUNTDOWN_UNITS.map((k) => (
-              <div key={k} className="flex aspect-square min-w-0 flex-col items-center justify-center bg-t-card px-2 py-3">
-                <span className="font-serif text-[30px] leading-[36px] tabular-nums text-t-accent">{String(left[k]).padStart(2, "0")}</span>
-                <span className="mt-1 font-sans text-[10px] uppercase leading-[15px] tracking-[1px] text-t-muted">{LABELS[k]}</span>
+              <div key={k} className="flex aspect-square min-w-0 flex-col items-center justify-center rounded-[14px] bg-t-card px-2 py-3">
+                <span className="font-serif text-[28px] leading-none tabular-nums text-t-accent sm:text-[36px] md:text-[42px]">{String(left[k]).padStart(2, "0")}</span>
+                <span className="mt-2 font-sans text-[10px] uppercase leading-none tracking-[0.16em] text-t-muted md:text-[11px]">{LABELS[k]}</span>
               </div>
             ))}
           </Reveal>

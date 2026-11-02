@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { Block, useTheme, useWishes, type Wish } from "../../shared";
+import { SECTION_Y } from "./Heading";
 
 const input = "h-[50px] w-full rounded-[12px] bg-t-input px-4 font-sans text-[15px] text-t-accent outline-none transition placeholder:text-[#C4C0C0] focus:ring-2 focus:ring-t-muted/40 md:h-[52px] md:px-5 md:text-[16px]";
 const label = "mb-2 block font-sans text-[12px] font-bold uppercase leading-[16px] tracking-[1px] text-[#565156]";
@@ -11,12 +12,12 @@ export function Rsvp() {
   const w = useWishes();
   return (
     <Block id="rsvp">
-      <section id="rsvp" className="bg-t-alt px-6 py-12 font-sans text-[#5B5150] md:px-8 md:py-14 lg:flex lg:min-h-[100svh] lg:items-center lg:py-8">
-        <div className="mx-auto grid w-full max-w-[1310px] gap-10 lg:grid-cols-[0.95fr_1fr] lg:gap-[62px]">
+      <section id="rsvp" className={`bg-t-alt px-5 font-sans text-[#5B5150] md:px-8 ${SECTION_Y}`}>
+        <div className="mx-auto grid w-full max-w-[1120px] gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
           <form onSubmit={w.submit} className="self-start rounded-[22px] border border-t-muted/25 bg-t-card px-6 py-7 shadow-[0_18px_45px_rgba(74,14,14,0.04)] sm:px-8 md:px-9 md:py-8">
-            <p className="text-[16px] uppercase leading-[22px] tracking-[3px] text-t-muted md:text-[17px]">{c.rsvp.eyebrow}</p>
-            <h2 className="mt-5 font-serif text-[34px] font-semibold leading-none text-t-accent md:text-[42px]">{c.rsvp.title}</h2>
-            <div className="mt-6 h-px w-[58px] bg-t-muted/25" />
+            <p className="text-[12px] font-medium uppercase leading-none tracking-[0.24em] text-t-muted md:text-[13px]">{c.rsvp.eyebrow}</p>
+            <h2 className="mt-4 font-serif text-[34px] font-semibold leading-[1.08] text-t-accent md:mt-5 md:text-[44px]">{c.rsvp.title}</h2>
+            <div className="mt-6 h-px w-12 bg-t-muted/40" />
             <div className="mt-6 grid gap-4 sm:grid-cols-2 md:gap-5">
               <label className="block">
                 <span className={label}>Nama</span>
@@ -52,19 +53,19 @@ export function Rsvp() {
               />
             </label>
             {w.status && <p className={`mt-4 rounded-[10px] px-4 py-3 text-[13px] font-semibold ${w.status.ok ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>{w.status.text}</p>}
-            <button type="submit" disabled={w.busy} className="mt-6 h-[58px] w-full rounded-[12px] bg-t-accent text-[15px] font-bold uppercase tracking-[3px] text-white shadow-[0_14px_25px_rgba(0,0,0,0.12)] transition hover:brightness-90 disabled:opacity-60">
+            <button type="submit" disabled={w.busy} className="mt-6 h-[54px] w-full rounded-[12px] bg-t-accent text-[15px] font-bold uppercase tracking-[3px] text-white shadow-[0_14px_25px_rgba(0,0,0,0.12)] transition hover:brightness-90 disabled:opacity-60">
               {w.busy ? "Mengirim..." : "Kirim Ucapan"}
             </button>
           </form>
           <div>
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h3 className="text-[18px] font-bold text-[#565156]">Doa &amp; Ucapan</h3>
+              <h3 className="font-serif text-[24px] font-semibold text-t-accent md:text-[28px]">Doa &amp; Ucapan</h3>
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-full bg-t-input px-3 py-2 text-[12px] font-bold leading-none text-t-accent">{w.stats.present} Kehadiran</span>
                 <span className="rounded-full bg-white px-3 py-2 text-[12px] font-bold leading-none text-[#6F6B75] shadow-[0_2px_10px_rgba(31,28,11,0.08)]">{w.stats.total} Ucapan</span>
               </div>
             </div>
-            <div className="mt-5 grid max-h-[640px] gap-4 overflow-y-auto pr-1">
+            <div className="mt-5 grid max-h-[560px] gap-3 overflow-y-auto pr-1">
               {w.wishes.map((x) => (
                 <article key={x.id} className="rounded-[18px] bg-white px-5 py-4 shadow-[0_4px_18px_rgba(31,28,11,0.05)] md:px-6">
                   <div className="flex flex-wrap items-center gap-2">

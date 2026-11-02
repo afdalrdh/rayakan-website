@@ -18,12 +18,12 @@ function Card({ icon, title, body, art, delay }: { icon: ReactNode; title: strin
   return (
     <Reveal delay={delay} className="h-full">
       <InView className="relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-[#efe2cf] bg-linear-to-br from-[#fffdf9] to-[#fbf3e8] p-6 shadow-[0_24px_50px_-36px_rgba(120,80,40,0.35)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(120,80,40,0.4)] sm:flex-row sm:items-center sm:p-7">
-        <div className="relative z-10 sm:w-[50%] sm:shrink-0">
+        <div className="relative z-10 sm:w-[48%] sm:shrink-0">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">{icon}</span>
           <h3 className="mt-5 font-rk-display text-[26px] font-light leading-[1.05] tracking-[-0.02em]">{title}</h3>
           <p className="mt-3 text-[14.5px] leading-relaxed text-rk-ink/65">{body}</p>
         </div>
-        <div className="relative flex min-h-[170px] flex-1 items-center justify-center">
+        <div className="relative flex min-h-[170px] min-w-0 flex-1 items-center justify-center sm:pr-1">
           <span className="absolute h-[150px] w-[150px] rounded-full bg-[radial-gradient(circle,#f6e6cf,transparent_70%)]" />
           {art}
         </div>
@@ -37,8 +37,8 @@ function Card({ icon, title, body, art, delay }: { icon: ReactNode; title: strin
 /** Mini editor card: a photo with "Ganti foto", a name field being edited, and a saved badge. */
 function EditArt() {
   return (
-    <div className="relative">
-      <div className={`${ease} w-[190px] rotate-2 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-2.5 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+    <div className="relative w-full max-w-[176px]">
+      <div className={`${ease} w-full rotate-2 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-2.5 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
         <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
           <Image src="/landing/afdal-desktop.webp" alt="" fill unoptimized className="object-cover object-[30%_30%]" />
           <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 rounded-full bg-[#1d1714]/85 px-2 py-0.5 text-[9.5px] font-semibold text-white">
@@ -46,13 +46,13 @@ function EditArt() {
           </span>
         </div>
         <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-[#e8d9c2] px-2.5 py-1.5 text-[11.5px] font-medium">
-          <span className="whitespace-nowrap border-r border-rk-ink/60 pr-0.5">Afdal &amp; Putri</span>
+          <span className="truncate border-r border-rk-ink/60 pr-0.5">Afdal &amp; Putri</span>
           <Pencil className="ml-auto h-3 w-3 text-[#8b6b43]" />
         </div>
       </div>
       <span
         style={{ transitionDelay: "450ms" }}
-        className={`${ease} absolute -left-4 -top-3 inline-flex scale-90 items-center gap-1 rounded-full border border-[#efe2cf] bg-white px-2.5 py-1 text-[10px] font-semibold text-emerald-700 opacity-0 shadow-[0_10px_20px_-12px_rgba(80,50,20,0.5)] group-data-[in=true]:scale-100 group-data-[in=true]:opacity-100`}
+        className={`${ease} absolute -left-3 -top-3 inline-flex scale-90 items-center gap-1 rounded-full border border-[#efe2cf] bg-white px-2.5 py-1 text-[10px] font-semibold text-emerald-700 opacity-0 shadow-[0_10px_20px_-12px_rgba(80,50,20,0.5)] group-data-[in=true]:scale-100 group-data-[in=true]:opacity-100`}
       >
         <Check className="h-3 w-3" /> Tersimpan
       </span>
@@ -63,19 +63,19 @@ function EditArt() {
 function GuestsArt() {
   const rows = ["Kel. Wijaya", "Rina & Bagus", "Budi Santoso"];
   return (
-    <div className="relative w-full max-w-[220px] space-y-2.5">
-      <span className="rk-twinkle absolute -right-1 -top-5 text-[#c9a46a]">✦</span>
+    <div className="relative w-full max-w-[200px] space-y-2.5">
+      <span className="rk-twinkle absolute right-1 -top-5 text-[#c9a46a]">✦</span>
       {rows.map((r, i) => (
         <div
           key={r}
           style={{ transitionDelay: `${150 + i * 140}ms` }}
-          className={`${ease} flex translate-x-8 items-center gap-2.5 rounded-full border border-[#efe2cf] bg-white whitespace-nowrap px-3 py-2 text-[12.5px] opacity-0 shadow-[0_10px_20px_-14px_rgba(80,50,20,0.4)] group-data-[in=true]:translate-x-0 group-data-[in=true]:opacity-100 ${i === 0 ? "-rotate-2" : ""}`}
+          className={`${ease} flex translate-x-8 items-center gap-2.5 rounded-full border border-[#efe2cf] bg-white px-3 py-2 text-[12.5px] opacity-0 shadow-[0_10px_20px_-14px_rgba(80,50,20,0.4)] group-data-[in=true]:translate-x-0 group-data-[in=true]:opacity-100 ${i === 0 ? "-rotate-2" : ""}`}
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">
             <User className="h-3.5 w-3.5" />
           </span>
-          {r}
-          {i === 0 && <Send className="ml-auto h-3.5 w-3.5 text-[#8b6b43]" />}
+          <span className="min-w-0 truncate">{r}</span>
+          {i === 0 && <Send className="ml-auto h-3.5 w-3.5 shrink-0 text-[#8b6b43]" />}
         </div>
       ))}
     </div>
@@ -84,7 +84,7 @@ function GuestsArt() {
 
 function ScheduleArt() {
   return (
-    <div className={`${ease} w-[170px] translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+    <div className={`${ease} w-full max-w-[170px] translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
       <ol className="relative space-y-4 border-l border-[#d8c3a2] pl-4">
         {[
           ["08.00 WIB", "Akad Nikah"],
@@ -103,8 +103,8 @@ function ScheduleArt() {
 
 function RsvpArt() {
   return (
-    <div className="relative">
-      <div className={`${ease} w-[190px] -rotate-3 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+    <div className="relative w-full max-w-[172px]">
+      <div className={`${ease} w-full -rotate-3 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-4 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f6e9d6]">
             <Heart className="h-3.5 w-3.5 fill-[#c08a5b] text-[#c08a5b]" />
@@ -116,7 +116,7 @@ function RsvpArt() {
         <span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Hadir</span>
       </div>
       {[0, 1, 2].map((i) => (
-        <Heart key={i} className="rk-rise absolute h-3.5 w-3.5 fill-[#d79a8a] text-[#d79a8a]" style={{ right: `${-6 + i * 18}px`, bottom: "6px", animationDelay: `${i * 1.1}s` }} />
+        <Heart key={i} className="rk-rise absolute h-3.5 w-3.5 fill-[#d79a8a] text-[#d79a8a]" style={{ right: `${6 + i * 18}px`, bottom: "6px", animationDelay: `${i * 1.1}s` }} />
       ))}
     </div>
   );
@@ -124,15 +124,15 @@ function RsvpArt() {
 
 function UrlArt() {
   return (
-    <div className={`${ease} w-full max-w-[230px] translate-y-6 overflow-hidden rounded-2xl border border-[#efe2cf] bg-[#fbf5ec] opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+    <div className={`${ease} w-full max-w-[216px] translate-y-6 overflow-hidden rounded-2xl border border-[#efe2cf] bg-[#fbf5ec] opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
       <div className="flex items-center gap-1.5 px-3 py-2.5">
         <span className="h-2 w-2 rounded-full bg-[#e6a57e]" />
         <span className="h-2 w-2 rounded-full bg-[#e8cf7d]" />
         <span className="h-2 w-2 rounded-full bg-[#a9c08a]" />
       </div>
-      <div className="mx-3 mb-3 flex items-center gap-2 rounded-xl bg-white px-2.5 py-2.5 text-[11px] font-medium shadow-sm">
+      <div className="mx-3 mb-3 flex items-center gap-2 rounded-xl bg-white px-2.5 py-2.5 text-[10px] font-medium shadow-sm">
         <Lock className="h-3 w-3 shrink-0 text-[#8b6b43]" />
-        <span className="w-0 overflow-hidden whitespace-nowrap border-r border-rk-ink/60 pr-0.5 group-data-[in=true]:rk-type">rayakan.my.id/afdal-putri</span>
+        <span className="w-0 max-w-full overflow-hidden whitespace-nowrap border-r border-rk-ink/60 pr-0.5 group-data-[in=true]:rk-type">rayakan.my.id/afdal-putri</span>
       </div>
     </div>
   );
@@ -141,12 +141,12 @@ function UrlArt() {
 function PaletteArt() {
   const sw = ["#6b2f2f", "#5d6340", "#ecd9b8"];
   return (
-    <div className="flex w-full max-w-[220px] flex-col items-center gap-4">
-      <div className="relative h-[70px] w-[170px]">
+    <div className="flex w-full max-w-[190px] flex-col items-center gap-4">
+      <div className="relative h-[70px] w-[160px]">
         {sw.map((c, i) => (
           <span
             key={c}
-            style={{ background: c, transitionDelay: `${200 + i * 120}ms`, left: `${i * 52}px` }}
+            style={{ background: c, transitionDelay: `${200 + i * 120}ms`, left: `${i * 48}px` }}
             className={`${ease} absolute top-2 h-[54px] w-[62px] rounded-[16px] border-4 border-white shadow-[0_12px_22px_-12px_rgba(60,40,20,0.6)] ${["group-data-[in=true]:-rotate-12", "group-data-[in=true]:-translate-y-2", "group-data-[in=true]:rotate-12"][i]}`}
           />
         ))}
@@ -181,7 +181,7 @@ export function Features() {
           </Title>
           <p className="mt-5 max-w-[560px] text-[16px] leading-relaxed text-rk-ink/65">Dari kelola undangan, daftar tamu, hingga detail acara. Semua dirancang agar momen spesialmu lebih mudah, rapi, dan berkesan.</p>
         </Reveal>
-        <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-14 grid gap-5 md:grid-cols-2 min-[1440px]:grid-cols-3">
           <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Kelola undangan, ganti foto, dan teks langsung dari ponsel." art={<EditArt />} />
           <Card delay={80} icon={<Users className="h-5 w-5" />} title="Link nama per tamu" body="Buat link undangan personal dari daftar tamu, kirim lewat WhatsApp." art={<GuestsArt />} />
           <Card delay={160} icon={<CalendarDays className="h-5 w-5" />} title="Acara tersusun rapi" body="Atur jadwal, lokasi, dan catatan acara dalam satu halaman." art={<ScheduleArt />} />

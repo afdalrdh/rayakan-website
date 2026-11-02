@@ -91,7 +91,7 @@ export default async function Landing() {
               <Eyebrow>Bukan template biasa</Eyebrow>
               <Title className="mt-4 max-w-[640px] text-[clamp(40px,5.5vw,68px)]">Setiap bagian dirancang seperti majalah.</Title>
             </div>
-            <p className="max-w-[380px] text-[15px] leading-relaxed text-rk-ink/60">Tipografi, jarak, dan animasi diatur dengan teliti. Kamu cukup mengisi, tampilannya tetap rapi di layar mana pun.</p>
+            <p className="max-w-[460px] text-pretty text-[15px] leading-relaxed text-rk-ink/60 lg:pb-2">Tipografi, jarak, dan animasi diatur dengan teliti. Kamu cukup mengisi, tampilannya tetap rapi di layar mana pun.</p>
           </Reveal>
         </div>
         <div className="no-scrollbar mt-14 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 sm:px-6 lg:mx-auto lg:grid lg:max-w-[1200px] lg:grid-cols-6 lg:overflow-visible">

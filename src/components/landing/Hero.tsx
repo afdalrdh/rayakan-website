@@ -98,19 +98,20 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
       </div>
 
       {/* hand-drawn curve behind the devices */}
-      <svg viewBox="0 0 800 1000" className="pointer-events-none absolute right-0 top-[8%] -z-[5] hidden h-[76%] max-h-[900px] w-auto overflow-visible text-[#e8d5b5] md:block" aria-hidden="true">
+      <svg viewBox="0 0 560 800" className="pointer-events-none absolute right-0 top-0 -z-[5] hidden h-[86%] max-h-[900px] w-auto overflow-visible text-[#e8d5b5] md:block" aria-hidden="true">
         <motion.path
-          d="M 840 -40 C 600 160, 300 420, 120 640 C 10 780, -90 900, 0 965 C 100 1015, 470 1000, 620 975 C 720 958, 790 930, 850 895"
+          d="M 590 30 C 390 190, 62 410, 37 600 C 17 760, 300 790, 590 610"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.3"
           strokeOpacity="0.55"
+          strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 2.4, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
         />
-        <path d="M 815 15 C 590 200, 320 440, 145 650 C 45 780, -45 890, 35 945 C 130 992, 470 980, 612 956 C 712 940, 782 912, 842 880" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" strokeDasharray="2 7" vectorEffect="non-scaling-stroke" className="rk-march" />
+        <path d="M 590 80 C 410 225, 98 432, 75 600 C 57 728, 300 752, 590 576" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" strokeDasharray="2 7" vectorEffect="non-scaling-stroke" className="rk-march" />
       </svg>
       <Sparkle className="rk-twinkle pointer-events-none absolute left-[46%] top-[22%] hidden h-5 w-5 text-[#e8d5b5] md:block" delay={1.2} />
       <Sparkle className="rk-twinkle pointer-events-none absolute right-[14%] top-[66%] hidden h-4 w-4 text-[#e8d5b5] [animation-delay:1.5s] md:block" delay={1.6} />
