@@ -28,7 +28,7 @@ import {
   updateSiteFields,
   type AppSettings,
 } from "@/lib/server/data";
-import { starterContent } from "@/lib/server/validate";
+import { sampleContent, starterContent } from "@/lib/server/validate";
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 const fail = (e: unknown): { ok: false; error: string } => ({ ok: false, error: e instanceof Error ? e.message : "Terjadi kesalahan." });
@@ -75,6 +75,8 @@ export async function createSiteAction(input: {
   clientName: string;
   clientPhone: string;
   notes: string;
+  /** Fill with the theme's sample photos & texts (portfolio / demo sites). */
+  sample?: boolean;
 }): Promise<Result<{ slug: string; password: string }>> {
   try {
     await requireOwner();
@@ -89,7 +91,7 @@ export async function createSiteAction(input: {
       slug: check.slug,
       title: `${first} & ${second}`,
       planId,
-      content: starterContent((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate),
+      content: (input.sample ? sampleContent : starterContent)((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate),
       passwordHash: await hashPassword(password),
       clientName: input.clientName.trim().slice(0, 80),
       clientPhone: input.clientPhone.replace(/[^\d+]/g, "").slice(0, 20),

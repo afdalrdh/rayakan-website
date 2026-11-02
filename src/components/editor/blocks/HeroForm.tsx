@@ -2,7 +2,7 @@
 
 import { SITE_HOST } from "@/lib/messages";
 import { useEditor } from "../context";
-import { Field, Group, ImageField, Segmented, Text } from "../fields";
+import { Field, Group, ImageField, Segmented, Text, Toggle } from "../fields";
 
 function WhatsappPreview() {
   const { content: c, resolve, slug } = useEditor();
@@ -98,6 +98,14 @@ export function HeroForm() {
           ]}
         />
         <p className="font-rk-sans text-[12px] text-rk-mute">Pilih &quot;di bawah&quot; bila nama menutupi wajah di foto HP.</p>
+        {c.theme === "afdal" && (
+          <Toggle
+            checked={c.hero.showHeart}
+            onChange={(v) => update((d) => void (d.hero.showHeart = v))}
+            label="Tampilkan hiasan hati"
+            hint="Garis hati di antara nama. Saat nama di bawah, hati pindah ke atas nama."
+          />
+        )}
         <Field label="Teks di bawah foto">
           <Text value={c.hero.scrollLabel} maxLength={32} onChange={(v) => update((d) => void (d.hero.scrollLabel = v))} />
         </Field>

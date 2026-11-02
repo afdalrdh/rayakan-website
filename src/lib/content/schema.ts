@@ -147,6 +147,8 @@ export interface WeddingContent {
     ogImage: string;
     /** Where the names sit on phones: top (default, works with cutout) or bottom. */
     namePosition: "top" | "bottom";
+    /** Decorative heart outline behind the names (themes that have one). */
+    showHeart: boolean;
     scrollLabel: string;
   };
   couple: {

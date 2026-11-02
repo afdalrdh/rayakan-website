@@ -17,15 +17,22 @@ const ease = "transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)]";
 function Card({ icon, title, body, art, delay }: { icon: ReactNode; title: string; body: string; art: ReactNode; delay: number }) {
   return (
     <Reveal delay={delay} className="h-full">
-      <InView className="relative flex h-full flex-col gap-6 overflow-hidden rounded-[28px] border border-[#efe2cf] bg-linear-to-br from-[#fffdf9] to-[#fbf3e8] p-6 shadow-[0_24px_50px_-36px_rgba(120,80,40,0.35)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(120,80,40,0.4)] sm:flex-row sm:items-center sm:p-7">
-        <div className="relative z-10 sm:w-[48%] sm:shrink-0">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">{icon}</span>
-          <h3 className="mt-5 font-rk-display text-[26px] font-light leading-[1.05] tracking-[-0.02em]">{title}</h3>
-          <p className="mt-3 text-[14.5px] leading-relaxed text-rk-ink/65">{body}</p>
+      <InView className="relative flex h-full flex-row items-center gap-3 overflow-hidden rounded-[24px] border border-[#efe2cf] bg-linear-to-br from-[#fffdf9] to-[#fbf3e8] p-5 shadow-[0_24px_50px_-36px_rgba(120,80,40,0.35)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(120,80,40,0.4)] sm:gap-5 sm:rounded-[28px] sm:p-7 xl:gap-3 xl:p-6 min-[1440px]:p-7">
+        <div className="relative z-10 w-[55%] shrink-0 sm:w-[50%] xl:w-[47%]">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43] sm:h-12 sm:w-12 [&_svg]:h-[18px] [&_svg]:w-[18px] sm:[&_svg]:h-5 sm:[&_svg]:w-5">{icon}</span>
+          <h3 className="mt-4 font-rk-display text-[22px] font-light leading-[1.05] tracking-[-0.02em] sm:mt-5 sm:text-[26px] lg:text-[24px] xl:text-[26px]">{title}</h3>
+          <p className="mt-2 text-[13px] leading-relaxed text-rk-ink/65 sm:mt-3 sm:text-[14.5px] lg:text-[13.5px] xl:text-[14.5px]">{body}</p>
         </div>
-        <div className="relative flex min-h-[170px] min-w-0 flex-1 items-center justify-center sm:pr-1">
-          <span className="absolute h-[150px] w-[150px] rounded-full bg-[radial-gradient(circle,#f6e6cf,transparent_70%)]" />
-          {art}
+        {/*
+          The illustration is drawn on a fixed 210px stage and scaled down in
+          steps when the space is narrower (container queries), so it always
+          keeps its padding on the right instead of being cut off.
+        */}
+        <div className="@container relative flex min-h-[130px] min-w-0 flex-1 items-center justify-center self-stretch sm:min-h-[170px]">
+          <span className="absolute h-[60%] max-h-[150px] w-auto aspect-square rounded-full bg-[radial-gradient(circle,#f6e6cf,transparent_70%)]" />
+          <div className="flex w-[210px] shrink-0 origin-center items-center justify-center @max-[209px]:scale-[0.9] @max-[189px]:scale-[0.8] @max-[169px]:scale-[0.7] @max-[149px]:scale-[0.62] @max-[134px]:scale-[0.56] @max-[119px]:scale-[0.5]">
+            {art}
+          </div>
         </div>
       </InView>
     </Reveal>
@@ -181,7 +188,7 @@ export function Features() {
           </Title>
           <p className="mt-5 max-w-[560px] text-[16px] leading-relaxed text-rk-ink/65">Dari kelola undangan, daftar tamu, hingga detail acara. Semua dirancang agar momen spesialmu lebih mudah, rapi, dan berkesan.</p>
         </Reveal>
-        <div className="mt-14 grid gap-5 md:grid-cols-2 min-[1440px]:grid-cols-3">
+        <div className="mt-14 grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
           <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Kelola undangan, ganti foto, dan teks langsung dari ponsel." art={<EditArt />} />
           <Card delay={80} icon={<Users className="h-5 w-5" />} title="Link nama per tamu" body="Buat link undangan personal dari daftar tamu, kirim lewat WhatsApp." art={<GuestsArt />} />
           <Card delay={160} icon={<CalendarDays className="h-5 w-5" />} title="Acara tersusun rapi" body="Atur jadwal, lokasi, dan catatan acara dalam satu halaman." art={<ScheduleArt />} />

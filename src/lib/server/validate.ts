@@ -142,3 +142,21 @@ export function starterContent(theme: ThemeId, first: string, second: string, ev
   c.closing = { ...c.closing, displayName: `${first} & ${second}`, hashtag: "", image: "" };
   return c;
 }
+
+/**
+ * Like `starterContent` but keeps the theme's sample photos, story, venue and
+ * gallery, so the owner can show or test a complete invitation. Personal data
+ * from the sample couple (full names, parents, Instagram, bank numbers) is
+ * replaced with neutral placeholders.
+ */
+export function sampleContent(theme: ThemeId, first: string, second: string, eventDate: string): WeddingContent {
+  const meta = getThemeMeta(theme);
+  const c = demoContent(meta.id);
+  c.hero = { ...c.hero, firstName: first, secondName: second };
+  const person = (name: string, role: string, photo: string) => ({ fullName: name, parents: `${role} dari Bapak Fulan dan Ibu Fulanah`, instagram: "", photo });
+  c.couple = { ...c.couple, first: person(first, "Putra pertama", c.couple.first.photo), second: person(second, "Putri kedua", c.couple.second.photo) };
+  if (/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) c.event.date = eventDate;
+  c.gift.accounts = c.gift.accounts.map((a, i) => ({ ...a, number: i ? "9876 5432 10" : "1234 5678 90", holder: (i ? second : first).toUpperCase() }));
+  c.closing = { ...c.closing, displayName: `${first} & ${second}`, hashtag: "" };
+  return c;
+}

@@ -22,6 +22,7 @@ export const DEMO_ARYA: WeddingContent = {
     imageCutout: "/demo/arya/hero-cutout.png",
     ogImage: "/demo/arya/og.jpg",
     namePosition: "top",
+    showHeart: true,
     scrollLabel: "Jelajahi Kisah Kami",
   },
   couple: {
@@ -141,6 +142,7 @@ export const DEMO_AFDAL: WeddingContent = {
     imageCutout: "/demo/afdal/hero-cutout.webp",
     ogImage: "/demo/afdal/og.jpg",
     namePosition: "top",
+    showHeart: true,
     scrollLabel: "Jelajahi Kisah Kami",
   },
   couple: {

@@ -280,13 +280,8 @@ export default async function Landing() {
         </div>
         <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="text-center">
-            {promoActive && settings.promoLabel && (
-              <p className="mx-auto inline-flex rounded-full bg-rk-ink px-4 py-1.5 text-[12px] font-semibold text-rk-sand">
-                {settings.promoLabel}
-                {promoEnds ? ` · berakhir ${promoEnds.toLocaleDateString("id-ID", { day: "numeric", month: "long" })}` : ""}
-              </p>
-            )}
-            <Title className="mt-5 text-[clamp(40px,6vw,76px)]">Satu kali bayar. Tanpa biaya bulanan.</Title>
+            <Eyebrow>Harga paket</Eyebrow>
+            <Title className="mt-4 text-[clamp(40px,6vw,76px)]">Satu kali bayar. Tanpa biaya bulanan.</Title>
             <p className="mx-auto mt-4 max-w-[520px] text-[15px] text-rk-ink/60">Semua paket memakai desain yang sama premiumnya. Bedanya ada di fitur dan masa aktif.</p>
           </Reveal>
           <div className="mt-14 grid gap-5 lg:grid-cols-3">

@@ -342,6 +342,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
   const [client, setClient] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [sample, setSample] = useState(false);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
@@ -424,6 +425,13 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
         <L label="Catatan internal" hint="Hanya terlihat di Studio. Misal: sudah DP, minta tema warna sage.">
           <input value={notes} onChange={(e) => setNotes(e.target.value)} className={input} />
         </L>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-rk-line bg-white px-3.5 py-3">
+          <input type="checkbox" checked={sample} onChange={(e) => setSample(e.target.checked)} className="mt-0.5 h-4 w-4 accent-rk-ink" />
+          <span>
+            <span className="block text-[14px] font-semibold">Isi dengan contoh lengkap</span>
+            <span className="block text-[12px] text-rk-mute">Foto, kisah, lokasi, galeri, dan rekening contoh dari tema. Untuk undangan demo atau portofolio.</span>
+          </span>
+        </label>
         {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-[13px] font-semibold text-red-700">{error}</p>}
         <button
           type="button"
@@ -431,7 +439,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
           onClick={() =>
             start(async () => {
               setError("");
-              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme, eventDate: date, clientName: client, clientPhone: phone, notes });
+              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme, eventDate: date, clientName: client, clientPhone: phone, notes, sample });
               if (r.ok) onCreated({ slug: r.slug, password: r.password, phone, title: `${first} & ${second}` });
               else setError(r.error);
             })

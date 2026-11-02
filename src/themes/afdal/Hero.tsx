@@ -90,11 +90,24 @@ export function Hero() {
           <span className="translate-x-[12vw] md:translate-x-0">{second}</span>
         </h1>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/themes/afdal/love.svg" alt="" aria-hidden="true" className={`pointer-events-none absolute left-1/2 z-30 w-[70vw] max-w-[520px] -translate-x-1/2 md:top-[29%] md:w-[15vw] md:min-w-[190px] md:max-w-[245px] ${bottom ? "bottom-[22svh] md:bottom-auto" : "top-[38%]"}`} />
+        {h.showHeart && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/themes/afdal/love.svg"
+            alt=""
+            aria-hidden="true"
+            style={{ ["--k" as string]: k }}
+            className={`pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 md:top-[29%] md:bottom-auto md:w-[15vw] md:min-w-[190px] md:max-w-[245px] ${
+              bottom
+                ? // Names sit at the bottom on phones: put the heart just above them (two lines of names ≈ 1.76em).
+                  "bottom-[calc(15svh+clamp(7rem,27.5vw,12.5rem)*var(--k)*1.76+2svh)] w-[42vw] max-w-[300px]"
+                : "top-[38%] w-[70vw] max-w-[520px]"
+            }`}
+          />
+        )}
 
         {h.imageCutout && (
-          <div className="pointer-events-none absolute inset-0 z-40">
+          <div className={`pointer-events-none absolute inset-0 z-40 ${bottom ? "hidden md:block" : ""}`}>
             <Img src={h.imageCutout} alt="" fill priority quality={90} sizes={COVER_SIZES} className="object-cover object-center" />
           </div>
         )}
