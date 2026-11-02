@@ -1,4 +1,6 @@
+import type { SiteLayouts } from "@/themes/layouts/catalog";
 import type { ThemeId } from "@/themes/meta";
+import type { SiteStyle } from "@/themes/style";
 
 /**
  * Content schema for one wedding site.
@@ -128,10 +130,12 @@ export const BANKS: Record<BankId, BankPreset> = {
 
 export interface WeddingContent {
   version: 1;
+  /** Preset the site started from. Only a starting point: style and layouts below decide the look. */
   theme: ThemeId;
-  /** Palette id from the active theme, or "custom". */
-  palette: string;
-  customAccent?: string;
+  /** Colour mode, palette, font pair and optional own accent colour. */
+  style: SiteStyle;
+  /** Chosen layout per section (ids from themes/layouts/catalog.ts). */
+  layouts: SiteLayouts;
   logo: { mode: "monogram" | "image" | "none"; image: string };
   music: { mode: "library" | "upload" | "none"; trackId: string; upload: string; uploadName: string };
   order: SectionKey[];
@@ -147,8 +151,9 @@ export interface WeddingContent {
     ogImage: string;
     /** Where the names sit on phones: top (default, works with cutout) or bottom. */
     namePosition: "top" | "bottom";
-    /** Decorative heart outline behind the names (themes that have one). */
+    /** Decorative heart outline behind the names (layouts that have one). */
     showHeart: boolean;
+    heartSize: "s" | "m" | "l";
     scrollLabel: string;
   };
   couple: {

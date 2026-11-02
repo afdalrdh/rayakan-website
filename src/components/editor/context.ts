@@ -9,6 +9,8 @@ export interface EditorCtxValue {
   content: WeddingContent;
   update: (recipe: (draft: WeddingContent) => void) => void;
   resolve: (src: string) => string;
+  /** Sandbox uploads ("media:<id>" → blob URL) for previews. */
+  media: Record<string, string>;
   upload: Uploader;
   /** Creates & uploads the 1200×630 WhatsApp preview from the desktop hero photo. */
   uploadOg: (file: File) => Promise<string>;

@@ -27,6 +27,7 @@ import {
   listGuests,
   listWishes,
   markGuestSent,
+  markGuestsSent,
   RESERVED_GUEST_SLUGS,
   siteIdOf,
   updateGuest,
@@ -173,6 +174,15 @@ export async function deleteGuestsAction(slug: string, ids: number[]): Promise<R
 export async function markSentAction(slug: string, guestId: number, sent: boolean): Promise<Result> {
   try {
     await markGuestSent(await siteId(slug), guestId, sent);
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function markSentBulkAction(slug: string, ids: number[], sent: boolean): Promise<Result> {
+  try {
+    await markGuestsSent(await siteId(slug), ids.map(Number).filter(Number.isFinite).slice(0, 5000), sent);
     return { ok: true };
   } catch (e) {
     return fail(e);

@@ -1,5 +1,6 @@
 "use client";
 
+import { layoutOf } from "@/lib/content";
 import { SITE_HOST } from "@/lib/messages";
 import { useEditor } from "../context";
 import { Field, Group, ImageField, Segmented, Text, Toggle } from "../fields";
@@ -29,6 +30,7 @@ function WhatsappPreview() {
 
 export function HeroForm() {
   const { content: c, update, resolve, upload, uploadOg } = useEditor();
+  const layout = layoutOf("hero", c.layouts.hero);
   return (
     <div className="space-y-7">
       <Group title="Nama di foto utama">
@@ -57,7 +59,7 @@ export function HeroForm() {
           }}
         />
         <WhatsappPreview />
-        <div className="grid grid-cols-2 gap-3">
+        <div className={layout.cutout ? "grid grid-cols-2 gap-3" : ""}>
           <ImageField
             label="Foto untuk HP"
             hint="Foto berdiri (portrait)."
@@ -74,7 +76,7 @@ export function HeroForm() {
               })
             }
           />
-          <ImageField
+          {layout.cutout && <ImageField
             label="Foto efek 3D"
             optional
             hint="PNG tanpa latar dari foto HP yang sama, agar badan tampil di depan nama. Otomatis dilepas saat foto HP diganti."
@@ -85,27 +87,39 @@ export function HeroForm() {
             fit="contain"
             aspect="aspect-[9/16]"
             onChange={(v) => update((d) => void (d.hero.imageCutout = v))}
-          />
+          />}
         </div>
       </Group>
-      <Group title="Tata letak di HP">
-        <Segmented
-          value={c.hero.namePosition}
-          onChange={(v) => update((d) => void (d.hero.namePosition = v))}
-          options={[
-            { value: "top", label: "Nama di atas" },
-            { value: "bottom", label: "Nama di bawah" },
-          ]}
-        />
-        <p className="font-rk-sans text-[12px] text-rk-mute">Pilih &quot;di bawah&quot; bila nama menutupi wajah di foto HP.</p>
-        {c.theme === "afdal" && (
-          <Toggle
-            checked={c.hero.showHeart}
-            onChange={(v) => update((d) => void (d.hero.showHeart = v))}
-            label="Tampilkan hiasan hati"
-            hint="Garis hati di antara nama. Saat nama di bawah, hati pindah ke atas nama."
+      {layout.cutout && (
+        <Group title="Posisi nama di HP">
+          <Segmented
+            value={c.hero.namePosition}
+            onChange={(v) => update((d) => void (d.hero.namePosition = v))}
+            options={[
+              { value: "top", label: "Nama di atas" },
+              { value: "bottom", label: "Nama di bawah" },
+            ]}
           />
-        )}
+          <p className="font-rk-sans text-[12px] text-rk-mute">Pilih &quot;di bawah&quot; bila nama menutupi wajah di foto HP.</p>
+        </Group>
+      )}
+      {layout.heart && (
+        <Group title="Hiasan hati">
+          <Toggle checked={c.hero.showHeart} onChange={(v) => update((d) => void (d.hero.showHeart = v))} label="Tampilkan hiasan hati" hint="Matikan bila kurang cocok dengan foto kalian." />
+          {c.hero.showHeart && (
+            <Segmented
+              value={c.hero.heartSize}
+              onChange={(v) => update((d) => void (d.hero.heartSize = v))}
+              options={[
+                { value: "s", label: "Kecil" },
+                { value: "m", label: "Sedang" },
+                { value: "l", label: "Besar" },
+              ]}
+            />
+          )}
+        </Group>
+      )}
+      <Group title="Teks bawah">
         <Field label="Teks di bawah foto">
           <Text value={c.hero.scrollLabel} maxLength={32} onChange={(v) => update((d) => void (d.hero.scrollLabel = v))} />
         </Field>

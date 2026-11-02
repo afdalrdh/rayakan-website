@@ -3,7 +3,7 @@
 import Image, { type ImageLoader, type ImageProps } from "next/image";
 import { createContext, useContext, type CSSProperties, type ReactNode } from "react";
 import type { BlockKey, WeddingContent } from "@/lib/content";
-import { resolvePalette } from "../meta";
+import { getFontPair, styleVars } from "../style";
 
 export interface SiteInfo {
   slug: string;
@@ -14,8 +14,12 @@ export interface SiteInfo {
 /** Everything a theme section needs, provided once at the top of the page. */
 export interface ThemeCtxValue {
   content: WeddingContent;
-  /** "edit" = inside the editor canvas: sections become tap targets. */
-  mode: "live" | "edit";
+  /**
+   * "live" = guests; "edit" = editor canvas (sections become tap targets);
+   * "thumb" = small read-only layout thumbnail; "preview" = read-only full
+   * site without the opening overlay (admin overview).
+   */
+  mode: "live" | "edit" | "thumb" | "preview";
   /** Browser-local uploads (demo editor only): "media:<id>" → blob URL. */
   media: Record<string, string>;
   selected?: BlockKey | null;
@@ -60,15 +64,17 @@ export function Img({ src, alt, ...rest }: Omit<ImageProps, "src"> & { src: stri
   return <Image src={url} alt={alt} unoptimized={!url.startsWith("/")} {...rest} />;
 }
 
-/** CSS variables consumed by the `t-*` Tailwind colours (see globals.css). */
-export function paletteStyle(c: WeddingContent): CSSProperties {
-  const p = resolvePalette(c.theme, c.palette, c.customAccent);
-  return {
-    "--t-bg": p.bg,
-    "--t-alt": p.alt,
-    "--t-card": p.card,
-    "--t-input": p.input,
-    "--t-accent": p.accent,
-    "--t-muted": p.muted,
-  } as CSSProperties;
+/** CSS variables for colours and fonts (see themes/style.ts and globals.css). */
+export function siteStyle(c: WeddingContent): CSSProperties {
+  return styleVars(c.style) as CSSProperties;
+}
+
+/** Font pair of the current site (for name sizing). */
+export function useFontPair() {
+  return getFontPair(useTheme().content.style.fonts);
+}
+
+/** Editor and thumbnails show placeholders for empty fields; guests never see them. */
+export function useShowEmpty() {
+  return useTheme().mode !== "live";
 }

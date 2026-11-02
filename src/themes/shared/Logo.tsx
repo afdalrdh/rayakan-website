@@ -11,7 +11,9 @@ export function CoupleLogo({ className = "", underline = false, tone = "light" }
   const { content: c } = useTheme();
   if (c.logo.mode === "none") return null;
   if (c.logo.mode === "image" && c.logo.image) {
-    return <Img src={c.logo.image} alt="Logo" width={340} height={144} priority className={`object-contain ${className}`} />;
+    // Logos are uploaded in a light colour (for photos); on a light background show them dark.
+    const darken = tone === "dark" && c.style.mode === "light";
+    return <Img src={c.logo.image} alt="Logo" width={340} height={144} priority className={`object-contain ${darken ? "brightness-0" : ""} ${className}`} />;
   }
   const [a = "", b = ""] = initials(c.hero.firstName, c.hero.secondName);
   const ink = tone === "light" ? "#fff" : "var(--t-accent)";

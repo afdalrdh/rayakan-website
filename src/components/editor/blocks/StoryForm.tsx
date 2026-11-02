@@ -1,13 +1,13 @@
 "use client";
 
-import { getThemeMeta, uid } from "@/lib/content";
+import { layoutOf, uid } from "@/lib/content";
 import { useEditor } from "../context";
 import { AddButton, Area, Field, Group, ImageField, ItemCard, Text, move } from "../fields";
 
 export function StoryForm() {
   const { content: c, update, resolve, upload, plan } = useEditor();
   const limit = plan.storyLimit;
-  const extraSlots = getThemeMeta(c.theme).storyPhotos - 1;
+  const extraSlots = (layoutOf("story", c.layouts.story).storyPhotos ?? 1) - 1;
   const items = c.story.items;
   return (
     <div className="space-y-7">

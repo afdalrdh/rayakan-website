@@ -4,10 +4,11 @@ Panduan singkat agar menambah fitur atau tema tidak perlu membaca seluruh kode.
 
 ## Prinsip
 
-1. **Satu sumber data.** Semua tema membaca objek `WeddingContent` yang sama (`src/lib/content/schema.ts`). Klien bisa ganti tema tanpa mengisi ulang.
-2. **Tema tidak tahu soal database.** Tema hanya menerima `content` lewat `ThemeProvider` (`src/themes/shared/context.tsx`). Halaman publik, editor, dan demo memakai `ThemeRenderer` yang sama.
-3. **Server selalu memvalidasi.** Apa pun yang dikirim editor dibersihkan di `src/lib/server/validate.ts` sebelum disimpan. Batas paket diterapkan lagi saat dirender untuk tamu (`components/site/PublicSite.tsx`).
-4. **Data lama tetap terbaca.** `normalizeContent()` mengisi kolom baru dengan nilai bawaan, jadi skema bisa bertambah tanpa migrasi database.
+1. **Satu sumber data.** Semua tata letak membaca objek `WeddingContent` yang sama (`src/lib/content/schema.ts`). Klien bisa ganti tema, warna, huruf, atau tata letak tanpa mengisi ulang.
+2. **Tampilan = gaya + tata letak.** `content.style` (mode terang/gelap, palet, pasangan huruf, aksen) dan `content.layouts` (satu id tata letak per bagian). Tema (`themes/meta.ts`) hanya preset awal untuk keduanya.
+3. **Tata letak tidak tahu soal database.** Layout hanya menerima `content` lewat `ThemeProvider` (`src/themes/shared/context.tsx`). Halaman publik, editor, admin, dan demo memakai `ThemeRenderer` yang sama.
+4. **Server selalu memvalidasi.** Apa pun yang dikirim editor dibersihkan di `src/lib/server/validate.ts` sebelum disimpan. Batas paket diterapkan lagi saat dirender untuk tamu (`components/site/PublicSite.tsx`).
+5. **Data lama tetap terbaca.** `normalizeContent()` mengisi kolom baru dengan nilai bawaan dan mengubah `palette` lama menjadi `style` + `layouts`, jadi skema bisa bertambah tanpa migrasi database.
 
 ## Peta folder
 
@@ -30,11 +31,11 @@ src/
 │  ├─ upload-client.ts        Kompres foto & buat gambar OG di browser
 │  └─ messages.ts             Teks WhatsApp & URL situs
 ├─ themes/
-│  ├─ meta.ts                 Katalog tema: id, nama, palet warna, gambar pratinjau
-│  ├─ index.tsx               ThemeRenderer (satu-satunya pintu masuk ke tema)
-│  ├─ shared/                 Kit bersama: Block, Img, Cover, Video, BankCard, hooks
-│  ├─ arya/                   Tema "Malam Emas"
-│  └─ afdal/                  Tema "Putih Marun"
+│  ├─ style.ts                Design system: 12 palet (terang & gelap), 8 pasangan huruf, token CSS
+│  ├─ meta.ts                 Preset tema (gaya + tata letak awal), musik bawaan
+│  ├─ index.tsx               ThemeRenderer + LayoutPreview (satu-satunya pintu masuk)
+│  ├─ layouts/                catalog.ts (daftar & id) + satu file per bagian (hero.tsx, couple.tsx, …)
+│  └─ shared/                 Kit bersama: Section, Heading, T (placeholder teks), EmptyPhoto, HeroChrome, BankCard, hooks
 └─ components/
    ├─ editor/                 Editor klien
    │  ├─ EditorApp.tsx        Rangka editor (tab, panel, kanvas)
@@ -50,15 +51,22 @@ src/
 
 ## Resep
 
-### Menambah tema baru
+### Menambah tata letak untuk satu bagian
 
-1. `src/themes/meta.ts`: tambahkan id ke `THEME_IDS` dan isi `THEMES[id]` (nama, palet, `storyPhotos`, `defaultTrack`, gambar pratinjau).
-2. Buat `src/themes/<id>/<Nama>Theme.tsx` + `sections/`. Ambil data dengan `useTheme()`, bungkus tiap bagian dengan `<Block id="...">` agar bisa diketuk di editor, dan pakai `<Img>` untuk semua foto (mendukung foto sandbox `media:`).
-3. Daftarkan komponennya di `COMPONENTS` pada `src/themes/index.tsx`.
-4. Tambahkan contoh isi di `src/lib/content/demo.ts` (`DEMO_BY_THEME`) dan aset di `public/demo/<id>/`.
-5. Buat tangkapan layar `public/landing/<id>-desktop.webp` dan `-mobile.webp`. Landing page, pilihan tema di Studio, dan panel Tema & Warna otomatis menampilkannya.
+1. `src/themes/layouts/catalog.ts`: tambahkan `{ id, name, desc, hint? }` di `LAYOUTS[bagian]`.
+2. Buat komponennya di `src/themes/layouts/<bagian>.tsx` dan daftarkan di objek `*_LAYOUTS` di bawah file itu.
+3. Pakai hanya token warna `t-*` (bg, alt, card, input, accent, muted, fg, fg2, line, on-accent) dan kelas huruf `t-display`, `t-head`, `font-t-body`, supaya cocok di mode terang/gelap dan semua pasangan huruf.
+4. Bungkus dengan `<Section block="...">` (atau `<Block id="...">`), pakai `<T v={...} ph="..."/>` untuk teks dan `<EmptyPhoto/>` untuk foto kosong agar editor menunjukkan isian yang belum diisi.
 
-TypeScript akan menandai setiap tempat yang belum lengkap karena `Record<ThemeId, …>`.
+### Menambah preset tema
+
+1. `src/themes/meta.ts`: tambahkan id ke `THEME_IDS` dan isi `THEMES[id]` (gaya, tata letak, musik, gambar pratinjau).
+2. `src/lib/content/demo.ts`: tambahkan contoh isi di `DEMO_BY_THEME` (boleh memakai `presetDemo`).
+3. Ambil tangkapan layar `/tema/<id>` ke `public/landing/<id>-desktop.webp` dan `-mobile.webp`.
+
+### Menambah palet atau pasangan huruf
+
+`src/themes/style.ts`: tambah entri di `PALETTES` (versi `light` dan `dark`) atau `FONT_PAIRS`. File huruf ditaruh di `public/fonts/` dan didaftarkan dengan `@font-face` di `globals.css`.
 
 ### Menambah kolom isian (mis. "dress code")
 
@@ -71,7 +79,7 @@ TypeScript akan menandai setiap tempat yang belum lengkap karena `Record<ThemeId
 
 1. Tambahkan key di `SECTION_KEYS` dan label di `BLOCK_LABELS` (`schema.ts`).
 2. Buat form di `components/editor/blocks/` dan daftarkan di `BLOCK_FORMS`.
-3. Render di tiap tema, dibungkus `<Block id="key">`, dan hormati `content.hidden`.
+3. Tambahkan daftar tata letaknya di `themes/layouts/catalog.ts`, komponennya di `themes/layouts/<bagian>.tsx`, dan daftarkan di `themes/layouts/index.tsx`. Hormati `content.hidden`.
 4. Jika hanya untuk paket tertentu, kunci lewat `locked` pada paket di Studio.
 
 ### Menambah portofolio

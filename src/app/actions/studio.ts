@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { timingSafeEqual } from "crypto";
-import { PLAN_IDS, PLANS, SECTION_KEYS, slugify, THEME_IDS, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
+import { DEFAULT_LAYOUTS, FONT_PAIR_IDS, PALETTE_IDS, PLAN_IDS, PLANS, SECTION_KEYS, slugify, THEME_IDS, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
 import {
   clearLoginFailures,
   clearSession,
@@ -77,6 +77,8 @@ export async function createSiteAction(input: {
   notes: string;
   /** Fill with the theme's sample photos & texts (portfolio / demo sites). */
   sample?: boolean;
+  /** "Custom" start: own mode, palette and font pair with standard layouts. */
+  style?: { mode: string; palette: string; fonts: string };
 }): Promise<Result<{ slug: string; password: string }>> {
   try {
     await requireOwner();
@@ -87,11 +89,16 @@ export async function createSiteAction(input: {
     if (!check.available) throw new Error(`Alamat tidak bisa dipakai: ${check.reason}`);
     const planId = (PLAN_IDS as string[]).includes(input.planId) ? input.planId : "premium";
     const password = generatePassword();
+    const content = (input.sample ? sampleContent : starterContent)((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate);
+    if (input.style) {
+      content.style = { mode: input.style.mode === "dark" ? "dark" : "light", palette: PALETTE_IDS.includes(input.style.palette) ? input.style.palette : "marun", fonts: FONT_PAIR_IDS.includes(input.style.fonts) ? input.style.fonts : "klasik", accent: "" };
+      content.layouts = { ...DEFAULT_LAYOUTS };
+    }
     await insertSite({
       slug: check.slug,
       title: `${first} & ${second}`,
       planId,
-      content: (input.sample ? sampleContent : starterContent)((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate),
+      content,
       passwordHash: await hashPassword(password),
       clientName: input.clientName.trim().slice(0, 80),
       clientPhone: input.clientPhone.replace(/[^\d+]/g, "").slice(0, 20),

@@ -1,4 +1,6 @@
 import "server-only";
+import { cleanLayouts } from "@/themes/layouts/catalog";
+import { FONT_PAIR_IDS, PALETTE_IDS } from "@/themes/style";
 import {
   BANKS,
   DEMO_ARYA,
@@ -69,8 +71,14 @@ export function sanitizeContent(input: unknown): WeddingContent {
   c.version = 1;
   c.theme = pick(c.theme, THEME_IDS, "arya");
   const theme = getThemeMeta(c.theme);
-  c.palette = pick(c.palette, [...Object.keys(theme.palettes), "custom"], theme.defaultPalette);
-  c.customAccent = /^#[0-9a-f]{6}$/i.test(String(raw.customAccent ?? "")) ? raw.customAccent : undefined;
+  c.style = {
+    mode: pick(c.style.mode, ["light", "dark"], theme.style.mode),
+    palette: pick(c.style.palette, PALETTE_IDS, theme.style.palette),
+    fonts: pick(c.style.fonts, FONT_PAIR_IDS, theme.style.fonts),
+    accent: /^#[0-9a-f]{6}$/i.test(c.style.accent) ? c.style.accent : "",
+  };
+  c.layouts = cleanLayouts(raw.layouts, theme.layouts);
+  c.hero.heartSize = pick(c.hero.heartSize, ["s", "m", "l"], "m");
   c.logo.mode = pick(c.logo.mode, ["monogram", "image", "none"], "monogram");
   c.music.mode = pick(c.music.mode, ["library", "upload", "none"], "library");
   c.hero.namePosition = pick(c.hero.namePosition, ["top", "bottom"], "top");
@@ -117,7 +125,6 @@ export function sanitizeContent(input: unknown): WeddingContent {
 export function starterContent(theme: ThemeId, first: string, second: string, eventDate: string): WeddingContent {
   const meta = getThemeMeta(theme);
   const c = demoContent(meta.id);
-  c.palette = meta.defaultPalette;
   c.logo = { mode: "monogram", image: "" };
   c.music = { mode: "library", trackId: meta.defaultTrack, upload: "", uploadName: "" };
   c.hero = { ...c.hero, firstName: first, secondName: second, imageDesktop: "", imageMobile: "", imageCutout: "", ogImage: "" };

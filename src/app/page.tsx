@@ -10,7 +10,7 @@ import { Bloom, Branch, Breath } from "@/components/landing/paintings";
 import { Features } from "@/components/landing/Features";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
 import { Reveal } from "@/components/landing/Reveal";
-import { activeLabel, rupiah, THEMES, type Plan } from "@/lib/content";
+import { activeLabel, FONT_PAIR_IDS, PALETTE_IDS, rupiah, THEMES, themeSwatch, type Plan } from "@/lib/content";
 import { getPlans, getSettings } from "@/lib/server/data";
 
 export const revalidate = 3600;
@@ -112,8 +112,8 @@ export default async function Landing() {
         <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="text-center">
             <Eyebrow>Pilihan tema</Eyebrow>
-            <Title className="mx-auto mt-4 max-w-[680px] text-[clamp(40px,5.5vw,68px)]">Dua karakter, satu isi.</Title>
-            <p className="mx-auto mt-4 max-w-[460px] text-[15px] text-rk-ink/60">Ganti tema kapan saja tanpa mengisi ulang. Pemilik paket Eksklusif otomatis mendapat setiap tema baru.</p>
+            <Title className="mx-auto mt-4 max-w-[680px] text-[clamp(40px,5.5vw,68px)]">Mulai dari tema, atur sesukamu.</Title>
+            <p className="mx-auto mt-4 max-w-[520px] text-[15px] text-rk-ink/60">Tiap bagian punya beberapa pilihan tata letak, {PALETTE_IDS.length} palet warna terang &amp; gelap, dan {FONT_PAIR_IDS.length} pasangan huruf. Ganti kapan saja tanpa mengisi ulang.</p>
           </Reveal>
           <div className="mt-14 grid gap-5 md:grid-cols-2">
             {Object.values(THEMES).map((t, i) => (
@@ -125,11 +125,11 @@ export default async function Landing() {
                   <div className="min-w-0">
                     <p className="font-rk-display text-[34px] font-light leading-none tracking-[-0.02em]">{t.name}</p>
                     <p className="mt-2 text-[13px] text-rk-mute">
-                      {t.tagline} · {Object.keys(t.palettes).length} pilihan warna
+                      {t.tagline} · huruf {themeSwatch(t).fonts}
                     </p>
                     <div className="mt-3 flex gap-1.5" aria-hidden="true">
-                      {Object.values(t.palettes).map((p) => (
-                        <span key={p.name} className="h-4 w-4 rounded-full ring-1 ring-black/10" style={{ background: p.accent }} />
+                      {(["bg", "accent", "muted"] as const).map((k) => (
+                        <span key={k} className="h-4 w-4 rounded-full ring-1 ring-black/10" style={{ background: themeSwatch(t)[k] }} />
                       ))}
                     </div>
                   </div>

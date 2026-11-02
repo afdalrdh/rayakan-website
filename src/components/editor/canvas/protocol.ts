@@ -7,6 +7,8 @@ export interface CanvasState {
   media: Record<string, string>;
   selected: BlockKey | null;
   locked: BlockKey[];
+  /** "preview" = read-only (admin overview). */
+  mode?: "edit" | "preview";
 }
 
 export type ToCanvas = { type: "state"; state: CanvasState } | { type: "scrollTo"; block: BlockKey };

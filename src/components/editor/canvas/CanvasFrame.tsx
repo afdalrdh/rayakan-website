@@ -28,7 +28,7 @@ export function CanvasFrame() {
     <ThemeRenderer
       content={state.content}
       media={state.media}
-      mode="edit"
+      mode={state.mode ?? "edit"}
       selected={state.selected}
       locked={state.locked}
       onSelect={(block: BlockKey) => window.parent.postMessage({ type: "select", block } satisfies FromCanvas, window.location.origin)}

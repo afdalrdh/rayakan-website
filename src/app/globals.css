@@ -6,7 +6,22 @@
 @font-face { font-family: 'Cormorant Garamond'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/cormorant-garamond-latin.woff2') format('woff2'); }
 @font-face { font-family: 'Cormorant Garamond'; font-style: italic; font-weight: 300 700; font-display: swap; src: url('/fonts/cormorant-garamond-italic-latin.woff2') format('woff2'); }
 
-/* Theme tokens: every theme colour comes from CSS variables set per site. */
+/* Wedding font pairs (themes/style.ts). Only the fonts a site actually uses are downloaded. */
+@font-face { font-family: 'Great Vibes'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/great-vibes-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400 900; font-display: swap; src: url('/fonts/playfair-display-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 400 900; font-display: swap; src: url('/fonts/playfair-display-italic-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/lato-400-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 600 700; font-display: swap; src: url('/fonts/lato-700-latin.woff2') format('woff2'); }
+@font-face { font-family: 'DM Serif Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dm-serif-display-latin.woff2') format('woff2'); }
+@font-face { font-family: 'DM Serif Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('/fonts/dm-serif-display-italic-latin.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 100 1000; font-display: swap; src: url('/fonts/dm-sans-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Cinzel'; font-style: normal; font-weight: 400 900; font-display: swap; src: url('/fonts/cinzel-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Raleway'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/raleway-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Bodoni Moda'; font-style: normal; font-weight: 400 900; font-display: swap; src: url('/fonts/bodoni-moda-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Bodoni Moda'; font-style: italic; font-weight: 400 900; font-display: swap; src: url('/fonts/bodoni-moda-italic-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/jost-latin.woff2') format('woff2'); }
+
+/* Invitation tokens: colours and fonts come from CSS variables set per site (themes/style.ts). */
 @theme inline {
   --color-t-bg: var(--t-bg);
   --color-t-alt: var(--t-alt);
@@ -14,6 +29,13 @@
   --color-t-input: var(--t-input);
   --color-t-accent: var(--t-accent);
   --color-t-muted: var(--t-muted);
+  --color-t-fg: var(--t-fg);
+  --color-t-fg2: var(--t-fg2);
+  --color-t-line: var(--t-line);
+  --color-t-on-accent: var(--t-on-accent);
+  --font-t-display: var(--t-font-display);
+  --font-t-head: var(--t-font-head);
+  --font-t-body: var(--t-font-body);
 
   /* Rayakan.my.id brand (editor + studio + landing) */
   --color-rk-ink: #120d10;
@@ -45,6 +67,15 @@
 }
 
 html { scroll-behavior: smooth; }
+
+/* Couple names: case and size follow the chosen font pair. */
+.t-display { font-family: var(--t-font-display); text-transform: var(--t-display-case, none); }
+.t-head { font-family: var(--t-font-head); font-weight: var(--t-head-weight, 600); }
+
+/* Empty photo slots in the editor */
+@keyframes t-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.t-skeleton { background-image: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--t-fg) 7%, transparent) 50%, transparent 70%); background-size: 200% 100%; animation: t-shimmer 1.6s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .t-skeleton { animation: none; } }
 body { -webkit-font-smoothing: antialiased; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }

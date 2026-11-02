@@ -64,7 +64,7 @@ export const RESERVED_SLUGS = new Set([
   "studio", "demo", "coba", "portofolio", "portfolio", "api", "admin", "canvas", "login", "masuk", "harga", "tema", "bantuan",
   "_next", "favicon.ico", "robots.txt", "sitemap.xml", "brand", "fonts", "music", "themes", "uploads",
 ]);
-export const RESERVED_GUEST_SLUGS = new Set(["admin", "preview", "opengraph-image"]);
+export const RESERVED_GUEST_SLUGS = new Set(["admin", "preview", "editor", "opengraph-image"]);
 
 /* ------------------------------ Mapping ------------------------------ */
 
@@ -298,6 +298,11 @@ export async function updateGuest(siteId: number, id: number, f: { name: string;
 
 export async function markGuestSent(siteId: number, id: number, sent: boolean) {
   await query(`UPDATE guests SET sent_at = ${sent ? "NOW()" : "NULL"} WHERE site_id = $1 AND id = $2`, [siteId, id]);
+}
+
+export async function markGuestsSent(siteId: number, ids: number[], sent: boolean) {
+  if (!ids.length) return;
+  await query(`UPDATE guests SET sent_at = ${sent ? "COALESCE(sent_at, NOW())" : "NULL"} WHERE site_id = $1 AND id = ANY($2::bigint[])`, [siteId, ids]);
 }
 
 export async function deleteGuests(siteId: number, ids: number[]) {

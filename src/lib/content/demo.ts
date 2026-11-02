@@ -1,4 +1,5 @@
-import type { ThemeId } from "@/themes/meta";
+import { THEMES, type ThemeId } from "@/themes/meta";
+import { legacyStyle } from "@/themes/style";
 import { withDefaults } from "./helpers";
 import { SECTION_KEYS, type WeddingContent } from "./schema";
 
@@ -8,7 +9,8 @@ const aryaPhoto = (n: string) => ({ id: `g${n}`, src: `/demo/arya/g-${n}.jpg` })
 export const DEMO_ARYA: WeddingContent = {
   version: 1,
   theme: "arya",
-  palette: "emas",
+  style: { ...THEMES.arya.style, accent: "" },
+  layouts: { ...THEMES.arya.layouts },
   logo: { mode: "image", image: "/demo/arya/logo.png" },
   music: { mode: "library", trackId: "arya-background", upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
@@ -23,6 +25,7 @@ export const DEMO_ARYA: WeddingContent = {
     ogImage: "/demo/arya/og.jpg",
     namePosition: "top",
     showHeart: true,
+    heartSize: "m",
     scrollLabel: "Jelajahi Kisah Kami",
   },
   couple: {
@@ -128,7 +131,8 @@ const afdalPhoto = (n: string) => ({ id: `a${n}`, src: `/demo/afdal/g-${n}.webp`
 export const DEMO_AFDAL: WeddingContent = {
   version: 1,
   theme: "afdal",
-  palette: "maroon",
+  style: { ...THEMES.afdal.style, accent: "" },
+  layouts: { ...THEMES.afdal.layouts },
   logo: { mode: "image", image: "/demo/afdal/logo.png" },
   music: { mode: "library", trackId: "afdal-background", upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
@@ -143,6 +147,7 @@ export const DEMO_AFDAL: WeddingContent = {
     ogImage: "/demo/afdal/og.jpg",
     namePosition: "top",
     showHeart: true,
+    heartSize: "m",
     scrollLabel: "Jelajahi Kisah Kami",
   },
   couple: {
@@ -218,7 +223,21 @@ export const DEMO_AFDAL: WeddingContent = {
   },
 };
 
-export const DEMO_BY_THEME: Record<ThemeId, WeddingContent> = { arya: DEMO_ARYA, afdal: DEMO_AFDAL };
+/** Presets without their own sample couple reuse one of the two real sites. */
+function presetDemo(theme: ThemeId, from: WeddingContent): WeddingContent {
+  const c = structuredClone(from);
+  c.theme = theme;
+  c.style = { ...THEMES[theme].style, accent: "" };
+  c.layouts = { ...THEMES[theme].layouts };
+  return c;
+}
+
+export const DEMO_BY_THEME: Record<ThemeId, WeddingContent> = {
+  arya: DEMO_ARYA,
+  afdal: DEMO_AFDAL,
+  sage: presetDemo("sage", DEMO_AFDAL),
+  navy: presetDemo("navy", DEMO_ARYA),
+};
 
 export function demoContent(theme: ThemeId = "arya"): WeddingContent {
   return structuredClone(DEMO_BY_THEME[theme] ?? DEMO_ARYA);
@@ -229,5 +248,15 @@ export const DEMO_CONTENT = DEMO_ARYA;
 
 /** Fills fields added after the content was saved (see withDefaults). */
 export function normalizeContent(content: unknown): WeddingContent {
-  return withDefaults(content, DEMO_ARYA);
+  const raw = (content && typeof content === "object" ? content : {}) as Record<string, unknown>;
+  const theme = (typeof raw.theme === "string" && raw.theme in THEMES ? raw.theme : "arya") as ThemeId;
+  // Sites saved before the design system had a theme palette instead of style + layouts.
+  const migrated = {
+    ...raw,
+    style: raw.style ?? legacyStyle(theme, String(raw.palette ?? ""), typeof raw.customAccent === "string" ? raw.customAccent : undefined),
+    layouts: raw.layouts ?? { ...THEMES[theme].layouts },
+  };
+  delete (migrated as Record<string, unknown>).palette;
+  delete (migrated as Record<string, unknown>).customAccent;
+  return withDefaults(migrated, DEMO_ARYA);
 }

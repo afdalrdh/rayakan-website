@@ -5,6 +5,7 @@ import { BLOCK_LABELS, type BlockKey } from "@/lib/content";
 import { SITE_HOST } from "@/lib/messages";
 import { BLOCK_FORMS } from "./blocks";
 import { useEditor } from "./context";
+import { LayoutCard } from "./LayoutPicker";
 import { ChecklistPanel, MusicPanel, OrderPanel, PublishPanel, ThemePanel } from "./panels";
 
 /* Where forms and panels open: a side panel on desktop, a bottom sheet on phones. */
@@ -13,7 +14,7 @@ export type PanelKind = "theme" | "music" | "order" | "checklist" | "publish";
 export type Panel = { kind: "block"; key: BlockKey } | { kind: PanelKind };
 
 const PANEL_TITLES: Record<PanelKind, string> = {
-  theme: "Tema & Warna",
+  theme: "Gaya & Warna",
   music: "Musik",
   order: "Urutan Bagian",
   checklist: "Isian Undangan",
@@ -50,13 +51,18 @@ function BlockBody({ blockKey, Form }: { blockKey: BlockKey; Form: () => React.J
       </div>
     );
   }
-  return <Form />;
+  return (
+    <div className="space-y-7">
+      <LayoutCard block={blockKey} />
+      <Form />
+    </div>
+  );
 }
 
-export function SidePanel({ panel, setPanel, openBlock }: { panel: Panel | null; setPanel: (p: Panel | null) => void; openBlock: (k: BlockKey) => void }) {
+export function SidePanel({ panel, setPanel, openBlock, design = false }: { panel: Panel | null; setPanel: (p: Panel | null) => void; openBlock: (k: BlockKey) => void; design?: boolean }) {
   const current: Panel = panel ?? { kind: "checklist" };
   return (
-    <aside className="hidden min-h-0 flex-col bg-white lg:col-start-3 lg:row-start-2 lg:flex">
+    <aside className={`hidden min-h-0 flex-col bg-white lg:row-start-2 lg:flex ${design ? "lg:col-start-2" : "lg:col-start-3"}`}>
       <div className="flex h-14 shrink-0 items-center gap-2 border-b border-rk-line px-5">
         {panel && panel.kind !== "checklist" && (
           <button type="button" aria-label="Kembali ke isian" onClick={() => setPanel(null)} className="-ml-2 rounded-lg p-1.5 hover:bg-rk-ivory">

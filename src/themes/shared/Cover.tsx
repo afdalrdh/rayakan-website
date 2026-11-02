@@ -1,52 +1,25 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MUSIC_LIBRARY } from "@/lib/content";
 import { Block } from "./Block";
-import { Img, useSrc, useTheme } from "./context";
-import { EnvelopeIcon } from "./icons";
+import { useSrc, useTheme } from "./context";
 
 /**
- * The "Buka Undangan" cover: a blurred overlay with the guest's name.
- * Live: fixed overlay that also starts the music. Edit: an inline, tappable section.
- * Themes pass their own logo; layout is shared because both designs use it.
+ * The "Buka Undangan" cover. The look comes from the chosen cover layout
+ * (a `CoverFace`); this file only handles where it appears:
+ *  - live: a fixed overlay that also starts the music,
+ *  - edit / thumb: an inline, tappable section.
  */
+export type CoverFace = (p: { guestName: string; onOpen?: () => void }) => React.JSX.Element;
 
-function CoverCard({ guestName, logo, onOpen }: { guestName: string; logo: ReactNode; onOpen?: () => void }) {
-  const { content: c } = useTheme();
-  return (
-    <>
-      <div className="relative z-10">{logo}</div>
-      <div className="relative z-10 flex h-[264px] w-full max-w-[392px] flex-col items-center justify-center gap-5 rounded-[16px] border border-white/50 px-6 text-center">
-        <p className="font-sans text-[14px] leading-[24px] text-white/80 sm:text-[16px] sm:leading-[28px]">{c.cover.greeting}</p>
-        <h1 className="px-2 font-serif text-[clamp(30px,8vw,44px)] italic leading-[1.05] text-white sm:text-[40px] md:text-[48px]">{guestName}</h1>
-        <button
-          type="button"
-          onClick={onOpen}
-          className="mt-2 inline-flex items-center gap-2.5 rounded-[14px] border border-white/75 px-6 py-3 font-sans text-[17px] leading-none text-white transition-colors hover:bg-white hover:text-neutral-950 md:rounded-[9px]"
-        >
-          <EnvelopeIcon className="h-[1em] w-[1em]" />
-          {c.cover.buttonLabel}
-        </button>
-      </div>
-      <p className="relative z-10 mt-6 font-sans text-[14px] leading-[26px] text-white/90 md:text-[16px]">
-        Made With <span className="px-1 text-white">♥</span> Rayakan.my.id
-      </p>
-    </>
-  );
-}
-
-export function CoverInline({ guestName, logo }: { guestName: string; logo: ReactNode }) {
-  const { content: c } = useTheme();
+export function CoverInline({ guestName, Face }: { guestName: string; Face: CoverFace }) {
   return (
     <Block id="cover">
-      <section className="relative isolate flex min-h-[640px] flex-col items-center justify-center gap-8 overflow-hidden px-6 py-16">
-        <div className="absolute inset-0 -z-10 hidden md:block">{c.hero.imageDesktop && <Img src={c.hero.imageDesktop} alt="" fill sizes="100vw" className="object-cover" />}</div>
-        <div className="absolute inset-0 -z-10 md:hidden">{c.hero.imageMobile && <Img src={c.hero.imageMobile} alt="" fill sizes="100vw" className="object-cover" />}</div>
-        <div className="absolute inset-0 -z-10 bg-black/60 backdrop-blur-[30px]" />
-        <CoverCard guestName={guestName} logo={logo} />
-      </section>
+      <div className="relative min-h-[680px] overflow-hidden">
+        <Face guestName={guestName} />
+      </div>
     </Block>
   );
 }
@@ -59,13 +32,15 @@ function useMusicSrc() {
   return MUSIC_LIBRARY.find((t) => t.id === c.music.trackId)?.src ?? "";
 }
 
-export function CoverOverlay({ guestName, logo }: { guestName: string; logo: ReactNode }) {
+export function CoverOverlay({ guestName, Face }: { guestName: string; Face: CoverFace }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const music = useMusicSrc();
 
-  useLayoutEffect(() => window.scrollTo(0, 0), []);
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   useEffect(() => {
     document.body.style.overflow = open ? "" : "hidden";
     return () => {
@@ -93,16 +68,9 @@ export function CoverOverlay({ guestName, logo }: { guestName: string; logo: Rea
       {music && <audio ref={audioRef} loop preload="auto" src={music} />}
       <AnimatePresence>
         {!open && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-8 px-6"
-          >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-[30px]" />
-            <CoverCard
+          <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }} className="fixed inset-0 z-[100] overflow-y-auto">
+            <Face
               guestName={guestName}
-              logo={logo}
               onOpen={() => {
                 play();
                 setOpen(true);

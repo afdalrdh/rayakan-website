@@ -1,41 +1,28 @@
 /**
- * Theme catalogue (no React here, so the server can import it for validation).
+ * Theme presets (no React here, so the server can import it).
  *
- * To add a theme:
- *   1. add its id + metadata below,
- *   2. build `src/themes/<id>/` (render from WeddingContent),
- *   3. register the component in `src/themes/index.tsx`,
- *   4. add sample content in `src/lib/content/demo.ts`.
+ * A theme is only a starting point: colour mode, palette, font pair and one
+ * layout per section. After a site is created the client can change any of
+ * these on their own, so a site is never locked to its theme.
+ *
+ * To add a preset:
+ *   1. add its id + settings below,
+ *   2. add sample content in `src/lib/content/demo.ts` (DEMO_BY_THEME),
+ *   3. take screenshots for `preview` (public/landing/<id>-desktop|mobile.webp).
  */
 
-export const THEME_IDS = ["arya", "afdal"] as const;
-export type ThemeId = (typeof THEME_IDS)[number];
+import { DEFAULT_LAYOUTS, type SiteLayouts } from "./layouts/catalog";
+import { getFontPair, getPalette, type SiteStyle } from "./style";
 
-export interface Palette {
-  name: string;
-  /** Page background */
-  bg: string;
-  /** Alternate section background */
-  alt: string;
-  /** Cards (schedule, countdown, form) */
-  card: string;
-  /** Form inputs */
-  input: string;
-  /** Headings, buttons — the brand colour of the site */
-  accent: string;
-  /** Labels, lines, secondary text */
-  muted: string;
-}
+export const THEME_IDS = ["arya", "afdal", "sage", "navy"] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
 
 export interface ThemeMeta {
   id: ThemeId;
   name: string;
   tagline: string;
-  tone: "dark" | "light";
-  palettes: Record<string, Palette>;
-  defaultPalette: string;
-  /** Photos shown per story chapter (1 = main photo only, 4 = 2×2 grid). */
-  storyPhotos: 1 | 4;
+  style: Omit<SiteStyle, "accent">;
+  layouts: SiteLayouts;
   /** Library track used when a site is created with this theme. */
   defaultTrack: string;
   /** Screenshots for the landing page, plus a photo used as their blurred backdrop. */
@@ -47,37 +34,37 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     id: "arya",
     name: "Malam Emas",
     tagline: "Gelap, sinematik, aksen emas",
-    tone: "dark",
-    defaultPalette: "emas",
-    storyPhotos: 1,
+    style: { mode: "dark", palette: "emas", fonts: "klasik" },
+    layouts: { ...DEFAULT_LAYOUTS },
     defaultTrack: "arya-background",
     preview: { desktop: "/landing/arya-desktop.webp", mobile: "/landing/arya-mobile.webp", backdrop: "/demo/arya/hero-desktop.jpg" },
-    palettes: {
-      emas: { name: "Emas Malam", bg: "#0B0C0E", alt: "#141315", card: "#141518", input: "#1A1B1F", accent: "#E5C07B", muted: "#C5A059" },
-      sage: { name: "Sage", bg: "#0C0F0D", alt: "#121714", card: "#151A17", input: "#1B211D", accent: "#CBD7B4", muted: "#9DB08A" },
-      rose: { name: "Rose Gold", bg: "#100C0D", alt: "#171213", card: "#1A1416", input: "#211A1C", accent: "#EAC2BE", muted: "#C99597" },
-      navy: { name: "Navy Champagne", bg: "#0A0D14", alt: "#10141D", card: "#131824", input: "#1A2030", accent: "#DCCBA3", muted: "#B3A27B" },
-      marun: { name: "Marun", bg: "#0F0909", alt: "#170E0E", card: "#1B1112", input: "#231718", accent: "#E6BC8C", muted: "#BF9465" },
-      perak: { name: "Perak", bg: "#0B0B0C", alt: "#131314", card: "#161618", input: "#1C1C1F", accent: "#E4E4E4", muted: "#A8A8AD" },
-    },
   },
   afdal: {
     id: "afdal",
     name: "Putih Marun",
     tagline: "Terang, bersih, tipografi besar",
-    tone: "light",
-    defaultPalette: "maroon",
-    storyPhotos: 4,
+    style: { mode: "light", palette: "marun", fonts: "tegas" },
+    layouts: { cover: "kaca", hero: "raksasa", couple: "ringkas", story: "bab", event: "kotak", venue: "berdampingan", gallery: "rapi", rsvp: "berdampingan", gift: "samping", closing: "foto" },
     defaultTrack: "afdal-background",
     preview: { desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp", backdrop: "/demo/afdal/hero.webp" },
-    palettes: {
-      maroon: { name: "Marun Klasik", bg: "#FFFFFF", alt: "#FBFAF7", card: "#FBFBF9", input: "#F3F1F0", accent: "#4A0E0E", muted: "#877270" },
-      zaitun: { name: "Hijau Zaitun", bg: "#FFFFFF", alt: "#F9FAF6", card: "#F8F9F4", input: "#EFF1EA", accent: "#3D4A2A", muted: "#7A8270" },
-      biru: { name: "Biru Malam", bg: "#FFFFFF", alt: "#F8F9FB", card: "#F7F8FA", input: "#EEF0F4", accent: "#1F2D4A", muted: "#727C8F" },
-      terakota: { name: "Terakota", bg: "#FFFFFF", alt: "#FCF9F6", card: "#FBF8F5", input: "#F4EEE9", accent: "#7A3B22", muted: "#937A6E" },
-      mauve: { name: "Mauve", bg: "#FFFFFF", alt: "#FBF8FA", card: "#FAF7F9", input: "#F2EDF0", accent: "#5C3A4E", muted: "#8D7A85" },
-      arang: { name: "Arang", bg: "#FFFFFF", alt: "#FAFAF9", card: "#F8F8F7", input: "#EFEFED", accent: "#1C1A17", muted: "#7B7772" },
-    },
+  },
+  sage: {
+    id: "sage",
+    name: "Taman Sage",
+    tagline: "Terang, lembut, huruf sambung",
+    style: { mode: "light", palette: "sage", fonts: "romantis" },
+    layouts: { cover: "lengkung", hero: "lengkung", couple: "bulat", story: "zigzag", event: "kalender", venue: "tengah", gallery: "masonry", rsvp: "tengah", gift: "daftar", closing: "lengkung" },
+    defaultTrack: "afdal-background",
+    preview: { desktop: "/landing/sage-desktop.webp", mobile: "/landing/sage-mobile.webp", backdrop: "/demo/afdal/story-2.webp" },
+  },
+  navy: {
+    id: "navy",
+    name: "Navy Mewah",
+    tagline: "Gelap, rapi, huruf majalah",
+    style: { mode: "dark", palette: "navy", fonts: "mewah" },
+    layouts: { cover: "sinema", hero: "editorial", couple: "editorial", story: "geser", event: "angka", venue: "linimasa", gallery: "geser", rsvp: "tab", gift: "amplop", closing: "belah" },
+    defaultTrack: "arya-background",
+    preview: { desktop: "/landing/navy-desktop.webp", mobile: "/landing/navy-mobile.webp", backdrop: "/demo/arya/g-8705.jpg" },
   },
 };
 
@@ -85,19 +72,10 @@ export function getThemeMeta(id: string | undefined): ThemeMeta {
   return THEMES[(id as ThemeId) ?? "arya"] ?? THEMES.arya;
 }
 
-/** Resolves the palette for a theme; "custom" derives everything from one accent colour. */
-export function resolvePalette(themeId: string, paletteId: string, customAccent?: string): Palette {
-  const theme = getThemeMeta(themeId);
-  const base = theme.palettes[paletteId] ?? theme.palettes[theme.defaultPalette];
-  if (paletteId !== "custom") return base;
-  const accent = customAccent || base.accent;
-  const fallback = theme.palettes[theme.defaultPalette];
-  return {
-    ...fallback,
-    name: "Warna Sendiri",
-    accent,
-    muted: theme.tone === "dark" ? `color-mix(in srgb, ${accent} 82%, #000)` : `color-mix(in srgb, ${accent} 45%, #9a8a86)`,
-  };
+/** Colours to show on a preset card (background, accent, muted). */
+export function themeSwatch(t: ThemeMeta) {
+  const p = getPalette(t.style.palette)[t.style.mode];
+  return { bg: p.bg, accent: p.accent, muted: p.muted, fonts: getFontPair(t.style.fonts).name };
 }
 
 export interface MusicTrack {

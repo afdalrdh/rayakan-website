@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Gift, Laptop, LayoutList, ListChecks, MessageCircleHeart, MoreHorizontal, Music2, Palette, Send, Smartphone, Users } from "lucide-react";
+import { ArrowLeft, ExternalLink, Gift, Laptop, LayoutList, ListChecks, MessageCircleHeart, MoreHorizontal, Music2, Palette, Send, Smartphone, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_HOST } from "@/lib/messages";
@@ -60,17 +60,24 @@ export function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void })
   );
 }
 
-export function TopBar({ title, saved, previewHref, isOwner, onPublish }: { title: string; saved: "saved" | "saving" | "error"; previewHref: string; isOwner: boolean; onPublish: () => void }) {
-  const { status } = useEditor();
+export function TopBar({ title, saved, previewHref, isOwner, onPublish, design = false }: { title: string; saved: "saved" | "saving" | "error"; previewHref: string; isOwner: boolean; onPublish: () => void; design?: boolean }) {
+  const { status, slug } = useEditor();
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-rk-line bg-white px-4 lg:col-span-2 lg:col-start-2 lg:h-16 lg:px-6">
-      <span className="lg:hidden">
-        <Image src="/brand/logo.png" alt="Rayakan.my.id" width={30} height={24} className="h-6 w-auto" />
-      </span>
+    <header className={`flex h-14 shrink-0 items-center gap-3 border-b border-rk-line bg-white px-4 lg:col-span-2 lg:h-16 lg:px-6 ${design ? "lg:col-start-1" : "lg:col-start-2"}`}>
+      {design ? (
+        <Link href={`/${slug}/admin/desain`} aria-label="Kembali ke admin" className="flex h-10 items-center gap-2 rounded-xl pr-2 text-rk-mute hover:text-rk-ink">
+          <ArrowLeft className="h-5 w-5" />
+          <Image src="/brand/logo.png" alt="" width={30} height={24} className="hidden h-6 w-auto sm:block" />
+        </Link>
+      ) : (
+        <span className="lg:hidden">
+          <Image src="/brand/logo.png" alt="Rayakan.my.id" width={30} height={24} className="h-6 w-auto" />
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <p className="truncate text-[14px] font-bold leading-tight lg:text-[15px]">
           {isOwner && <Link href="/studio" className="mr-1.5 text-rk-mute hover:text-rk-ink">Studio /</Link>}
-          Undangan {title}
+          {design ? "Desain" : "Undangan"} {title}
         </p>
         <p className={`flex items-center gap-1.5 text-[12px] ${saved === "error" ? "font-semibold text-red-700" : "text-rk-mute"}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${saved === "saved" ? "bg-emerald-500" : saved === "error" ? "bg-red-600" : "animate-pulse bg-rk-gold"}`} />
@@ -101,7 +108,7 @@ export function Toolbar({ device, setDevice, open }: { device: Device; setDevice
         </button>
         <button type="button" onClick={() => open("theme")} className={chip}>
           <Palette className="h-4 w-4" />
-          Warna &amp; Logo
+          Gaya &amp; Warna
         </button>
         <button type="button" onClick={() => open("music")} className={chip}>
           <Music2 className="h-4 w-4" />

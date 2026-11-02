@@ -17,7 +17,7 @@ async function contentForGuests(site: SiteRecord): Promise<WeddingContent> {
     hidden: [...new Set([...c.hidden, ...plan.locked])],
     gallery: { ...c.gallery, photos: c.gallery.photos.slice(0, plan.galleryLimit) },
     story: { ...c.story, items: c.story.items.slice(0, plan.storyLimit) },
-    palette: c.palette === "custom" && !plan.customColor ? "emas" : c.palette,
+    style: plan.customColor ? c.style : { ...c.style, accent: "" },
     music: c.music.mode === "upload" && !plan.musicUpload ? { ...c.music, mode: "library" } : c.music,
   };
 }

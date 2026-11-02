@@ -17,6 +17,7 @@ export function Canvas({
   plan,
   selected,
   onSelect,
+  readOnly = false,
 }: {
   device: Device;
   content: WeddingContent;
@@ -24,6 +25,8 @@ export function Canvas({
   plan: Plan;
   selected: BlockKey | null;
   onSelect: (k: BlockKey) => void;
+  /** Read-only preview: no tap targets. */
+  readOnly?: boolean;
 }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -52,8 +55,8 @@ export function Canvas({
   const post = useCallback((msg: ToCanvas) => frame.current?.contentWindow?.postMessage(msg, window.location.origin), []);
 
   useEffect(() => {
-    if (ready) post({ type: "state", state: { content, media, selected, locked } });
-  }, [ready, content, media, selected, locked, post]);
+    if (ready) post({ type: "state", state: { content, media, selected, locked, mode: readOnly ? "preview" : "edit" } });
+  }, [ready, content, media, selected, locked, post, readOnly]);
 
   useEffect(() => {
     if (ready && selected) post({ type: "scrollTo", block: selected });

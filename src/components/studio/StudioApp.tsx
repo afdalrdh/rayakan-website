@@ -31,7 +31,7 @@ import {
   setPublishedAction,
   updateSiteMetaAction,
 } from "@/app/actions/studio";
-import { activeLabel, BLOCK_LABELS, rupiah, slugify, THEME_IDS, THEMES, type Plan, type PlanId, type ThemeId } from "@/lib/content";
+import { activeLabel, BLOCK_LABELS, FONT_PAIR_IDS, FONT_PAIRS, PALETTE_IDS, PALETTES, rupiah, slugify, THEME_IDS, THEMES, themeSwatch, type ColorMode, type Plan, type PlanId, type ThemeId } from "@/lib/content";
 import { SITE_HOST, SITE_URL, waLink } from "@/lib/messages";
 import type { AppSettings } from "@/lib/server/data";
 
@@ -252,7 +252,7 @@ function SitesTab({ sites, plans }: { sites: SiteSummary[]; plans: Plan[] }) {
                   </div>
                   <div className="relative ml-auto flex shrink-0 items-center gap-1.5">
                     <a href={`/${s.slug}/admin`} className={ghost}>
-                      <Pencil className="h-4 w-4" /> Editor
+                      <Pencil className="h-4 w-4" /> Admin
                     </a>
                     <button type="button" disabled={pending} onClick={() => togglePublish(s)} className={s.status === "published" ? ghost : primary}>
                       {s.status === "published" ? "Jadikan draft" : "Terbitkan"}
@@ -338,6 +338,8 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
   const [checked, setChecked] = useState<{ slug: string; available: boolean; reason?: string } | null>(null);
   const [planId, setPlanId] = useState<PlanId>(plans.find((p) => p.highlight)?.id ?? "premium");
   const [theme, setTheme] = useState<ThemeId>("arya");
+  const [start0, setStart0] = useState<"theme" | "custom">("theme");
+  const [custom, setCustom] = useState<{ mode: ColorMode; palette: string; fonts: string }>({ mode: "light", palette: "sage", fonts: "elegan" });
   const [date, setDate] = useState("");
   const [client, setClient] = useState("");
   const [phone, setPhone] = useState("");
@@ -384,20 +386,77 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
           </div>
         </L>
         <div>
-          <span className="mb-1.5 block text-[13px] font-semibold">Tema</span>
-          <div className="grid grid-cols-2 gap-2">
-            {THEME_IDS.map((id) => (
-              <button key={id} type="button" onClick={() => setTheme(id)} className={`flex items-center gap-3 rounded-2xl border bg-white p-2 text-left ${theme === id ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
-                <span className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg bg-rk-cream">
-                  <Image src={THEMES[id].preview.mobile} alt="" fill sizes="44px" className="object-cover object-top" />
-                </span>
-                <span>
-                  <span className="block text-[14px] font-bold">{THEMES[id].name}</span>
-                  <span className="block text-[11px] text-rk-mute">{THEMES[id].tagline}</span>
-                </span>
-              </button>
-            ))}
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <span className="text-[13px] font-semibold">Tampilan awal</span>
+            <div className="flex rounded-full bg-rk-cream p-0.5 text-[12px] font-semibold">
+              {(
+                [
+                  ["theme", "Pakai tema"],
+                  ["custom", "Custom"],
+                ] as const
+              ).map(([v, l]) => (
+                <button key={v} type="button" onClick={() => setStart0(v)} className={`rounded-full px-3 py-1.5 ${start0 === v ? "bg-white shadow-sm" : "text-rk-mute"}`}>
+                  {l}
+                </button>
+              ))}
+            </div>
           </div>
+          {start0 === "theme" ? (
+            <div className="grid grid-cols-2 gap-2">
+              {THEME_IDS.map((id) => {
+                const sw = themeSwatch(THEMES[id]);
+                return (
+                  <button key={id} type="button" onClick={() => setTheme(id)} className={`flex items-center gap-3 rounded-2xl border bg-white p-2 text-left ${theme === id ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
+                    <span className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg bg-rk-cream">
+                      <Image src={THEMES[id].preview.mobile} alt="" fill sizes="44px" className="object-cover object-top" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[14px] font-bold">{THEMES[id].name}</span>
+                      <span className="block truncate text-[11px] text-rk-mute">{THEMES[id].tagline}</span>
+                      <span className="mt-1 flex gap-1">
+                        {[sw.bg, sw.accent, sw.muted].map((c) => (
+                          <span key={c} className="h-3 w-3 rounded-full ring-1 ring-black/10" style={{ background: c }} />
+                        ))}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-3 rounded-2xl border border-rk-line bg-white p-3">
+              <div className="flex gap-2">
+                {(
+                  [
+                    ["light", "Terang"],
+                    ["dark", "Gelap"],
+                  ] as const
+                ).map(([m, l]) => (
+                  <button key={m} type="button" onClick={() => setCustom((c) => ({ ...c, mode: m }))} className={`h-9 flex-1 rounded-xl border text-[13px] font-semibold ${custom.mode === m ? "border-rk-ink bg-rk-ink text-white" : "border-rk-line"}`}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-6 gap-1.5">
+                {PALETTE_IDS.map((id) => {
+                  const p = PALETTES[id][custom.mode];
+                  return (
+                    <button key={id} type="button" title={PALETTES[id].name} onClick={() => setCustom((c) => ({ ...c, palette: id }))} className={`flex h-10 items-center justify-center rounded-lg ${custom.palette === id ? "ring-2 ring-rk-ink ring-offset-1" : "ring-1 ring-black/10"}`} style={{ background: p.bg }}>
+                      <span className="h-4 w-4 rounded-full" style={{ background: p.accent }} />
+                    </button>
+                  );
+                })}
+              </div>
+              <select value={custom.fonts} onChange={(e) => setCustom((c) => ({ ...c, fonts: e.target.value }))} className={input}>
+                {FONT_PAIR_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    Huruf {FONT_PAIRS[id].name} · {FONT_PAIRS[id].desc}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-rk-mute">Tata letak tiap bagian memakai pilihan standar; klien bisa menggantinya sendiri dari editor.</p>
+            </div>
+          )}
         </div>
         <div>
           <span className="mb-1.5 block text-[13px] font-semibold">Paket</span>
@@ -439,7 +498,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
           onClick={() =>
             start(async () => {
               setError("");
-              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme, eventDate: date, clientName: client, clientPhone: phone, notes, sample });
+              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme: start0 === "custom" ? (custom.mode === "dark" ? "arya" : "afdal") : theme, style: start0 === "custom" ? custom : undefined, eventDate: date, clientName: client, clientPhone: phone, notes, sample });
               if (r.ok) onCreated({ slug: r.slug, password: r.password, phone, title: `${first} & ${second}` });
               else setError(r.error);
             })
@@ -455,7 +514,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
 
 function AccessModal({ title, slug, password, phone, coupleTitle, onClose }: { title: string; slug: string; password: string; phone: string; coupleTitle: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const text = `Halo! Undangan digital ${coupleTitle} sudah siap diisi 🎉\n\nBuka halaman admin:\n${SITE_URL}/${slug}/admin\nPassword: ${password}\n\nKetuk bagian undangan untuk mengganti foto dan teks. Setelah lengkap, tekan "Terbitkan".\n\nRayakan.my.id`;
+  const text = `Halo! Undangan digital ${coupleTitle} sudah siap diisi 🎉\n\nBuka halaman admin:\n${SITE_URL}/${slug}/admin\nPassword: ${password}\n\nDi menu Undangan kamu bisa menambah tamu dan mengirim link lewat WhatsApp. Buka menu Desain Undangan → Edit Tampilan untuk mengganti foto, teks, warna, dan tata letak.\n\nRayakan.my.id`;
   return (
     <Modal title={title} onClose={onClose}>
       <div className="space-y-4">
