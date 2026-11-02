@@ -1,4 +1,4 @@
-import { CalendarDays, Heart, Lock, MessageCircleHeart, Palette, Play, Send, Smartphone, User, Users, Globe2 } from "lucide-react";
+import { CalendarDays, Check, Heart, ImageIcon, Lock, MessageCircleHeart, Palette, Pencil, Play, Send, Smartphone, User, Users, Globe2 } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Eyebrow, Title } from "./chrome";
@@ -7,7 +7,7 @@ import { InView, Reveal } from "./Reveal";
 
 /*
  * "Fitur" section. Each card pairs copy with a small illustration built from
- * HTML/CSS (no images except one reused screenshot), animated with CSS only:
+ * HTML/CSS (no images except one reused hero screenshot), animated with CSS only:
  * elements settle in when the card enters the viewport (group-data-[in=true])
  * and keep a gentle idle motion. Cheap to load, smooth to scroll.
  */
@@ -34,20 +34,34 @@ function Card({ icon, title, body, art, delay }: { icon: ReactNode; title: strin
 
 /* ---------- illustrations ---------- */
 
-function PhoneArt() {
+/** Mini editor card: a photo with "Ganti foto", a name field being edited, and a saved badge. */
+function EditArt() {
   return (
-    <div className={`${ease} relative w-[110px] rotate-[10deg] translate-y-6 opacity-0 group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
-      <div className="rk-float rounded-[22px] bg-[#1d1714] p-[4px] shadow-[0_24px_40px_-14px_rgba(60,40,20,0.55)]">
-        <div className="relative aspect-[390/844] overflow-hidden rounded-[18px]">
-          <Image src="/landing/afdal-mobile.webp" alt="" fill unoptimized className="object-cover object-top" />
+    <div className="relative">
+      <div className={`${ease} w-[190px] rotate-2 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-2.5 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
+        <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
+          <Image src="/landing/afdal-desktop.webp" alt="" fill unoptimized className="object-cover object-[30%_30%]" />
+          <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 rounded-full bg-[#1d1714]/85 px-2 py-0.5 text-[9.5px] font-semibold text-white">
+            <ImageIcon className="h-2.5 w-2.5" /> Ganti foto
+          </span>
+        </div>
+        <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-[#e8d9c2] px-2.5 py-1.5 text-[11.5px] font-medium">
+          <span className="whitespace-nowrap border-r border-rk-ink/60 pr-0.5">Afdal &amp; Putri</span>
+          <Pencil className="ml-auto h-3 w-3 text-[#8b6b43]" />
         </div>
       </div>
+      <span
+        style={{ transitionDelay: "450ms" }}
+        className={`${ease} absolute -left-4 -top-3 inline-flex scale-90 items-center gap-1 rounded-full border border-[#efe2cf] bg-white px-2.5 py-1 text-[10px] font-semibold text-emerald-700 opacity-0 shadow-[0_10px_20px_-12px_rgba(80,50,20,0.5)] group-data-[in=true]:scale-100 group-data-[in=true]:opacity-100`}
+      >
+        <Check className="h-3 w-3" /> Tersimpan
+      </span>
     </div>
   );
 }
 
 function GuestsArt() {
-  const rows = ["Keluarga Wijaya", "Rina & Bagus", "Budi Santoso"];
+  const rows = ["Kel. Wijaya", "Rina & Bagus", "Budi Santoso"];
   return (
     <div className="relative w-full max-w-[220px] space-y-2.5">
       <span className="rk-twinkle absolute -right-1 -top-5 text-[#c9a46a]">✦</span>
@@ -55,7 +69,7 @@ function GuestsArt() {
         <div
           key={r}
           style={{ transitionDelay: `${150 + i * 140}ms` }}
-          className={`${ease} flex translate-x-8 items-center gap-2.5 rounded-full border border-[#efe2cf] bg-white px-3 py-2 text-[12.5px] opacity-0 shadow-[0_10px_20px_-14px_rgba(80,50,20,0.4)] group-data-[in=true]:translate-x-0 group-data-[in=true]:opacity-100 ${i === 0 ? "-rotate-2" : ""}`}
+          className={`${ease} flex translate-x-8 items-center gap-2.5 rounded-full border border-[#efe2cf] bg-white whitespace-nowrap px-3 py-2 text-[12.5px] opacity-0 shadow-[0_10px_20px_-14px_rgba(80,50,20,0.4)] group-data-[in=true]:translate-x-0 group-data-[in=true]:opacity-100 ${i === 0 ? "-rotate-2" : ""}`}
         >
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f6e9d6] text-[#8b6b43]">
             <User className="h-3.5 w-3.5" />
@@ -168,11 +182,11 @@ export function Features() {
           <p className="mt-5 max-w-[560px] text-[16px] leading-relaxed text-rk-ink/65">Dari kelola undangan, daftar tamu, hingga detail acara. Semua dirancang agar momen spesialmu lebih mudah, rapi, dan berkesan.</p>
         </Reveal>
         <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Kelola undangan, ganti foto, dan teks langsung dari ponsel." art={<PhoneArt />} />
+          <Card delay={0} icon={<Smartphone className="h-5 w-5" />} title="Ubah sendiri dari HP" body="Kelola undangan, ganti foto, dan teks langsung dari ponsel." art={<EditArt />} />
           <Card delay={80} icon={<Users className="h-5 w-5" />} title="Link nama per tamu" body="Buat link undangan personal dari daftar tamu, kirim lewat WhatsApp." art={<GuestsArt />} />
           <Card delay={160} icon={<CalendarDays className="h-5 w-5" />} title="Acara tersusun rapi" body="Atur jadwal, lokasi, dan catatan acara dalam satu halaman." art={<ScheduleArt />} />
           <Card delay={0} icon={<MessageCircleHeart className="h-5 w-5" />} title="RSVP & ucapan" body="Terima konfirmasi kehadiran dan doa dari para tamu." art={<RsvpArt />} />
-          <Card delay={80} icon={<Globe2 className="h-5 w-5" />} title="Alamat atas nama kalian" body="Link yang mudah diingat dan bisa dibagikan ke siapa saja." art={<UrlArt />} />
+          <Card delay={80} icon={<Globe2 className="h-5 w-5" />} title="Alamat web pribadi" body="Link yang mudah diingat dan bisa dibagikan ke siapa saja." art={<UrlArt />} />
           <Card delay={160} icon={<Palette className="h-5 w-5" />} title="Warna & lagu pilihan" body="Pilih palet warna, logo inisial, dan lagu latar favorit." art={<PaletteArt />} />
         </div>
       </div>

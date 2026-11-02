@@ -44,7 +44,6 @@ export function PortfolioGrid({ items, className = "", fillTo = 0, ctaHref }: { 
             <span className="relative mx-auto block aspect-[390/844] w-full max-w-[260px] rounded-[30px] bg-[#0d0b0a] p-[5px] shadow-[0_30px_50px_-28px_rgba(60,40,20,0.7)] transition duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_40px_60px_-28px_rgba(60,40,20,0.75)] sm:rounded-[36px] sm:p-[6px]">
               <span className="relative block h-full w-full overflow-hidden rounded-[25px] sm:rounded-[30px]">
                 <Image src={p.mobile} alt={`Undangan ${p.couple} di HP`} fill unoptimized className="object-cover object-top transition duration-[1200ms] ease-out group-hover:scale-[1.04]" />
-                <span className="absolute left-1/2 top-[8px] h-[14px] w-[34%] -translate-x-1/2 rounded-full bg-black" />
               </span>
               <span className="absolute -right-2 bottom-6 flex h-10 w-10 items-center justify-center rounded-full bg-white text-rk-ink shadow-lg transition group-hover:rotate-45">
                 <ArrowUpRight className="h-4 w-4" />

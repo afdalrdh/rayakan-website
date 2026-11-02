@@ -5,7 +5,8 @@ import { ArrowRight, Check, Plus } from "lucide-react";
 import { contactHref, Eyebrow, GENERAL_ENQUIRY, LandingFooter, LandingNav, portfolioCards, Title } from "@/components/landing/chrome";
 import { Hero } from "@/components/landing/Hero";
 import { DeviceDuo, DuoStage } from "@/components/landing/DeviceDuo";
-import { Envelope, Rings, Sprig } from "@/components/landing/illustrations";
+import { Envelope, Rings } from "@/components/landing/illustrations";
+import { Bloom, Branch, Breath } from "@/components/landing/paintings";
 import { Features } from "@/components/landing/Features";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
 import { Reveal } from "@/components/landing/Reveal";
@@ -59,7 +60,6 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
       <div className="relative h-full w-full overflow-hidden rounded-[26px] bg-white">
         <Image src={src} alt={alt} fill unoptimized className="object-cover object-top" />
       </div>
-      <span className="absolute left-1/2 top-[13px] h-[16px] w-[64px] -translate-x-1/2 rounded-full bg-black" />
     </div>
   );
 }
@@ -81,8 +81,11 @@ export default async function Landing() {
       <Features />
 
       {/* ------------------------------ Sections ------------------------------ */}
-      <section className="border-y border-rk-line/70 bg-[#fbf8f2] py-24 lg:py-32">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+      <section className="relative overflow-hidden border-y border-rk-line/70 bg-[#fbf8f2] py-24 lg:py-32">
+        <div className="pointer-events-none absolute -top-4 right-[3%] hidden w-[100px] rotate-[28deg] lg:block">
+          <Branch className="rk-sway h-auto w-full" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px] px-4 sm:px-6">
           <Reveal variant="blur" className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
               <Eyebrow>Bukan template biasa</Eyebrow>
@@ -102,8 +105,11 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ Themes ------------------------------ */}
-      <section id="tema" className="scroll-mt-16 px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto max-w-[1200px]">
+      <section id="tema" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+        <div className="pointer-events-none absolute left-[3%] top-14 hidden w-[130px] -rotate-12 lg:block xl:left-[6%]">
+          <Bloom className="rk-sway h-auto w-full" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="text-center">
             <Eyebrow>Pilihan tema</Eyebrow>
             <Title className="mx-auto mt-4 max-w-[680px] text-[clamp(40px,5.5vw,68px)]">Dua karakter, satu isi.</Title>
@@ -191,8 +197,11 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ Guests ------------------------------ */}
-      <section className="border-y border-rk-line/70 bg-[#fbf8f2] px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-2">
+      <section className="relative overflow-hidden border-y border-rk-line/70 bg-[#fbf8f2] px-4 py-24 sm:px-6 lg:py-32">
+        <div className="pointer-events-none absolute -bottom-6 right-[2%] hidden w-[120px] lg:block">
+          <Breath className="rk-sway h-auto w-full" />
+        </div>
+        <div className="relative mx-auto grid max-w-[1200px] items-center gap-14 lg:grid-cols-2">
           <Reveal variant="left" className="order-2 lg:order-1">
             <div className="mx-auto max-w-[420px] rounded-[28px] bg-[#e9e2d6] p-5">
               <p className="text-center text-[11px] font-semibold uppercase tracking-wider text-rk-mute">WhatsApp</p>
@@ -265,8 +274,11 @@ export default async function Landing() {
       </section>
 
       {/* ------------------------------ Pricing ------------------------------ */}
-      <section id="harga" className="scroll-mt-16 bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
-        <div className="mx-auto max-w-[1200px]">
+      <section id="harga" className="relative scroll-mt-16 overflow-hidden bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
+        <div className="pointer-events-none absolute -left-2 top-10 hidden w-[100px] -rotate-[24deg] lg:block xl:left-[4%]">
+          <Branch className="rk-sway h-auto w-full -scale-x-100" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="text-center">
             {promoActive && settings.promoLabel && (
               <p className="mx-auto inline-flex rounded-full bg-rk-ink px-4 py-1.5 text-[12px] font-semibold text-rk-sand">
@@ -319,10 +331,10 @@ export default async function Landing() {
 
       {/* ------------------------------ FAQ ------------------------------ */}
       <section id="faq" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
-        <div className="rk-parallax pointer-events-none absolute -left-6 bottom-10 hidden -scale-x-100 text-rk-bronze/40 lg:block">
-          <Sprig className="rk-sway h-[200px] w-auto" delay={0.2} />
+        <div className="pointer-events-none absolute -left-8 bottom-6 hidden w-[140px] rotate-[18deg] lg:block">
+          <Bloom className="rk-sway h-auto w-full" />
         </div>
-        <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="relative mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <Reveal variant="blur">
             <Eyebrow>Pertanyaan</Eyebrow>
             <Title className="mt-4 text-[clamp(40px,5.5vw,68px)]">Yang sering ditanyakan.</Title>

@@ -58,7 +58,6 @@ function Devices({ url, desktop, mobile }: { url: string; desktop: string; mobil
         >
           <span className="relative block h-full w-full overflow-hidden rounded-[16px] md:rounded-[24px]">
             <Image src={mobile} alt="Contoh undangan di HP" fill priority unoptimized className="object-cover object-top" />
-            <span className="absolute left-1/2 top-[5px] h-[9px] w-[34%] -translate-x-1/2 rounded-full bg-black md:top-[8px] md:h-[13px]" />
           </span>
         </motion.button>
       </div>
@@ -94,26 +93,27 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
           <img src="/landing/hero-bg-mobile.webp" alt="" fetchPriority="high" className="rk-kenburns h-full w-full object-cover" />
         </picture>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,13,10,0.88)_0%,rgba(18,13,10,0.5)_45%,rgba(18,13,10,0.2)_100%)] max-md:bg-[linear-gradient(180deg,rgba(18,13,10,0.75)_0%,rgba(18,13,10,0.55)_50%,rgba(18,13,10,0.85)_100%)]" />
-        <div className="rk-drift absolute inset-0 opacity-[0.22] [background-image:radial-gradient(rgba(255,255,255,0.55)_1px,transparent_1px)] [background-size:24px_24px]" />
+        <div className="rk-drift absolute -inset-x-[240px] -top-[120px] bottom-0 opacity-[0.22] [background-image:radial-gradient(rgba(255,255,255,0.55)_1px,transparent_1px)] [background-size:24px_24px]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-[#15110e] to-transparent" />
       </div>
 
       {/* hand-drawn curve behind the devices */}
-      <svg viewBox="0 0 800 800" className="pointer-events-none absolute -right-[8%] -top-[4%] -z-[5] hidden h-[80%] w-auto text-[#e8d5b5] md:block" aria-hidden="true">
+      <svg viewBox="0 0 800 1000" className="pointer-events-none absolute right-0 top-[8%] -z-[5] hidden h-[76%] max-h-[900px] w-auto overflow-visible text-[#e8d5b5] md:block" aria-hidden="true">
         <motion.path
-          d="M 690 40 C 470 230, 210 380, 230 560 C 250 740, 560 760, 700 600"
+          d="M 840 -40 C 600 160, 300 420, 120 640 C 10 780, -90 900, 0 965 C 100 1015, 470 1000, 620 975 C 720 958, 790 930, 850 895"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.3"
           strokeOpacity="0.55"
+          vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 2.4, delay: 0.3, ease: [0.65, 0, 0.35, 1] }}
         />
-        <path d="M 640 120 C 440 300, 250 420, 280 580 C 310 720, 560 720, 650 560" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" strokeDasharray="2 7" className="rk-march" />
+        <path d="M 815 15 C 590 200, 320 440, 145 650 C 45 780, -45 890, 35 945 C 130 992, 470 980, 612 956 C 712 940, 782 912, 842 880" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1.2" strokeDasharray="2 7" vectorEffect="non-scaling-stroke" className="rk-march" />
       </svg>
       <Sparkle className="rk-twinkle pointer-events-none absolute left-[46%] top-[22%] hidden h-5 w-5 text-[#e8d5b5] md:block" delay={1.2} />
-      <Sparkle className="rk-twinkle pointer-events-none absolute right-[9%] top-[58%] hidden h-4 w-4 text-[#e8d5b5] [animation-delay:1.5s] md:block" delay={1.6} />
+      <Sparkle className="rk-twinkle pointer-events-none absolute right-[14%] top-[66%] hidden h-4 w-4 text-[#e8d5b5] [animation-delay:1.5s] md:block" delay={1.6} />
 
       <div className="mx-auto grid min-h-[100svh] max-w-[1240px] items-center gap-10 px-5 pb-28 pt-28 sm:px-8 md:grid-cols-[1fr_1.05fr] md:gap-6 md:pt-24">
         <div>

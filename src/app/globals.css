@@ -61,7 +61,7 @@ body { -webkit-font-smoothing: antialiased; }
 
 /* ---------------- Landing animations (all cheap: transform / opacity / background-position) ---------------- */
 @keyframes rk-kenburns { from { transform: scale(1.08) translate3d(-1%, -1%, 0); } to { transform: scale(1) translate3d(0, 0, 0); } }
-@keyframes rk-drift { from { background-position: 0 0; } to { background-position: 240px 120px; } }
+@keyframes rk-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(240px, 120px, 0); } }
 @keyframes rk-march { to { stroke-dashoffset: -180; } }
 @keyframes rk-twinkle { 0%, 100% { opacity: 0.35; transform: scale(0.85) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(20deg); } }
 @keyframes rk-marquee { to { transform: translateX(-50%); } }
@@ -74,7 +74,7 @@ body { -webkit-font-smoothing: antialiased; }
 .rk-rise { animation: rk-rise 3.3s ease-out infinite; opacity: 0; }
 .rk-eq { animation: rk-eq 1.1s ease-in-out infinite; transform-origin: center; }
 .rk-kenburns { animation: rk-kenburns 26s ease-out infinite alternate; will-change: transform; }
-.rk-drift { animation: rk-drift 60s linear infinite; }
+.rk-drift { animation: rk-drift 60s linear infinite; will-change: transform; }
 .rk-march { animation: rk-march 14s linear infinite; }
 .rk-twinkle { animation: rk-twinkle 4.5s ease-in-out infinite; }
 .rk-marquee { animation: rk-marquee 38s linear infinite; }
