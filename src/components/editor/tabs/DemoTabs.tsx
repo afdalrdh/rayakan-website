@@ -1,9 +1,8 @@
 "use client";
 
-import { type Plan, type PlanId } from "@/lib/content";
 import { SITE_HOST } from "@/lib/messages";
 import { useEditor } from "../context";
-import { Group, Segmented } from "../fields";
+import { Group } from "../fields";
 import { TabShell } from "./TabShell";
 
 /* Sandbox-only versions of the Tamu / Ucapan / Lainnya tabs (no database). */
@@ -54,19 +53,17 @@ export function DemoWishesTab() {
   );
 }
 
-export function DemoMoreTab({ plan, plans, setPlan, onReset }: { plan: PlanId; plans: Plan[]; setPlan: (p: PlanId) => void; onReset: () => void }) {
+export function DemoMoreTab({ onReset, onSave }: { onReset: () => void; onSave: () => void }) {
   return (
-    <TabShell title="Lainnya" note="Ini editor contoh. Perubahan hanya tersimpan di browser ini.">
-      <Group title="Simulasi paket (khusus prototipe)">
-        <Segmented
-          value={plan}
-          onChange={setPlan}
-          options={plans.map((p) => ({ value: p.id, label: p.name }))}
-        />
-        <p className="font-rk-sans text-[12px] text-rk-mute">Ganti paket untuk melihat bagian yang terkunci, batas foto, dan fitur upgrade. Di versi asli, paket diatur dari /studio.</p>
+    <TabShell title="Lainnya" note="Kamu sedang memakai Coba Gratis. Perubahan tersimpan di browser ini sampai kamu menyimpan draf.">
+      <Group title="Simpan & lanjutkan kapan saja">
+        <p className="font-rk-sans text-[13px] leading-relaxed text-rk-mute">Simpan draf dengan nama dan nomor WhatsApp. Kamu dapat alamat undangan sendiri dan link edit pribadi, lalu bisa kirim ke admin saat siap diterbitkan.</p>
+        <button type="button" onClick={onSave} className="h-12 w-full rounded-2xl bg-rk-ink font-rk-sans text-[14px] font-bold text-white">
+          Simpan draf
+        </button>
       </Group>
       <button type="button" onClick={onReset} className="w-full rounded-2xl border border-rk-line bg-white py-3 font-rk-sans text-[14px] font-semibold text-red-700">
-        Kembalikan ke contoh awal
+        Mulai ulang dari contoh tema
       </button>
     </TabShell>
   );

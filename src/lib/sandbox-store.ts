@@ -54,11 +54,11 @@ export function resetContent() {
 export function loadPlan(): PlanId {
   try {
     const p = localStorage.getItem(PLAN_KEY);
-    if (p === "esensial" || p === "premium" || p === "eksklusif") return p;
+    if (p === "gratis" || p === "mandiri" || p === "siap") return p;
   } catch {
     /* ignore */
   }
-  return "premium";
+  return "gratis";
 }
 
 export function savePlan(p: PlanId) {
@@ -66,6 +66,41 @@ export function savePlan(p: PlanId) {
     localStorage.setItem(PLAN_KEY, p);
   } catch {
     /* ignore */
+  }
+}
+
+const DRAFT_KEY = "rayakan:draft:last";
+
+/** After "Simpan draf": remember the address so /buat can offer "Lanjutkan draf". */
+export function rememberDraft(slug: string, title: string) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ slug, title, at: Date.now() }));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function lastDraft(): { slug: string; title: string } | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    const v = raw ? JSON.parse(raw) : null;
+    return v && typeof v.slug === "string" ? { slug: v.slug, title: String(v.title ?? v.slug) } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Raw blob of a sandbox upload ("media:<id>"), to move it to the server when the draft is saved. */
+export async function getMedia(id: string): Promise<Blob | null> {
+  try {
+    const db = await openDb();
+    return await new Promise((resolve) => {
+      const req = db.transaction(STORE, "readonly").objectStore(STORE).get(id);
+      req.onsuccess = () => resolve((req.result as Blob) ?? null);
+      req.onerror = () => resolve(null);
+    });
+  } catch {
+    return null;
   }
 }
 

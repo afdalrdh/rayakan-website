@@ -3,7 +3,9 @@
 import { Check, Lock, Moon, Sun } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { FONT_PAIR_IDS, FONT_PAIRS, getPalette, initials, PALETTE_IDS, PALETTES, THEME_IDS, THEMES, type ThemeId } from "@/lib/content";
+import { DECOR_IDS, DECORS, FONT_PAIR_IDS, FONT_PAIRS, getPalette, initials, namesOf, OCCASION_IDS, OCCASIONS, PALETTE_IDS, PALETTES, THEME_IDS, THEMES, type Occasion, type ThemeId } from "@/lib/content";
+import { DecorCorner } from "@/themes/decor/art";
+import { styleVars } from "@/themes/style";
 import { useEditor } from "../context";
 import { Group, ImageField, Segmented, UpgradeNote } from "../fields";
 
@@ -11,8 +13,11 @@ import { Group, ImageField, Segmented, UpgradeNote } from "../fields";
 export function ThemePanel() {
   const { content: c, update, resolve, upload, plan } = useEditor();
   const canCustom = plan.customColor;
-  const [a = "", b = ""] = initials(c.hero.firstName, c.hero.secondName);
+  const n = namesOf(c);
+  const [a = "", b = ""] = initials(n.first, n.second);
   const [confirm, setConfirm] = useState<ThemeId | null>(null);
+  const [filter, setFilter] = useState<Occasion | "semua">(c.occasion);
+  const themeIds = THEME_IDS.filter((id) => filter === "semua" || THEMES[id].occasion === filter);
   const s = c.style;
   const pal = getPalette(s.palette)[s.mode];
 
@@ -26,18 +31,28 @@ export function ThemePanel() {
   return (
     <div className="space-y-8">
       <Group title="Mulai dari tema">
+        <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1">
+          {(["semua", ...OCCASION_IDS] as const).map((id) => (
+            <button key={id} type="button" onClick={() => setFilter(id)} className={`h-8 shrink-0 rounded-full px-3 font-rk-sans text-[12px] font-semibold transition ${filter === id ? "bg-rk-ink text-white" : "border border-rk-line bg-white text-rk-mute"}`}>
+              {id === "semua" ? "Semua tema" : OCCASIONS[id].name}
+            </button>
+          ))}
+        </div>
         <div className="grid grid-cols-2 gap-2.5">
-          {THEME_IDS.map((id) => {
+          {themeIds.map((id) => {
             const t = THEMES[id];
             const sel = confirm === id;
+            const now = c.theme === id;
             return (
               <button key={id} type="button" onClick={() => setConfirm(id)} className={`overflow-hidden rounded-2xl border text-left transition ${sel ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line hover:border-rk-ink/40"}`}>
-                <span className="relative block aspect-[4/3] bg-rk-cream">
+                <span className="relative block aspect-[4/5] bg-rk-cream">
                   <Image src={t.preview.mobile} alt="" fill sizes="200px" className="object-cover object-top" />
+                  {t.badge && <span className="absolute left-2 top-2 rounded-full bg-rk-gold px-2 py-0.5 font-rk-sans text-[10px] font-bold text-rk-ink">{t.badge}</span>}
+                  {now && <span className="absolute right-2 top-2 rounded-full bg-rk-ink px-2 py-0.5 font-rk-sans text-[10px] font-bold text-white">Awal</span>}
                 </span>
                 <span className="block px-3 py-2.5">
                   <span className="block font-rk-sans text-[14px] font-bold text-rk-ink">{t.name}</span>
-                  <span className="block truncate font-rk-sans text-[12px] text-rk-mute">{t.tagline}</span>
+                  <span className="line-clamp-2 block font-rk-sans text-[11.5px] leading-snug text-rk-mute">{t.tagline}</span>
                 </span>
               </button>
             );
@@ -65,8 +80,36 @@ export function ThemePanel() {
             </div>
           </div>
         ) : (
-          <p className="font-rk-sans text-[12px] text-rk-mute">Tema hanya titik awal. Setelah itu warna, huruf, dan tata letak tiap bagian bisa diatur sendiri.</p>
+          <p className="font-rk-sans text-[12px] text-rk-mute">Tema hanya titik awal. Warna, huruf, ornamen, dan tata letak tiap bagian bisa dicampur sesukamu.</p>
         )}
+      </Group>
+
+      <Group title="Ornamen & animasi">
+        <div className="grid grid-cols-2 gap-2.5">
+          {DECOR_IDS.map((id) => {
+            const d = DECORS[id];
+            const sel = (s.decor || "none") === id;
+            return (
+              <button key={id} type="button" onClick={() => update((x) => void (x.style.decor = id))} className={`overflow-hidden rounded-2xl border text-left transition ${sel ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line hover:border-rk-ink/40"}`}>
+                <span style={styleVars({ ...s, decor: id }) as React.CSSProperties} className="relative block h-[72px] overflow-hidden bg-t-bg">
+                  <DecorCorner decor={id} at="tl" sizeClass="w-[84px]" />
+                  <DecorCorner decor={id} at="br" sizeClass="w-[84px]" />
+                  {id === "none" && <span className="absolute inset-0 flex items-center justify-center font-rk-sans text-[11px] text-t-muted">Bersih</span>}
+                  {sel && (
+                    <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow">
+                      <Check className="h-3.5 w-3.5 text-rk-ink" />
+                    </span>
+                  )}
+                </span>
+                <span className="block px-3 py-2">
+                  <span className="block font-rk-sans text-[13px] font-bold text-rk-ink">{d.name}</span>
+                  <span className="line-clamp-2 block font-rk-sans text-[11px] leading-snug text-rk-mute">{d.desc}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="font-rk-sans text-[12px] text-rk-mute">Ornamen tampil di sudut tiap bagian, di bawah judul, dan sebagai animasi melayang. Tata letak &quot;Ilustrasi&quot; dan sampul beranimasi ikut berganti gambar.</p>
       </Group>
 
       <Group title="Mode">

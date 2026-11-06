@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ExternalLink, Gift, Laptop, LayoutList, ListChecks, MessageCircleHeart, MoreHorizontal, Music2, Palette, Send, Smartphone, Users } from "lucide-react";
+import { ArrowLeft, Eye, Gift, Laptop, LayoutList, ListChecks, MessageCircleHeart, MoreHorizontal, Music2, Palette, Save, Send, Smartphone, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_HOST } from "@/lib/messages";
@@ -60,37 +60,65 @@ export function Sidebar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void })
   );
 }
 
-export function TopBar({ title, saved, previewHref, isOwner, onPublish, design = false }: { title: string; saved: "saved" | "saving" | "error"; previewHref: string; isOwner: boolean; onPublish: () => void; design?: boolean }) {
-  const { status, slug } = useEditor();
+export function TopBar({
+  title,
+  saved,
+  previewHref,
+  isOwner,
+  onPublish,
+  onSave,
+  design = false,
+}: {
+  title: string;
+  saved: "saved" | "saving" | "error";
+  previewHref: string;
+  isOwner: boolean;
+  onPublish: () => void;
+  /** Coba Gratis only: save the browser draft as a real invitation. */
+  onSave?: () => void;
+  design?: boolean;
+}) {
+  const { status, slug, mode } = useEditor();
+  const demo = mode === "demo";
   return (
-    <header className={`flex h-14 shrink-0 items-center gap-3 border-b border-rk-line bg-white px-4 lg:col-span-2 lg:h-16 lg:px-6 ${design ? "lg:col-start-1" : "lg:col-start-2"}`}>
+    <header className={`flex h-14 shrink-0 items-center gap-2 border-b border-rk-line bg-white px-3 sm:gap-3 sm:px-4 lg:col-span-2 lg:h-16 lg:px-6 ${design ? "lg:col-start-1" : "lg:col-start-2"}`}>
       {design ? (
-        <Link href={`/${slug}/admin/desain`} aria-label="Kembali ke admin" className="flex h-10 items-center gap-2 rounded-xl pr-2 text-rk-mute hover:text-rk-ink">
+        <Link href={`/${slug}/admin/desain`} aria-label="Kembali ke admin" className="flex h-10 items-center gap-2 rounded-xl pr-1 text-rk-mute hover:text-rk-ink">
           <ArrowLeft className="h-5 w-5" />
           <Image src="/brand/logo.png" alt="" width={30} height={24} className="hidden h-6 w-auto sm:block" />
         </Link>
       ) : (
-        <span className="lg:hidden">
+        <Link href="/" className="lg:hidden" aria-label="Beranda Rayakan.my.id">
           <Image src="/brand/logo.png" alt="Rayakan.my.id" width={30} height={24} className="h-6 w-auto" />
-        </span>
+        </Link>
       )}
       <div className="min-w-0 flex-1">
         <p className="truncate text-[14px] font-bold leading-tight lg:text-[15px]">
           {isOwner && <Link href="/studio" className="mr-1.5 text-rk-mute hover:text-rk-ink">Studio /</Link>}
-          {design ? "Desain" : "Undangan"} {title}
+          {demo ? "Draf kamu" : `${design ? "Desain" : "Undangan"} ${title}`}
         </p>
-        <p className={`flex items-center gap-1.5 text-[12px] ${saved === "error" ? "font-semibold text-red-700" : "text-rk-mute"}`}>
-          <span className={`h-1.5 w-1.5 rounded-full ${saved === "saved" ? "bg-emerald-500" : saved === "error" ? "bg-red-600" : "animate-pulse bg-rk-gold"}`} />
-          {saved === "saved" ? "Tersimpan" : saved === "error" ? "Gagal menyimpan · periksa koneksi" : "Menyimpan…"}
+        <p className={`flex items-center gap-1.5 truncate text-[12px] ${saved === "error" ? "font-semibold text-red-700" : "text-rk-mute"}`}>
+          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${saved === "saved" ? "bg-emerald-500" : saved === "error" ? "bg-red-600" : "animate-pulse bg-rk-gold"}`} />
+          {saved === "error" ? "Gagal menyimpan · periksa koneksi" : saved === "saving" ? "Menyimpan…" : demo ? "Tersimpan di HP ini" : "Tersimpan"}
         </p>
       </div>
-      <a href={previewHref} target="_blank" rel="noreferrer" className="flex h-10 items-center gap-1.5 rounded-xl border border-rk-line px-3 text-[13px] font-semibold hover:bg-rk-ivory">
-        <ExternalLink className="h-4 w-4" />
-        <span className="hidden sm:inline">Lihat undangan</span>
+      <a href={previewHref} target="_blank" rel="noreferrer" aria-label="Lihat undangan" className="flex h-10 w-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-rk-line text-[13px] font-semibold hover:bg-rk-ivory sm:w-auto sm:px-3">
+        <Eye className="h-4 w-4" />
+        <span className="hidden sm:inline">Lihat</span>
       </a>
-      <button type="button" onClick={onPublish} className="flex h-10 items-center gap-1.5 rounded-xl bg-rk-ink px-4 text-[13px] font-bold text-white hover:bg-rk-plum">
+      {demo && onSave && (
+        <button type="button" onClick={onSave} aria-label="Simpan draf" className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-rk-line px-3 text-[13px] font-semibold hover:bg-rk-ivory">
+          <Save className="h-4 w-4" />
+          <span className="hidden min-[400px]:inline">Simpan</span>
+        </button>
+      )}
+      <button type="button" onClick={onPublish} className="flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-rk-ink px-3.5 text-[13px] font-bold text-white hover:bg-rk-plum">
         <Send className="h-4 w-4" />
-        {status === "published" ? "Bagikan" : "Terbitkan"}
+        {status === "published" ? "Bagikan" : (
+          <>
+            Kirim<span className="hidden sm:inline">&nbsp;ke admin</span>
+          </>
+        )}
       </button>
     </header>
   );
@@ -108,7 +136,7 @@ export function Toolbar({ device, setDevice, open }: { device: Device; setDevice
         </button>
         <button type="button" onClick={() => open("theme")} className={chip}>
           <Palette className="h-4 w-4" />
-          Gaya &amp; Warna
+          Tema &amp; Gaya
         </button>
         <button type="button" onClick={() => open("music")} className={chip}>
           <Music2 className="h-4 w-4" />
@@ -119,7 +147,7 @@ export function Toolbar({ device, setDevice, open }: { device: Device; setDevice
           Urutan
         </button>
       </div>
-      <div className="flex shrink-0 rounded-full border border-rk-line bg-white p-0.5">
+      <div className="hidden shrink-0 rounded-full border border-rk-line bg-white p-0.5 sm:flex">
         {(
           [
             ["hp", Smartphone, "HP"],

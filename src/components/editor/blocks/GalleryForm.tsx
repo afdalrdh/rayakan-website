@@ -86,7 +86,7 @@ export function GalleryForm() {
         />
         {error && <p className="font-rk-sans text-[12px] font-semibold text-red-700">{error}</p>}
         <p className="font-rk-sans text-[12px] text-rk-mute">Bisa pilih banyak foto sekaligus. Susunan besar–kecil diatur otomatis agar tetap rapi.</p>
-        {photos.length >= limit && plan.id !== "eksklusif" && <UpgradeNote>Batas foto paket {plan.name} tercapai. Upgrade paket untuk menambah foto.</UpgradeNote>}
+        {photos.length >= limit && <UpgradeNote>Batas {limit} foto tercapai. Hapus foto lain untuk menambah.</UpgradeNote>}
       </Group>
     </div>
   );

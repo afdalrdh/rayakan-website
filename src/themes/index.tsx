@@ -1,9 +1,9 @@
 "use client";
 
 import { createElement } from "react";
-import type { BlockKey, WeddingContent } from "@/lib/content";
+import { getDecor, type BlockKey, type WeddingContent } from "@/lib/content";
 import { coverFace, sectionComponent } from "./layouts";
-import { CoverInline, CoverOverlay, siteStyle, ThemeProvider, useTheme, type SiteInfo } from "./shared";
+import { CoverInline, CoverOverlay, DecorParticles, siteStyle, ThemeProvider, useTheme, type SiteInfo } from "./shared";
 
 export interface ThemeRendererProps {
   content: WeddingContent;
@@ -33,6 +33,7 @@ function Site({ guestName }: { guestName: string }) {
       {c.order.filter((k) => !c.hidden.includes(k)).map((k) => section(k, c.layouts[k]))}
       {section("closing", c.layouts.closing)}
       {mode === "live" && <CoverOverlay guestName={guestName} Face={Face} />}
+      <DecorParticles kind={getDecor(c.style.decor).particles} />
     </main>
   );
 }

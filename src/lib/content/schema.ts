@@ -1,9 +1,11 @@
 import type { SiteLayouts } from "@/themes/layouts/catalog";
 import type { ThemeId } from "@/themes/meta";
 import type { SiteStyle } from "@/themes/style";
+import type { Occasion } from "./occasion";
 
 /**
- * Content schema for one wedding site.
+ * Content schema for one invitation site (wedding, birthday, circumcision…).
+ * The type keeps its historical name `WeddingContent`.
  *
  * Every theme renders from this same shape, so a client can switch themes
  * without re-entering anything. Image fields hold either a public path
@@ -132,6 +134,8 @@ export interface WeddingContent {
   version: 1;
   /** Preset the site started from. Only a starting point: style and layouts below decide the look. */
   theme: ThemeId;
+  /** What is being celebrated. Decides labels and whether there are one or two people. */
+  occasion: Occasion;
   /** Colour mode, palette, font pair and optional own accent colour. */
   style: SiteStyle;
   /** Chosen layout per section (ids from themes/layouts/catalog.ts). */
@@ -140,8 +144,21 @@ export interface WeddingContent {
   music: { mode: "library" | "upload" | "none"; trackId: string; upload: string; uploadName: string };
   order: SectionKey[];
   hidden: SectionKey[];
-  cover: { greeting: string; buttonLabel: string };
+  cover: {
+    greeting: string;
+    buttonLabel: string;
+    /** "Stiker" cover: small line and big title above the names. Empty = the occasion's default. */
+    kicker: string;
+    title: string;
+    /** "Stiker" cover: two speech bubbles next to the photo. Empty = not shown. */
+    bubbleA: string;
+    bubbleB: string;
+    /** "Stiker" cover: photo, best as a PNG without background (it gets a white sticker outline). */
+    photo: string;
+  };
   hero: {
+    /** Line above the names. Empty = the occasion's default ("The Wedding of", "Ulang Tahun"…). */
+    eyebrow: string;
     firstName: string;
     secondName: string;
     imageDesktop: string;

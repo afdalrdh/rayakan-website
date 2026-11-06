@@ -4,7 +4,7 @@ import { canEditSite, isOwner } from "@/lib/server/auth";
 import { findSite, getPlans, getSettings } from "@/lib/server/data";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Edit Tampilan · Rayakan.my.id", robots: { index: false } };
+export const metadata = { title: "Edit Tampilan", robots: { index: false } };
 
 /** Full-screen design editor, opened in its own tab from Admin → Desain Undangan. */
 export default async function SiteEditorPage({ params }: { params: Promise<{ slug: string }> }) {

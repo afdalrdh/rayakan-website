@@ -1,6 +1,8 @@
 import { THEMES, type ThemeId } from "@/themes/meta";
 import { legacyStyle } from "@/themes/style";
 import { withDefaults } from "./helpers";
+import { DEMO_EXTRA } from "./demo-extra";
+import { isOccasion } from "./occasion";
 import { SECTION_KEYS, type WeddingContent } from "./schema";
 
 const aryaPhoto = (n: string) => ({ id: `g${n}`, src: `/demo/arya/g-${n}.jpg` });
@@ -9,14 +11,16 @@ const aryaPhoto = (n: string) => ({ id: `g${n}`, src: `/demo/arya/g-${n}.jpg` })
 export const DEMO_ARYA: WeddingContent = {
   version: 1,
   theme: "arya",
+  occasion: "nikah",
   style: { ...THEMES.arya.style, accent: "" },
   layouts: { ...THEMES.arya.layouts },
   logo: { mode: "image", image: "/demo/arya/logo.png" },
   music: { mode: "library", trackId: "arya-background", upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
-  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
   hero: {
+    eyebrow: "",
     firstName: "Arya",
     secondName: "Almalia",
     imageDesktop: "/demo/arya/hero-desktop.jpg",
@@ -131,14 +135,16 @@ const afdalPhoto = (n: string) => ({ id: `a${n}`, src: `/demo/afdal/g-${n}.webp`
 export const DEMO_AFDAL: WeddingContent = {
   version: 1,
   theme: "afdal",
+  occasion: "nikah",
   style: { ...THEMES.afdal.style, accent: "" },
   layouts: { ...THEMES.afdal.layouts },
   logo: { mode: "image", image: "/demo/afdal/logo.png" },
   music: { mode: "library", trackId: "afdal-background", upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
-  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
   hero: {
+    eyebrow: "",
     firstName: "Afdal",
     secondName: "Putri",
     imageDesktop: "/demo/afdal/hero.webp",
@@ -230,20 +236,22 @@ const demoPhotos = (folder: string, names: string[]) => names.map((n) => ({ id: 
 export const DEMO_SAGE: WeddingContent = {
   version: 1,
   theme: "sage",
+  occasion: "nikah",
   style: { ...THEMES.sage.style, accent: "" },
   layouts: { ...THEMES.sage.layouts },
   logo: { mode: "monogram", image: "" },
   music: { mode: "library", trackId: THEMES.sage.defaultTrack, upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
-  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
   hero: {
+    eyebrow: "",
     firstName: "Raka",
     secondName: "Nadia",
     imageDesktop: "/demo/sage/hero-desktop.webp",
     imageMobile: "/demo/sage/hero-mobile.webp",
     imageCutout: "",
-    ogImage: "/demo/sage/hero-desktop.webp",
+    ogImage: "/demo/sage/og.jpg",
     namePosition: "top",
     showHeart: true,
     heartSize: "m",
@@ -320,20 +328,22 @@ export const DEMO_SAGE: WeddingContent = {
 export const DEMO_NAVY: WeddingContent = {
   version: 1,
   theme: "navy",
+  occasion: "nikah",
   style: { ...THEMES.navy.style, accent: "" },
   layouts: { ...THEMES.navy.layouts },
   logo: { mode: "monogram", image: "" },
   music: { mode: "library", trackId: THEMES.navy.defaultTrack, upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
-  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan" },
+  cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
   hero: {
+    eyebrow: "",
     firstName: "Bima",
     secondName: "Kirana",
     imageDesktop: "/demo/navy/hero-desktop.webp",
     imageMobile: "/demo/navy/hero-mobile.webp",
     imageCutout: "",
-    ogImage: "/demo/navy/hero-desktop.webp",
+    ogImage: "/demo/navy/og.jpg",
     namePosition: "top",
     showHeart: true,
     heartSize: "m",
@@ -411,6 +421,7 @@ export const DEMO_BY_THEME: Record<ThemeId, WeddingContent> = {
   afdal: DEMO_AFDAL,
   sage: DEMO_SAGE,
   navy: DEMO_NAVY,
+  ...DEMO_EXTRA,
 };
 
 export function demoContent(theme: ThemeId = "arya"): WeddingContent {
@@ -427,6 +438,8 @@ export function normalizeContent(content: unknown): WeddingContent {
   // Sites saved before the design system had a theme palette instead of style + layouts.
   const migrated = {
     ...raw,
+    // Sites made before other occasions existed are weddings.
+    occasion: isOccasion(raw.occasion) ? raw.occasion : "nikah",
     style: raw.style ?? legacyStyle(theme, String(raw.palette ?? ""), typeof raw.customAccent === "string" ? raw.customAccent : undefined),
     layouts: raw.layouts ?? { ...THEMES[theme].layouts },
   };

@@ -31,6 +31,7 @@ function ChapterPhoto({ item, sizes, className = "" }: { item: StoryItem; sizes:
 /** "Linimasa" (from Malam Emas): vertical timeline, alternating sides on desktop. */
 const Linimasa: Story = () => {
   const { content: c, mode } = useTheme();
+  const showEmpty = useShowEmpty();
   const [open, setOpen] = useState<StoryItem | null>(null);
   const items = mode === "thumb" ? c.story.items.slice(0, 2) : c.story.items;
   const card = (item: StoryItem, align: "left" | "right") => (
@@ -44,9 +45,12 @@ const Linimasa: Story = () => {
       <p className="mt-3 text-[14px] leading-[1.8] text-t-fg2 md:max-w-[460px] md:text-[15px]">
         <T v={item.body} ph="Isi cerita" />
       </p>
-      <button type="button" onClick={() => item.image && setOpen(item)} aria-label={`Perbesar foto ${item.title}`} className="mt-4 block w-full max-w-[460px] cursor-zoom-in">
-        <ChapterPhoto item={item} sizes="(min-width: 768px) 460px, 92vw" className="aspect-[3/2] w-full rounded-2xl border border-t-line" />
-      </button>
+      {/* Text-only chapters are fine for photo-free themes: no empty box for guests. */}
+      {(item.image || showEmpty) && (
+        <button type="button" onClick={() => item.image && setOpen(item)} aria-label={`Perbesar foto ${item.title}`} className="mt-4 block w-full max-w-[460px] cursor-zoom-in">
+          <ChapterPhoto item={item} sizes="(min-width: 768px) 460px, 92vw" className="aspect-[3/2] w-full rounded-2xl border border-t-line" />
+        </button>
+      )}
     </div>
   );
   return (

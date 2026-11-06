@@ -18,10 +18,18 @@ export interface LayoutOption {
   heart?: boolean;
   /** Hero layouts that use the 3D cut-out photo. */
   cutout?: boolean;
+  /** Looks complete without any photo (illustrated). Shown as a chip in the picker. */
+  noPhoto?: boolean;
+  /** Plays an opening animation when guests tap the button (cover layouts). */
+  animated?: boolean;
 }
 
 export const LAYOUTS: Record<BlockKey, LayoutOption[]> = {
   cover: [
+    { id: "surat", name: "Surat Terbuka", desc: "Amplop bersegel yang terbuka, lalu surat berisi nama tamu keluar perlahan.", noPhoto: true, animated: true },
+    { id: "gerbang", name: "Gerbang Terbuka", desc: "Dua daun pintu berornamen terbelah saat undangan dibuka.", noPhoto: true, animated: true },
+    { id: "kado", name: "Kotak Kado", desc: "Tutup kado melompat dan konfeti bertaburan. Cocok untuk ulang tahun.", noPhoto: true, animated: true },
+    { id: "stiker", name: "Stiker Lucu", desc: "Foto tanpa latar bergaris putih seperti stiker, dengan gelembung obrolan dan hati yang berterbangan.", hint: "Paling lucu dengan foto masa kecil atau versi anak buatan AI (PNG tanpa latar).", animated: true },
     { id: "kaca", name: "Kaca Buram", desc: "Foto utama diburamkan, kartu nama tamu bergaris tipis." },
     { id: "amplop", name: "Amplop", desc: "Sampul seperti amplop dengan segel inisial di tengah." },
     { id: "lengkung", name: "Bingkai Lengkung", desc: "Latar warna polos, foto dalam bingkai lengkung." },
@@ -33,12 +41,16 @@ export const LAYOUTS: Record<BlockKey, LayoutOption[]> = {
     { id: "tengah", name: "Klasik Tengah", desc: "Nama di tengah foto, tanggal acara di bawahnya.", hint: "Aman untuk nama panjang." },
     { id: "lengkung", name: "Bingkai Lengkung", desc: "Foto dalam bingkai lengkung di atas latar warna tema.", hint: "Bagus untuk foto berdiri (portrait)." },
     { id: "editorial", name: "Editorial", desc: "Nama di kiri bawah ala majalah, tanggal di kanan.", hint: "Bagus bila wajah ada di tengah atau atas foto." },
+    { id: "lukisan", name: "Lukisan", desc: "Lukisan atau ilustrasi penuh layar, nama di bawahnya. Di laptop, lukisan di kiri dan nama di kanan.", hint: "Untuk gambar berdiri (2:3), misalnya lukisan cat air atau ilustrasi AI dari foto kalian." },
+    { id: "ilustrasi", name: "Ilustrasi", desc: "Gambar ilustrasi beranimasi sesuai ornamen, tanpa perlu foto.", hint: "Bisa diisi foto atau gambar AI di dalam bingkai.", noPhoto: true },
+    { id: "polaroid", name: "Polaroid", desc: "Dua foto polaroid miring dengan coretan lucu.", hint: "Memakai foto profil. Cocok untuk foto masa kecil atau versi anak buatan AI." },
   ],
   couple: [
     { id: "kartu", name: "Kartu Foto", desc: "Dua kartu dengan foto lebar di atas nama." },
     { id: "ringkas", name: "Kartu Ringkas", desc: "Foto kecil di samping nama, hemat tempat." },
     { id: "bulat", name: "Potret Bulat", desc: "Foto bulat berhadapan dengan tanda & di tengah." },
     { id: "editorial", name: "Editorial Besar", desc: "Foto tinggi bergantian kiri-kanan dengan nama besar." },
+    { id: "medali", name: "Medali Inisial", desc: "Inisial dalam bingkai ornamen. Foto opsional.", noPhoto: true },
   ],
   story: [
     { id: "linimasa", name: "Linimasa", desc: "Garis waktu vertikal, cerita bergantian kiri-kanan." },

@@ -1,6 +1,6 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { normalizeContent, PLAN_IDS, PLANS, type Plan, type PlanId, type WeddingContent } from "../content";
+import { normalizeContent, PLAN_IDS, PLANS, toPlanId, type Plan, type PlanId, type WeddingContent } from "../content";
 import { one, query } from "./db";
 
 /* ------------------------------ Types ------------------------------ */
@@ -23,6 +23,11 @@ export interface SiteRecord {
   expiresAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** "self" = made by a visitor from the free editor, "studio" = made by the owner. */
+  source: "studio" | "self";
+  /** Package the client asked for when pressing "Kirim ke admin". */
+  requestPlan: PlanId | null;
+  requestedAt: string | null;
 }
 
 export interface AppSettings {
@@ -61,7 +66,7 @@ export interface WishRecord {
 
 /** Slugs that can never be a client address. */
 export const RESERVED_SLUGS = new Set([
-  "studio", "demo", "coba", "portofolio", "portfolio", "api", "admin", "canvas", "login", "masuk", "harga", "tema", "bantuan",
+  "studio", "demo", "coba", "buat", "ulasan", "portofolio", "portfolio", "api", "admin", "canvas", "login", "masuk", "harga", "tema", "bantuan",
   "_next", "favicon.ico", "robots.txt", "sitemap.xml", "brand", "fonts", "music", "themes", "uploads",
 ]);
 export const RESERVED_GUEST_SLUGS = new Set(["admin", "preview", "editor", "opengraph-image"]);
@@ -84,6 +89,9 @@ type SiteRow = {
   expires_at: string | Date | null;
   created_at: string | Date;
   updated_at: string | Date;
+  source: string | null;
+  request_plan: string | null;
+  requested_at: string | Date | null;
 };
 
 const iso = (v: string | Date | null) => (v ? new Date(v).toISOString() : null);
@@ -94,7 +102,7 @@ function toSite(r: SiteRow): SiteRecord {
     id: Number(r.id),
     slug: r.slug,
     title: r.title,
-    planId: (PLAN_IDS as string[]).includes(r.plan_id) ? (r.plan_id as PlanId) : "premium",
+    planId: toPlanId(r.plan_id),
     theme: r.theme,
     status: r.status,
     content: normalizeContent(json(r.content)),
@@ -106,10 +114,13 @@ function toSite(r: SiteRow): SiteRecord {
     expiresAt: iso(r.expires_at),
     createdAt: iso(r.created_at)!,
     updatedAt: iso(r.updated_at)!,
+    source: r.source === "self" ? "self" : "studio",
+    requestPlan: r.request_plan ? toPlanId(r.request_plan) : null,
+    requestedAt: iso(r.requested_at),
   };
 }
 
-const SITE_COLS = `id, slug, title, plan_id, theme, status, content, wa_template, client_name, client_phone, notes, published_at, expires_at, created_at, updated_at`;
+const SITE_COLS = `id, slug, title, plan_id, theme, status, content, wa_template, client_name, client_phone, notes, published_at, expires_at, created_at, updated_at, source, request_plan, requested_at`;
 
 /* ------------------------------ Plans & settings ------------------------------ */
 
@@ -125,7 +136,7 @@ async function loadPlans(): Promise<Plan[]> {
   return PLAN_IDS.map((id) => byId.get(id) ?? PLANS[id]);
 }
 
-export const getPlans = unstable_cache(loadPlans, ["plans-v1"], { tags: ["plans"], revalidate: 3600 });
+export const getPlans = unstable_cache(loadPlans, ["plans-v2"], { tags: ["plans"], revalidate: 3600 });
 
 export async function getPlan(id: PlanId) {
   return (await getPlans()).find((p) => p.id === id) ?? PLANS[id];
@@ -168,7 +179,7 @@ export async function findSite(slug: string) {
 
 /** Public, cached read. Invalidated with tag `site:<slug>` whenever the site changes. */
 export function getPublicSite(slug: string) {
-  return unstable_cache(() => findSite(slug), ["site-v1", slug], { tags: [`site:${slug}`], revalidate: 86400 })();
+  return unstable_cache(() => findSite(slug), ["site-v2", slug], { tags: [`site:${slug}`], revalidate: 86400 })();
 }
 
 export async function listSites(opts: { search?: string; status?: string } = {}) {
@@ -202,11 +213,13 @@ export async function insertSite(input: {
   clientName: string;
   clientPhone: string;
   notes: string;
+  source?: "studio" | "self";
+  createdIp?: string;
 }) {
   const r = await one<SiteRow>(
-    `INSERT INTO sites (slug, title, plan_id, content, password_hash, client_name, client_phone, notes)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ${SITE_COLS}`,
-    [input.slug, input.title, input.planId, JSON.stringify(input.content), input.passwordHash, input.clientName, input.clientPhone, input.notes],
+    `INSERT INTO sites (slug, title, plan_id, theme, content, password_hash, client_name, client_phone, notes, source, created_ip)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING ${SITE_COLS}`,
+    [input.slug, input.title, input.planId, input.content.theme, JSON.stringify(input.content), input.passwordHash, input.clientName, input.clientPhone, input.notes, input.source ?? "studio", input.createdIp ?? null],
   );
   return toSite(r!);
 }
@@ -217,9 +230,11 @@ export async function updateSiteContent(slug: string, content: WeddingContent) {
 
 export async function updateSiteFields(
   slug: string,
-  f: Partial<{ title: string; planId: PlanId; status: SiteStatus; waTemplate: string | null; clientName: string; clientPhone: string; notes: string; publishedAt: string | null; expiresAt: string | null; passwordHash: string }>,
+  f: Partial<{ title: string; planId: PlanId; status: SiteStatus; waTemplate: string | null; clientName: string; clientPhone: string; notes: string; publishedAt: string | null; expiresAt: string | null; passwordHash: string; requestPlan: PlanId | null; requestedAt: string | null }>,
 ) {
   const map: Record<string, string> = {
+    requestPlan: "request_plan",
+    requestedAt: "requested_at",
     title: "title",
     planId: "plan_id",
     status: "status",
@@ -245,6 +260,26 @@ export async function updateSiteFields(
 export async function deleteSite(slug: string) {
   await query(`DELETE FROM sites WHERE slug = $1`, [slug]);
 }
+
+/** Drafts made from one (hashed) IP in the last day, to slow down spam. */
+export async function recentDraftsFrom(ipHash: string) {
+  const r = await one<{ n: number }>(`SELECT COUNT(*)::int AS n FROM sites WHERE created_ip = $1 AND created_at > NOW() - INTERVAL '1 day'`, [ipHash]);
+  return Number(r?.n ?? 0);
+}
+
+/** Number of invitations made with Rayakan.my.id (shown on the landing page once it is meaningful). */
+export const countSites = unstable_cache(
+  async () => {
+    try {
+      const r = await one<{ n: number }>(`SELECT COUNT(*)::int AS n FROM sites`);
+      return Number(r?.n ?? 0);
+    } catch {
+      return 0;
+    }
+  },
+  ["sites-count-v1"],
+  { tags: ["stats"], revalidate: 3600 },
+);
 
 export async function siteIdOf(slug: string) {
   const r = await one<{ id: string | number }>(`SELECT id FROM sites WHERE slug = $1`, [slug]);
@@ -381,4 +416,83 @@ export function computeExpiry(plan: Plan, from = new Date()) {
   const d = new Date(from);
   d.setMonth(d.getMonth() + plan.activeMonths);
   return d.toISOString();
+}
+
+/* ------------------------------ Reviews ------------------------------ */
+
+export type ReviewStatus = "pending" | "shown" | "hidden";
+
+export interface ReviewRecord {
+  id: number;
+  siteId: number | null;
+  siteSlug: string | null;
+  name: string;
+  occasion: string;
+  city: string | null;
+  rating: number;
+  message: string;
+  /** Public link to the invitation, only when its owner allowed it. */
+  link: string | null;
+  status: ReviewStatus;
+  createdAt: string;
+}
+
+type ReviewRow = { id: string | number; site_id: string | number | null; site_slug?: string | null; name: string; occasion: string; city: string | null; rating: number; message: string; link: string | null; status: ReviewStatus; created_at: string | Date };
+const toReview = (r: ReviewRow): ReviewRecord => ({
+  id: Number(r.id),
+  siteId: r.site_id === null ? null : Number(r.site_id),
+  siteSlug: r.site_slug ?? null,
+  name: r.name,
+  occasion: r.occasion,
+  city: r.city,
+  rating: Number(r.rating),
+  message: r.message,
+  link: r.link,
+  status: r.status,
+  createdAt: iso(r.created_at)!,
+});
+
+const REVIEW_COLS = `r.id, r.site_id, s.slug AS site_slug, r.name, r.occasion, r.city, r.rating, r.message, r.link, r.status, r.created_at`;
+
+export async function listReviews() {
+  const rows = await query<ReviewRow>(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN sites s ON s.id = r.site_id ORDER BY r.created_at DESC LIMIT 500`);
+  return rows.map(toReview);
+}
+
+/** Approved reviews for the landing page (cached; tag "reviews"). */
+export const getShownReviews = unstable_cache(
+  async () => {
+    try {
+      const rows = await query<ReviewRow>(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN sites s ON s.id = r.site_id WHERE r.status = 'shown' ORDER BY r.created_at DESC LIMIT 60`);
+      return rows.map(toReview);
+    } catch (e) {
+      console.error("[reviews] unavailable:", e);
+      return [] as ReviewRecord[];
+    }
+  },
+  ["reviews-shown-v1"],
+  { tags: ["reviews"], revalidate: 3600 },
+);
+
+export async function reviewOfSite(siteId: number) {
+  const r = await one<ReviewRow>(`SELECT ${REVIEW_COLS} FROM reviews r LEFT JOIN sites s ON s.id = r.site_id WHERE r.site_id = $1 ORDER BY r.created_at DESC LIMIT 1`, [siteId]);
+  return r ? toReview(r) : null;
+}
+
+type ReviewInput = { name: string; occasion: string; city: string | null; rating: number; message: string; link: string | null };
+
+export async function insertReview(siteId: number | null, f: ReviewInput, status: ReviewStatus) {
+  await query(`INSERT INTO reviews (site_id, name, occasion, city, rating, message, link, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [siteId, f.name, f.occasion, f.city, f.rating, f.message, f.link, status]);
+}
+
+export async function updateReview(id: number, f: ReviewInput & { status?: ReviewStatus }) {
+  await query(`UPDATE reviews SET name = $2, occasion = $3, city = $4, rating = $5, message = $6, link = $7, status = COALESCE($8, status) WHERE id = $1`, [id, f.name, f.occasion, f.city, f.rating, f.message, f.link, f.status ?? null]);
+}
+
+export async function setReviewStatus(id: number, status: ReviewStatus) {
+  await query(`UPDATE reviews SET status = $2 WHERE id = $1`, [id, status]);
+}
+
+export async function deleteReview(id: number) {
+  await query(`DELETE FROM reviews WHERE id = $1`, [id]);
 }

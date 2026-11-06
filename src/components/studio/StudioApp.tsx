@@ -3,6 +3,8 @@
 import {
   AlertTriangle,
   Check,
+  MessageCircle,
+  Star,
   Copy,
   ExternalLink,
   KeyRound,
@@ -23,17 +25,20 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   checkSlugAction,
   createSiteAction,
+  deleteReviewAction,
   deleteSiteAction,
   logoutOwnerAction,
+  saveReviewAction,
+  setReviewStatusAction,
   resetPasswordAction,
   savePlansAction,
   saveSettingsAction,
   setPublishedAction,
   updateSiteMetaAction,
 } from "@/app/actions/studio";
-import { activeLabel, BLOCK_LABELS, FONT_PAIR_IDS, FONT_PAIRS, PALETTE_IDS, PALETTES, rupiah, slugify, THEME_IDS, THEMES, themeSwatch, type ColorMode, type Plan, type PlanId, type ThemeId } from "@/lib/content";
+import { activeLabel, BLOCK_LABELS, FONT_PAIR_IDS, FONT_PAIRS, OCCASION_IDS, OCCASIONS, PAID_PLAN_IDS, PALETTE_IDS, PALETTES, rupiah, slugify, THEME_IDS, THEMES, themeSwatch, type ColorMode, type Occasion, type Plan, type PlanId, type ThemeId } from "@/lib/content";
 import { SITE_HOST, SITE_URL, waLink } from "@/lib/messages";
-import type { AppSettings } from "@/lib/server/data";
+import type { AppSettings, ReviewRecord, ReviewStatus } from "@/lib/server/data";
 
 export interface SiteSummary {
   slug: string;
@@ -50,6 +55,10 @@ export interface SiteSummary {
   guests: number;
   wishes: number;
   eventDate: string;
+  occasion: Occasion;
+  source: "studio" | "self";
+  requestPlan: PlanId | null;
+  requestedAt: string | null;
 }
 
 type Env = { database: boolean; media: boolean; secret: boolean; studioPassword: boolean; siteUrl: boolean };
@@ -93,8 +102,10 @@ function Modal({ title, onClose, children, wide }: { title: string; onClose: () 
   );
 }
 
-export function StudioApp({ sites, plans, settings, env }: { sites: SiteSummary[]; plans: Plan[]; settings: AppSettings; env: Env }) {
-  const [tab, setTab] = useState<"sites" | "plans" | "settings">("sites");
+export function StudioApp({ sites, plans, settings, env, reviews }: { sites: SiteSummary[]; plans: Plan[]; settings: AppSettings; env: Env; reviews: ReviewRecord[] }) {
+  const [tab, setTab] = useState<"sites" | "requests" | "reviews" | "plans" | "settings">("sites");
+  const requests = sites.filter((s) => s.status === "draft" && s.requestedAt).length;
+  const pendingReviews = reviews.filter((r) => r.status === "pending").length;
   const envWarnings = [
     !env.database && "DATABASE_URL belum diisi (memakai database lokal).",
     !env.media && "CLOUDINARY_URL belum diisi (foto disimpan lokal).",
@@ -114,13 +125,16 @@ export function StudioApp({ sites, plans, settings, env }: { sites: SiteSummary[
           <nav className="no-scrollbar ml-2 flex flex-1 gap-1 overflow-x-auto">
             {(
               [
-                ["sites", "Undangan"],
-                ["plans", "Paket & Harga"],
-                ["settings", "Pengaturan"],
+                ["sites", "Undangan", 0],
+                ["requests", "Permintaan", requests],
+                ["reviews", "Ulasan", pendingReviews],
+                ["plans", "Paket & Harga", 0],
+                ["settings", "Pengaturan", 0],
               ] as const
-            ).map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setTab(id)} className={`shrink-0 rounded-full px-3.5 py-2 text-[13px] font-semibold ${tab === id ? "bg-rk-ink text-white" : "text-rk-mute hover:text-rk-ink"}`}>
+            ).map(([id, label, badge]) => (
+              <button key={id} type="button" onClick={() => setTab(id)} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold ${tab === id ? "bg-rk-ink text-white" : "text-rk-mute hover:text-rk-ink"}`}>
                 {label}
+                {badge > 0 && <span className={`rounded-full px-1.5 text-[11px] ${tab === id ? "bg-white text-rk-ink" : "bg-rk-gold text-rk-ink"}`}>{badge}</span>}
               </button>
             ))}
           </nav>
@@ -146,6 +160,8 @@ export function StudioApp({ sites, plans, settings, env }: { sites: SiteSummary[
           </div>
         )}
         {tab === "sites" && <SitesTab sites={sites} plans={plans} />}
+        {tab === "requests" && <RequestsTab sites={sites} plans={plans} />}
+        {tab === "reviews" && <ReviewsTab reviews={reviews} />}
         {tab === "plans" && <PlansTab plans={plans} />}
         {tab === "settings" && <SettingsTab settings={settings} />}
       </main>
@@ -233,7 +249,9 @@ function SitesTab({ sites, plans }: { sites: SiteSummary[]; plans: Plan[] }) {
                     </a>
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-1.5 text-[11px] font-bold">
+                    <span className="rounded-full bg-rk-cream px-2.5 py-1">{OCCASIONS[s.occasion].short}</span>
                     <span className="rounded-full bg-rk-cream px-2.5 py-1">{p.name}</span>
+                    {s.status === "draft" && s.requestedAt && <span className="rounded-full bg-rk-gold/30 px-2.5 py-1">Minta terbit</span>}
                     <span className={`rounded-full px-2.5 py-1 ${expired ? "bg-red-50 text-red-700" : s.status === "published" ? "bg-emerald-50 text-emerald-700" : "bg-rk-cream text-rk-mute"}`}>
                       {expired ? "Kedaluwarsa" : s.status === "published" ? "Terbit" : "Draft"}
                     </span>
@@ -336,7 +354,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [checked, setChecked] = useState<{ slug: string; available: boolean; reason?: string } | null>(null);
-  const [planId, setPlanId] = useState<PlanId>(plans.find((p) => p.highlight)?.id ?? "premium");
+  const [planId, setPlanId] = useState<PlanId>(plans.find((p) => p.highlight)?.id ?? "mandiri");
   const [theme, setTheme] = useState<ThemeId>("arya");
   const [start0, setStart0] = useState<"theme" | "custom">("theme");
   const [custom, setCustom] = useState<{ mode: ColorMode; palette: string; fonts: string }>({ mode: "light", palette: "sage", fonts: "elegan" });
@@ -345,10 +363,12 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [sample, setSample] = useState(false);
+  const [occasion, setOccasion] = useState<Occasion>("nikah");
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
+  const single = OCCASIONS[occasion].single;
 
-  const auto = slugify(`${first} ${second}`);
+  const auto = slugify(single ? first : `${first} ${second}`);
   const finalSlug = slugTouched ? slugify(slug) : auto;
 
   // Only trust a result that belongs to the slug currently typed.
@@ -363,13 +383,22 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
   return (
     <Modal title="Undangan baru" onClose={onClose} wide>
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <L label="Nama panggilan 1">
-            <input value={first} onChange={(e) => setFirst(e.target.value)} className={input} placeholder="Afdal" />
+        <div className="flex rounded-xl bg-rk-cream p-1">
+          {OCCASION_IDS.map((id) => (
+            <button key={id} type="button" onClick={() => setOccasion(id)} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold ${occasion === id ? "bg-white shadow-sm" : "text-rk-mute"}`}>
+              {OCCASIONS[id].name}
+            </button>
+          ))}
+        </div>
+        <div className={single ? "" : "grid grid-cols-2 gap-3"}>
+          <L label={single ? "Nama panggilan" : "Nama panggilan 1"}>
+            <input value={first} onChange={(e) => setFirst(e.target.value)} className={input} placeholder={single ? "Alea" : "Afdal"} />
           </L>
-          <L label="Nama panggilan 2">
-            <input value={second} onChange={(e) => setSecond(e.target.value)} className={input} placeholder="Putri" />
-          </L>
+          {!single && (
+            <L label="Nama panggilan 2">
+              <input value={second} onChange={(e) => setSecond(e.target.value)} className={input} placeholder="Putri" />
+            </L>
+          )}
         </div>
         <L label="Alamat undangan">
           <div className="flex items-center overflow-hidden rounded-xl border border-rk-line bg-white focus-within:border-rk-ink">
@@ -403,7 +432,7 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
           </div>
           {start0 === "theme" ? (
             <div className="grid grid-cols-2 gap-2">
-              {THEME_IDS.map((id) => {
+              {[...THEME_IDS].sort((a, b) => Number(THEMES[b].occasion === occasion) - Number(THEMES[a].occasion === occasion)).map((id) => {
                 const sw = themeSwatch(THEMES[id]);
                 return (
                   <button key={id} type="button" onClick={() => setTheme(id)} className={`flex items-center gap-3 rounded-2xl border bg-white p-2 text-left ${theme === id ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
@@ -460,8 +489,8 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
         </div>
         <div>
           <span className="mb-1.5 block text-[13px] font-semibold">Paket</span>
-          <div className="grid gap-2 sm:grid-cols-3">
-            {plans.map((p) => (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {plans.filter((p) => PAID_PLAN_IDS.includes(p.id)).map((p) => (
               <button key={p.id} type="button" onClick={() => setPlanId(p.id)} className={`rounded-2xl border p-3 text-left ${planId === p.id ? "border-rk-ink bg-white ring-2 ring-rk-ink" : "border-rk-line bg-white"}`}>
                 <span className="block text-[14px] font-bold">{p.name}</span>
                 <span className="block text-[13px]">{rupiah(p.price)}</span>
@@ -494,12 +523,12 @@ function NewSiteModal({ plans, onClose, onCreated }: { plans: Plan[]; onClose: (
         {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-[13px] font-semibold text-red-700">{error}</p>}
         <button
           type="button"
-          disabled={pending || !first.trim() || !second.trim() || (check !== null && !check.available)}
+          disabled={pending || !first.trim() || (!single && !second.trim()) || (check !== null && !check.available)}
           onClick={() =>
             start(async () => {
               setError("");
-              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme: start0 === "custom" ? (custom.mode === "dark" ? "arya" : "afdal") : theme, style: start0 === "custom" ? custom : undefined, eventDate: date, clientName: client, clientPhone: phone, notes, sample });
-              if (r.ok) onCreated({ slug: r.slug, password: r.password, phone, title: `${first} & ${second}` });
+              const r = await createSiteAction({ firstName: first, secondName: second, slug: finalSlug, planId, theme: start0 === "custom" ? (custom.mode === "dark" ? "arya" : "afdal") : theme, style: start0 === "custom" ? custom : undefined, eventDate: date, clientName: client, clientPhone: phone, notes, sample, occasion });
+              if (r.ok) onCreated({ slug: r.slug, password: r.password, phone, title: single ? first : `${first} & ${second}` });
               else setError(r.error);
             })
           }
@@ -810,6 +839,238 @@ function SettingsTab({ settings }: { settings: AppSettings }) {
           {msg && <span className="text-[13px] font-semibold text-emerald-700">{msg}</span>}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ================================ PERMINTAAN ================================ */
+
+/** Drafts made by visitors (Coba Gratis). Ones that pressed "Kirim ke admin" come first. */
+function RequestsTab({ sites, plans }: { sites: SiteSummary[]; plans: Plan[] }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const list = sites
+    .filter((s) => s.source === "self" && s.status === "draft")
+    .sort((a, b) => (b.requestedAt ?? "").localeCompare(a.requestedAt ?? "") || b.createdAt.localeCompare(a.createdAt));
+  const planName = (id: PlanId | null) => (id ? plans.find((p) => p.id === id) : null);
+  const publish = (s: SiteSummary) =>
+    start(async () => {
+      if (!confirm(`Terbitkan ${s.title} dengan paket ${planName(s.requestPlan ?? "mandiri")?.name}? Pastikan pembayaran sudah diterima.`)) return;
+      const r = await setPublishedAction(s.slug, true);
+      if (!r.ok) alert(r.error);
+      router.refresh();
+    });
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-rk-line bg-white p-4 text-[13px] text-rk-mute">
+        Draf dari <b className="text-rk-ink">Coba Gratis</b>. Yang sudah menekan <b className="text-rk-ink">Kirim ke admin</b> tampil paling atas. Setelah pembayaran diterima, tekan Terbitkan: paket yang diminta otomatis dipakai dan masa aktif dimulai.
+      </div>
+      {list.length === 0 ? (
+        <div className="rounded-2xl border border-rk-line bg-white p-10 text-center">
+          <p className="font-rk-serif text-[26px]">Belum ada draf masuk</p>
+          <p className="mt-1 text-[14px] text-rk-mute">Draf muncul di sini saat pengunjung menyimpan undangan dari Coba Gratis.</p>
+        </div>
+      ) : (
+        <ul className="grid gap-3 md:grid-cols-2">
+          {list.map((s) => {
+            const want = planName(s.requestPlan);
+            const hello = `Halo ${s.clientName ?? ""}, terima kasih sudah membuat draf undangan ${s.title} di Rayakan.my.id 🙏\n\n${SITE_URL}/${s.slug}\n\n${want ? `Paket ${want.name}: ${rupiah(want.price)}.` : "Ada yang bisa kami bantu?"}`;
+            return (
+              <li key={s.slug} className={`rounded-2xl border bg-white p-4 ${s.requestedAt ? "border-rk-gold ring-1 ring-rk-gold/50" : "border-rk-line"}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-[16px] font-bold">{s.title}</p>
+                    <p className="truncate text-[12px] text-rk-mute">
+                      {SITE_HOST}/{s.slug} · {OCCASIONS[s.occasion].name}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${s.requestedAt ? "bg-rk-gold/30 text-rk-ink" : "bg-rk-cream text-rk-mute"}`}>{s.requestedAt ? `Minta terbit · ${want?.name ?? ""}` : "Draf tersimpan"}</span>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-[12px] text-rk-mute">
+                  <p>
+                    Klien: <b className="text-rk-ink">{s.clientName || "–"}</b>
+                  </p>
+                  <p>Acara: {fmtDate(s.eventDate || null)}</p>
+                  <p>Dibuat: {fmtDate(s.createdAt)}</p>
+                  <p>{s.requestedAt ? `Dikirim: ${fmtDate(s.requestedAt)}` : want ? "" : "Belum kirim ke admin"}</p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {s.clientPhone && (
+                    <a href={waLink(s.clientPhone, hello)} target="_blank" rel="noreferrer" className={`${btn} bg-[#1f8f4e] text-white`}>
+                      <MessageCircle className="h-4 w-4" /> WhatsApp
+                    </a>
+                  )}
+                  <a href={`/${s.slug}/preview`} target="_blank" rel="noreferrer" className={ghost}>
+                    <ExternalLink className="h-4 w-4" /> Pratinjau
+                  </a>
+                  <a href={`/${s.slug}/editor`} target="_blank" rel="noreferrer" className={ghost}>
+                    <Pencil className="h-4 w-4" /> Edit
+                  </a>
+                  <button type="button" disabled={pending} onClick={() => publish(s)} className={primary}>
+                    <Send className="h-4 w-4" /> Terbitkan
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/* ================================ ULASAN ================================ */
+
+type ReviewDraft = { id: number | null; name: string; occasion: Occasion; city: string; rating: number; message: string; link: string; status: ReviewStatus };
+const EMPTY_REVIEW: ReviewDraft = { id: null, name: "", occasion: "nikah", city: "", rating: 5, message: "", link: "", status: "shown" };
+
+function Stars({ n, onPick }: { n: number; onPick?: (n: number) => void }) {
+  return (
+    <span className="inline-flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <button key={i} type="button" disabled={!onPick} onClick={() => onPick?.(i)} aria-label={`${i} bintang`} className="disabled:cursor-default">
+          <Star className={`h-4 w-4 ${i <= n ? "fill-[#F5B400] text-[#F5B400]" : "text-rk-line"}`} />
+        </button>
+      ))}
+    </span>
+  );
+}
+
+function ReviewsTab({ reviews }: { reviews: ReviewRecord[] }) {
+  const router = useRouter();
+  const [edit, setEdit] = useState<ReviewDraft | null>(null);
+  const [error, setError] = useState("");
+  const [pending, start] = useTransition();
+  const status = (id: number, st: ReviewStatus) =>
+    start(async () => {
+      const r = await setReviewStatusAction(id, st);
+      if (!r.ok) alert(r.error);
+      router.refresh();
+    });
+  const remove = (id: number) =>
+    start(async () => {
+      if (!confirm("Hapus ulasan ini?")) return;
+      await deleteReviewAction(id);
+      router.refresh();
+    });
+  const LABEL: Record<ReviewStatus, [string, string]> = { pending: ["Menunggu", "bg-rk-gold/30 text-rk-ink"], shown: ["Tampil di beranda", "bg-emerald-50 text-emerald-700"], hidden: ["Disembunyikan", "bg-rk-cream text-rk-mute"] };
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-2xl border border-rk-line bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-[13px] text-rk-mute">
+          Klien bisa menulis ulasan dari halaman admin mereka (Pengaturan → Ulasan). Ulasan baru menunggu persetujuan. Tambahkan manual hanya ulasan <b className="text-rk-ink">asli</b> dari klien, dengan izin mereka.
+        </p>
+        <button type="button" onClick={() => setEdit({ ...EMPTY_REVIEW })} className={`${primary} shrink-0`}>
+          <Plus className="h-4 w-4" /> Tambah ulasan
+        </button>
+      </div>
+      {reviews.length === 0 ? (
+        <div className="rounded-2xl border border-rk-line bg-white p-10 text-center">
+          <p className="font-rk-serif text-[26px]">Belum ada ulasan</p>
+          <p className="mt-1 text-[14px] text-rk-mute">Bagian ulasan di beranda muncul otomatis begitu ada ulasan yang ditampilkan.</p>
+        </div>
+      ) : (
+        <ul className="grid gap-3 md:grid-cols-2">
+          {reviews.map((r) => (
+            <li key={r.id} className="rounded-2xl border border-rk-line bg-white p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-bold">{r.name}</p>
+                  <p className="text-[12px] text-rk-mute">
+                    {OCCASIONS[(r.occasion as Occasion) in OCCASIONS ? (r.occasion as Occasion) : "nikah"].name}
+                    {r.city ? ` · ${r.city}` : ""} · {fmtDate(r.createdAt)}
+                    {r.siteSlug ? ` · dari ${SITE_HOST}/${r.siteSlug}` : ""}
+                  </p>
+                </div>
+                <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${LABEL[r.status][1]}`}>{LABEL[r.status][0]}</span>
+              </div>
+              <div className="mt-2">
+                <Stars n={r.rating} />
+              </div>
+              <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed">{r.message}</p>
+              {r.link && <p className="mt-2 truncate text-[12px] text-rk-mute">Link: {r.link}</p>}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {r.status !== "shown" && (
+                  <button type="button" disabled={pending} onClick={() => status(r.id, "shown")} className={primary}>
+                    <Check className="h-4 w-4" /> Tampilkan
+                  </button>
+                )}
+                {r.status === "shown" && (
+                  <button type="button" disabled={pending} onClick={() => status(r.id, "hidden")} className={ghost}>
+                    Sembunyikan
+                  </button>
+                )}
+                <button type="button" onClick={() => setEdit({ id: r.id, name: r.name, occasion: (r.occasion as Occasion) in OCCASIONS ? (r.occasion as Occasion) : "nikah", city: r.city ?? "", rating: r.rating, message: r.message, link: r.link ?? "", status: r.status })} className={ghost}>
+                  <Pencil className="h-4 w-4" /> Ubah
+                </button>
+                <button type="button" disabled={pending} onClick={() => remove(r.id)} className={`${ghost} text-red-700`}>
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {edit && (
+        <Modal title={edit.id ? "Ubah ulasan" : "Tambah ulasan"} onClose={() => setEdit(null)}>
+          <div className="space-y-3.5">
+            <div className="grid grid-cols-2 gap-3">
+              <L label="Nama (seperti ingin ditampilkan)">
+                <input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} className={input} placeholder="Rina & Bagus" />
+              </L>
+              <L label="Kota">
+                <input value={edit.city} onChange={(e) => setEdit({ ...edit, city: e.target.value })} className={input} placeholder="Bandung" />
+              </L>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <L label="Acara">
+                <select value={edit.occasion} onChange={(e) => setEdit({ ...edit, occasion: e.target.value as Occasion })} className={input}>
+                  {OCCASION_IDS.map((id) => (
+                    <option key={id} value={id}>
+                      {OCCASIONS[id].name}
+                    </option>
+                  ))}
+                </select>
+              </L>
+              <L label="Nilai">
+                <div className="flex h-[42px] items-center">
+                  <Stars n={edit.rating} onPick={(n) => setEdit({ ...edit, rating: n })} />
+                </div>
+              </L>
+            </div>
+            <L label="Isi ulasan">
+              <textarea value={edit.message} onChange={(e) => setEdit({ ...edit, message: e.target.value })} rows={4} className={`${input} resize-none`} />
+            </L>
+            <L label="Link undangan (opsional)" hint="Hanya bila pemiliknya mengizinkan undangannya dilihat publik. Kosongkan = tampil sebagai undangan privat.">
+              <input value={edit.link} onChange={(e) => setEdit({ ...edit, link: e.target.value })} className={input} placeholder="https://rayakan.my.id/…" />
+            </L>
+            <L label="Status">
+              <select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value as ReviewStatus })} className={input}>
+                <option value="shown">Tampil di beranda</option>
+                <option value="pending">Menunggu</option>
+                <option value="hidden">Disembunyikan</option>
+              </select>
+            </L>
+            {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-[13px] font-semibold text-red-700">{error}</p>}
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                start(async () => {
+                  setError("");
+                  const r = await saveReviewAction(edit.id, edit);
+                  if (!r.ok) return setError(r.error);
+                  setEdit(null);
+                  router.refresh();
+                })
+              }
+              className={`${primary} h-11 w-full`}
+            >
+              Simpan ulasan
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

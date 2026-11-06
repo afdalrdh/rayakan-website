@@ -16,12 +16,17 @@ import {
   setSession,
   verifyPassword,
 } from "@/lib/server/auth";
+import { PAID_PLAN_IDS, peopleOf, type PlanId } from "@/lib/content";
+import { SITE_URL } from "@/lib/messages";
 import {
   countGuests,
   deleteGuests,
   deleteWish,
   findSite,
   getPlan,
+  insertReview,
+  reviewOfSite,
+  updateReview,
   guestSlugsTaken,
   insertGuests,
   listGuests,
@@ -200,6 +205,56 @@ export async function listWishesAction(slug: string) {
 export async function deleteWishAction(slug: string, wishId: number): Promise<Result> {
   try {
     await deleteWish(await siteId(slug), wishId);
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/* ------------------------------ Publish request ------------------------------ */
+
+/** "Kirim ke admin": remember which package the client wants, so it shows up in Studio → Permintaan. */
+export async function requestPublishAction(slug: string, planId: PlanId): Promise<Result> {
+  try {
+    await requireSite(slug);
+    if (!PAID_PLAN_IDS.includes(planId)) throw new Error("Paket tidak dikenal.");
+    await updateSiteFields(slug, { requestPlan: planId, requestedAt: new Date().toISOString() });
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/* ------------------------------ Review ------------------------------ */
+
+export async function myReviewAction(slug: string) {
+  const id = await siteId(slug);
+  return reviewOfSite(id);
+}
+
+/**
+ * The client's own review of Rayakan.my.id. It waits for the owner's approval
+ * before it appears on the landing page; editing it sends it back for approval.
+ */
+export async function submitReviewAction(slug: string, f: { name: string; city: string; rating: number; message: string; showLink: boolean }): Promise<Result> {
+  try {
+    const id = await siteId(slug);
+    const site = await findSite(slug);
+    if (!site) throw new Error("Undangan tidak ditemukan.");
+    const name = f.name.replace(/\s+/g, " ").trim().slice(0, 60) || peopleOf(site.content).map((p) => p.fullName.split(" ")[0]).filter(Boolean).join(" & ") || site.title;
+    const message = f.message.trim().slice(0, 600);
+    if (message.length < 10) throw new Error("Ceritakan sedikit lebih banyak, minimal 10 huruf.");
+    const clean = {
+      name,
+      occasion: site.content.occasion,
+      city: f.city.trim().slice(0, 40) || null,
+      rating: Math.min(5, Math.max(1, Math.round(Number(f.rating) || 5))),
+      message,
+      link: f.showLink && site.status === "published" ? `${SITE_URL}/${slug}` : null,
+    };
+    const existing = await reviewOfSite(id);
+    if (existing) await updateReview(existing.id, { ...clean, status: "pending" });
+    else await insertReview(id, clean, "pending");
     return { ok: true };
   } catch (e) {
     return fail(e);

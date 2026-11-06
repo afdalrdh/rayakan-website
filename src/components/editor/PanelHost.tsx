@@ -1,7 +1,8 @@
 "use client";
 
 import { ChevronLeft } from "lucide-react";
-import { BLOCK_LABELS, SECTION_KEYS, type BlockKey, type SectionKey } from "@/lib/content";
+import { useRef, useState } from "react";
+import { blockLabel, SECTION_KEYS, type BlockKey, type SectionKey } from "@/lib/content";
 import { SITE_HOST } from "@/lib/messages";
 import { BLOCK_FORMS } from "./blocks";
 import { useEditor } from "./context";
@@ -15,15 +16,16 @@ export type PanelKind = "theme" | "music" | "order" | "checklist" | "publish";
 export type Panel = { kind: "block"; key: BlockKey } | { kind: PanelKind };
 
 const PANEL_TITLES: Record<PanelKind, string> = {
-  theme: "Gaya & Warna",
+  theme: "Tema & Gaya",
   music: "Musik",
   order: "Urutan Bagian",
   checklist: "Isian Undangan",
   publish: "Terbitkan Undangan",
 };
 
-function panelTitle(p: Panel) {
-  return p.kind === "block" ? BLOCK_LABELS[p.key] : PANEL_TITLES[p.kind];
+function usePanelTitle(p: Panel) {
+  const { content: c } = useEditor();
+  return p.kind === "block" ? blockLabel(p.key, c.occasion) : PANEL_TITLES[p.kind];
 }
 
 function PanelBody({ panel, openBlock }: { panel: Panel; openBlock: (k: BlockKey) => void }) {
@@ -58,8 +60,8 @@ function BlockBody({ blockKey, Form }: { blockKey: BlockKey; Form: () => React.J
   if (lockedIn) {
     return (
       <div className="space-y-4 rounded-2xl bg-rk-cream p-5 text-center">
-        <p className="font-rk-serif text-[26px] leading-tight">{BLOCK_LABELS[blockKey]} belum termasuk paket {plan.name}</p>
-        <p className="text-[13px] text-rk-mute">Upgrade ke Premium untuk menampilkan {BLOCK_LABELS[blockKey].toLowerCase()} di undangan kamu.</p>
+        <p className="font-rk-serif text-[26px] leading-tight">{blockLabel(blockKey, c.occasion)} belum termasuk paket {plan.name}</p>
+        <p className="text-[13px] text-rk-mute">Hubungi admin untuk menampilkan bagian ini di undangan kamu.</p>
         <a href={`https://wa.me/${adminWhatsapp}?text=${encodeURIComponent(`Halo, saya ingin upgrade paket undangan ${SITE_HOST}/${slug}`)}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center rounded-xl bg-rk-ink px-5 text-[14px] font-bold text-white">
           Upgrade paket
         </a>
@@ -81,6 +83,7 @@ function BlockBody({ blockKey, Form }: { blockKey: BlockKey; Form: () => React.J
 
 export function SidePanel({ panel, setPanel, openBlock, design = false }: { panel: Panel | null; setPanel: (p: Panel | null) => void; openBlock: (k: BlockKey) => void; design?: boolean }) {
   const current: Panel = panel ?? { kind: "checklist" };
+  const title = usePanelTitle(current);
   return (
     <aside className={`hidden min-h-0 flex-col bg-white lg:row-start-2 lg:flex ${design ? "lg:col-start-2" : "lg:col-start-3"}`}>
       <div className="flex h-14 shrink-0 items-center gap-2 border-b border-rk-line px-5">
@@ -89,7 +92,7 @@ export function SidePanel({ panel, setPanel, openBlock, design = false }: { pane
             <ChevronLeft className="h-5 w-5" />
           </button>
         )}
-        <h2 className="font-rk-serif text-[24px] leading-none">{panelTitle(current)}</h2>
+        <h2 className="font-rk-serif text-[24px] leading-none">{title}</h2>
       </div>
       <div key={JSON.stringify(current)} className="rk-sheet-in min-h-0 flex-1 overflow-y-auto px-5 py-6">
         <PanelBody panel={current} openBlock={openBlock} />
@@ -98,23 +101,59 @@ export function SidePanel({ panel, setPanel, openBlock, design = false }: { pane
   );
 }
 
+/**
+ * Phone editor sheet. Forms open at half height so the edited part of the
+ * invitation stays visible above; drag the handle (or tap it) for full height.
+ */
 export function MobileSheet({ panel, setPanel, openBlock }: { panel: Panel | null; setPanel: (p: Panel | null) => void; openBlock: (k: BlockKey) => void }) {
   if (!panel) return null;
+  return <Sheet key={panel.kind === "block" ? `block:${panel.key}` : panel.kind} panel={panel} setPanel={setPanel} openBlock={openBlock} />;
+}
+
+function Sheet({ panel, setPanel, openBlock }: { panel: Panel; setPanel: (p: Panel | null) => void; openBlock: (k: BlockKey) => void }) {
+  const [full, setFull] = useState(panel.kind !== "block");
+  const [drag, setDrag] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const start = useRef<number | null>(null);
+  const title = usePanelTitle(panel);
+  const onDown = (e: React.PointerEvent) => {
+    start.current = e.clientY;
+    setDragging(true);
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    if (start.current !== null) setDrag(e.clientY - start.current);
+  };
+  const onUp = () => {
+    const dy = drag;
+    start.current = null;
+    setDragging(false);
+    setDrag(0);
+    if (Math.abs(dy) < 6) return setFull((f) => !f);
+    if (dy < -40) setFull(true);
+    else if (dy > 60) {
+      if (full) setFull(false);
+      else setPanel(null);
+    }
+  };
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
-      <button type="button" aria-label="Tutup" className="rk-fade-in absolute inset-0 bg-rk-ink/25" onClick={() => setPanel(null)} />
-      <div className="rk-sheet-in relative flex max-h-[62dvh] flex-col rounded-t-[28px] bg-white shadow-[0_-20px_40px_-10px_rgba(18,13,16,0.25)]">
-        <div className="flex justify-center pt-2.5">
-          <span className="h-1 w-10 rounded-full bg-rk-line" />
+      <button type="button" aria-label="Tutup" className={`rk-fade-in absolute inset-0 transition ${full ? "bg-rk-ink/30" : "bg-transparent"}`} onClick={() => setPanel(null)} />
+      <div
+        style={{ transform: drag > 0 ? `translateY(${drag}px)` : undefined, transition: !dragging ? "height 280ms cubic-bezier(.2,.8,.2,1), transform 200ms" : "none" }}
+        className={`rk-sheet-in relative flex flex-col rounded-t-[26px] bg-white shadow-[0_-20px_40px_-10px_rgba(18,13,16,0.3)] ${full ? "h-[92dvh]" : "h-[56dvh]"}`}
+      >
+        <div onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp} className="flex cursor-grab touch-none flex-col items-center pt-2.5" aria-label={full ? "Perkecil panel" : "Perbesar panel"} role="button" tabIndex={0}>
+          <span className="h-1.5 w-11 rounded-full bg-rk-line" />
         </div>
-        <div className="flex items-center gap-2 px-5 pb-3 pt-2">
+        <div className="flex items-center gap-2 px-5 pb-3 pt-1.5">
           {panel.kind === "block" && (
             <button type="button" aria-label="Ke daftar isian" onClick={() => setPanel({ kind: "checklist" })} className="-ml-2 rounded-lg p-1.5 text-rk-mute">
               <ChevronLeft className="h-5 w-5" />
             </button>
           )}
-          <h2 className="flex-1 font-rk-serif text-[26px] leading-none">{panelTitle(panel)}</h2>
-          <button type="button" onClick={() => setPanel(null)} className="h-9 rounded-full bg-rk-ink px-4 text-[13px] font-bold text-white">
+          <h2 className="min-w-0 flex-1 truncate font-rk-serif text-[25px] leading-none">{title}</h2>
+          <button type="button" onClick={() => setPanel(null)} className="h-9 shrink-0 rounded-full bg-rk-ink px-4 text-[13px] font-bold text-white">
             Selesai
           </button>
         </div>

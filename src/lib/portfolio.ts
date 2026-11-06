@@ -21,6 +21,8 @@ export interface PortfolioItem {
   mobile: string;
   /** One line from the couple or about the site. */
   note: string;
+  /** Live invitation. Only for owners who agreed to show it publicly. */
+  liveUrl?: string;
 }
 
 export const PORTFOLIO: PortfolioItem[] = [
@@ -36,6 +38,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     desktop: "/landing/arya-desktop.webp",
     mobile: "/landing/arya-mobile.webp",
     note: "Nuansa sinematik dengan aksen emas, kisah cinta bergambar, dan galeri 25 foto.",
+    liveUrl: "https://arya-alma.rayakan.my.id",
   },
   {
     id: "afdal-putri",
@@ -49,6 +52,7 @@ export const PORTFOLIO: PortfolioItem[] = [
     desktop: "/landing/afdal-desktop.webp",
     mobile: "/landing/afdal-mobile.webp",
     note: "Kisah cinta lima babak yang bergulir saat di-scroll, video prewedding, dan daftar hadiah.",
+    liveUrl: "https://wedding.afdalrdh.com",
   },
 ];
 

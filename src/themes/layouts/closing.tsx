@@ -1,6 +1,6 @@
 "use client";
 
-import { Block, EmptyPhoto, Img, Ornament, T, useHas, useTheme } from "../shared";
+import { Block, DecorFrame, EmptyPhoto, Img, Ornament, T, useDecor, useHas, useTheme } from "../shared";
 
 /* Closing words with the couple name. */
 
@@ -93,16 +93,20 @@ const Belah: Closing = () => {
   );
 };
 
-/** "Teks Saja": no photo, big name between ornaments. */
-const Polos: Closing = () => (
-  <Block id="closing">
-    <footer className="relative flex min-h-[90svh] flex-col items-center justify-center bg-t-bg px-6 pb-28 pt-20 text-center">
-      <Ornament className="mb-10" />
-      <Words tone="theme" />
-      <Ornament className="mt-10" />
-      <Credit tone="theme" />
-    </footer>
-  </Block>
-);
+/** "Teks Saja": no photo, big name between ornaments (and the site's ornament set, if any). */
+const Polos: Closing = () => {
+  const decor = useDecor();
+  return (
+    <Block id="closing">
+      <footer className="relative isolate flex min-h-[90svh] flex-col items-center justify-center overflow-hidden bg-t-bg px-6 pb-28 pt-20 text-center">
+        <DecorFrame decor={decor} />
+        <Ornament className="mb-10" />
+        <Words tone="theme" />
+        <Ornament className="mt-10" />
+        <Credit tone="theme" />
+      </footer>
+    </Block>
+  );
+};
 
 export const CLOSING_LAYOUTS: Record<string, Closing> = { foto: Foto, lengkung: Lengkung, belah: Belah, polos: Polos };

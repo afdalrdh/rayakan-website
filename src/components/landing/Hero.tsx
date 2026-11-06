@@ -77,13 +77,13 @@ function Devices({ url, desktop, mobile }: { url: string; desktop: string; mobil
   );
 }
 
-const MARQUEE = ["Amplop digital", "RSVP & buku ucapan", "Link nama per tamu", "Musik latar", "Galeri foto", "Kisah cinta", "Edit dari HP", "Peta lokasi", "Hitung mundur", "Video prewedding"];
+const MARQUEE = ["Coba gratis tanpa daftar", "Bayar setelah jadi", "Aktif selamanya", "Tema adat Jawa & Sunda", "Lukisan & ilustrasi AI", "Animasi pembuka", "Link nama per tamu", "RSVP & buku ucapan", "Amplop digital", "Edit dari HP"];
 
 /**
  * Landing hero: cinematic photo with a slow zoom, drifting dots and a hand-drawn
  * curve; headline on the left, the sample invitation on a laptop and a phone on the right.
  */
-export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string; consultHref: string; priceFrom: string }) {
+export function Hero({ tryHref, consultHref, priceFrom }: { tryHref: string; consultHref: string; priceFrom: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-[#15110e] text-white">
       {/* background */}
@@ -124,7 +124,7 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
             transition={{ duration: 0.6, ease: EASE }}
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-4 py-1.5 text-[12px] text-white/80 backdrop-blur-md"
           >
-            <span className="text-[#e8d5b5]">✦</span> Website undangan pernikahan · mulai {priceFrom}
+            <span className="text-[#e8d5b5]">✦</span> Nikah · Ulang tahun · Khitanan · mulai {priceFrom}
           </motion.span>
           <h1 className="mt-6 font-rk-display text-[clamp(50px,6.6vw,94px)] font-light leading-[0.98] tracking-[-0.03em]">
             {["Setiap", "momen"].map((w, i) => (
@@ -141,15 +141,15 @@ export function Hero({ orderHref, consultHref, priceFrom }: { orderHref: string;
           </h1>
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4, ease: EASE }}>
             <p className="mt-6 max-w-[500px] text-[16px] leading-relaxed text-white/75 sm:text-[17px]">
-              Bukan sekadar undangan biasa. Website yang elegan, sinematik, dan bisa kamu ubah sendiri dari HP, lalu dikirim ke setiap tamu dengan namanya.
+              Undangan digital yang gampang dibuat, bebas kamu atur sendiri dari HP, dan dikirim ke setiap tamu dengan namanya. Coba dulu gratis, bayar saat siap disebar.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={orderHref} target="_blank" rel="noreferrer" className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#f3eadb] px-7 text-[15px] font-semibold text-rk-ink transition hover:bg-white">
-                Pesan sekarang <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </a>
-              <Link href="/tema/afdal" prefetch={false} className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-white/[0.04] px-7 text-[15px] font-semibold backdrop-blur-sm transition hover:border-white/60">
-                Lihat contoh undangan
+              <Link href={tryHref} prefetch={false} className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#f3eadb] px-7 text-[15px] font-semibold text-rk-ink transition hover:bg-white">
+                Coba gratis sekarang <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
               </Link>
+              <a href="#tema" className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-white/[0.04] px-7 text-[15px] font-semibold backdrop-blur-sm transition hover:border-white/60">
+                Lihat 12 tema
+              </a>
             </div>
             <p className="mt-5 text-[13px] text-white/55">
               Sudah punya konsep sendiri?{" "}

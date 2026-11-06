@@ -7,8 +7,10 @@ import { getSettings } from "@/lib/server/data";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Portofolio · Rayakan.my.id",
-  description: "Momen bahagia yang sudah kami rayakan: undangan pernikahan digital dari Rayakan.my.id.",
+  title: "Portofolio Undangan Pernikahan Digital",
+  description: "Contoh undangan pernikahan digital yang sudah kami buat bersama para pasangan. Lihat desain, fitur, dan tampilannya di HP maupun laptop.",
+  alternates: { canonical: "/portofolio" },
+  openGraph: { title: "Portofolio Undangan Pernikahan Digital", url: "/portofolio", images: [{ url: "/demo/afdal/og.jpg", width: 1200, height: 630 }] },
 };
 
 /** All weddings, newest first. Cards open a detail popup. */

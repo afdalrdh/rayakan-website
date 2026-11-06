@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { demoContent, getThemeMeta, THEME_IDS, type ThemeId } from "@/lib/content";
+import { demoContent, getOccasion, getThemeMeta, namesOf, THEME_IDS, type ThemeId } from "@/lib/content";
 import { ThemeRenderer } from "@/themes";
 
 /**
@@ -21,11 +21,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   if (!isTheme(id)) return {};
   const c = demoContent(id);
-  const title = `Tema ${getThemeMeta(id).name} · The Wedding of ${c.hero.firstName} & ${c.hero.secondName}`;
+  const name = getThemeMeta(id).name;
+  const title = `Contoh Undangan Digital Tema ${name}`;
+  const kind = getOccasion(c.occasion).name.toLowerCase();
+  const description = `Lihat contoh undangan ${kind} digital tema ${name}: ${namesOf(c).joined}. Warna, ornamen, dan tata letak bisa diubah sendiri dari HP di Rayakan.my.id.`;
+  const image = c.hero.ogImage;
   return {
     title,
-    description: `Contoh undangan digital tema ${getThemeMeta(id).name} dari Rayakan.my.id.`,
-    openGraph: { title, images: c.hero.ogImage ? [{ url: c.hero.ogImage, width: 1200, height: 630 }] : undefined },
+    description,
+    alternates: { canonical: `/tema/${id}` },
+    openGraph: { title: `${title} · Rayakan.my.id`, description, url: `/tema/${id}`, images: image ? [{ url: image, width: 1200, height: 630 }] : undefined },
   };
 }
 

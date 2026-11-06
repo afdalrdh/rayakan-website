@@ -101,6 +101,25 @@ const SCHEMA = [
     count INT NOT NULL,
     first_at TIMESTAMPTZ NOT NULL
   )`,
+  // Self-serve drafts (Nov 2026): who made the site and whether they asked to publish it.
+  `ALTER TABLE sites ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'studio'`,
+  `ALTER TABLE sites ADD COLUMN IF NOT EXISTS request_plan TEXT`,
+  `ALTER TABLE sites ADD COLUMN IF NOT EXISTS requested_at TIMESTAMPTZ`,
+  `ALTER TABLE sites ADD COLUMN IF NOT EXISTS created_ip TEXT`,
+  `CREATE TABLE IF NOT EXISTS reviews (
+    id BIGSERIAL PRIMARY KEY,
+    site_id BIGINT REFERENCES sites(id) ON DELETE SET NULL,
+    name TEXT NOT NULL,
+    occasion TEXT NOT NULL DEFAULT 'nikah',
+    city TEXT,
+    rating INT NOT NULL DEFAULT 5 CHECK (rating BETWEEN 1 AND 5),
+    message TEXT NOT NULL,
+    link TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','shown','hidden')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS reviews_status_idx ON reviews (status, created_at DESC)`,
+  `CREATE INDEX IF NOT EXISTS sites_ip_idx ON sites (created_ip, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS guests_site_idx ON guests (site_id, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS wishes_site_idx ON wishes (site_id, created_at DESC)`,
   `CREATE INDEX IF NOT EXISTS wishes_ip_idx ON wishes (ip_hash, created_at DESC)`,

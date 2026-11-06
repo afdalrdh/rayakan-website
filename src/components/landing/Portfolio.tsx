@@ -55,6 +55,25 @@ export function PortfolioGrid({ items, className = "", fillTo = 0, ctaHref }: { 
               <span className="mt-1 block text-[13px] text-rk-mute">
                 {longDate(p.date)} · {p.city}
               </span>
+              {p.liveUrl && (
+                <span
+                  role="link"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(p.liveUrl, "_blank", "noopener");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.stopPropagation();
+                      window.open(p.liveUrl, "_blank", "noopener");
+                    }
+                  }}
+                  className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-rk-ink px-4 text-[12.5px] font-semibold text-white transition hover:bg-rk-plum"
+                >
+                  Lihat website <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              )}
             </span>
           </motion.button>
         ))}
@@ -73,7 +92,7 @@ export function PortfolioGrid({ items, className = "", fillTo = 0, ctaHref }: { 
             <span className="mx-auto flex aspect-[390/844] w-full max-w-[260px] flex-col items-center justify-center gap-3 rounded-[30px] border-2 border-dashed border-rk-bronze/30 bg-white/40 p-5 text-center transition duration-500 group-hover:-translate-y-2 group-hover:border-rk-bronze/60 sm:rounded-[36px]">
               <span className="font-rk-display text-[40px] font-light italic leading-none text-rk-bronze/70">{items.length + i + 1}</span>
               <span className="font-rk-display text-[22px] font-light leading-tight">Momen kalian berikutnya</span>
-              <span className="text-[12px] text-rk-mute">Ketuk untuk mulai pesan</span>
+              <span className="text-[12px] text-rk-mute">Ketuk untuk coba gratis</span>
             </span>
           </motion.a>
         ))}
@@ -144,12 +163,18 @@ function PortfolioModal({ item: p, onClose }: { item: PortfolioCard; onClose: ()
               </div>
             </dl>
             <div className="mt-auto grid gap-2.5 pt-8 sm:grid-cols-2">
-              <Link href={`/tema/${p.theme}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40">
-                Lihat contoh tema
-              </Link>
-              <a href={p.orderHref} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-rk-ink px-5 text-[14px] font-semibold text-white transition hover:bg-rk-plum">
+              {p.liveUrl ? (
+                <a href={p.liveUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40">
+                  Lihat website <ArrowUpRight className="h-4 w-4" />
+                </a>
+              ) : (
+                <Link href={`/tema/${p.theme}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40">
+                  Lihat contoh tema
+                </Link>
+              )}
+              <Link href={`/buat?tema=${p.theme}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-rk-ink px-5 text-[14px] font-semibold text-white transition hover:bg-rk-plum">
                 Pakai tema ini
-              </a>
+              </Link>
             </div>
           </div>
         </div>

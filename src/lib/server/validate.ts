@@ -1,8 +1,13 @@
 import "server-only";
+import { DECOR_IDS } from "@/themes/decor/catalog";
 import { cleanLayouts } from "@/themes/layouts/catalog";
 import { FONT_PAIR_IDS, PALETTE_IDS } from "@/themes/style";
 import {
+  applyOccasion,
   BANKS,
+  OCCASION_IDS,
+  OCCASIONS,
+  type Occasion,
   DEMO_ARYA,
   demoContent,
   getThemeMeta,
@@ -71,11 +76,13 @@ export function sanitizeContent(input: unknown): WeddingContent {
   c.version = 1;
   c.theme = pick(c.theme, THEME_IDS, "arya");
   const theme = getThemeMeta(c.theme);
+  c.occasion = pick(c.occasion, OCCASION_IDS, "nikah");
   c.style = {
     mode: pick(c.style.mode, ["light", "dark"], theme.style.mode),
     palette: pick(c.style.palette, PALETTE_IDS, theme.style.palette),
     fonts: pick(c.style.fonts, FONT_PAIR_IDS, theme.style.fonts),
     accent: /^#[0-9a-f]{6}$/i.test(c.style.accent) ? c.style.accent : "",
+    decor: pick(c.style.decor, DECOR_IDS, "none"),
   };
   c.layouts = cleanLayouts(raw.layouts, theme.layouts);
   c.hero.heartSize = pick(c.hero.heartSize, ["s", "m", "l"], "m");
@@ -92,6 +99,7 @@ export function sanitizeContent(input: unknown): WeddingContent {
   c.hidden = [...new Set((Array.isArray(raw.hidden) ? raw.hidden : []).filter(isKey))];
 
   c.logo.image = safeMediaUrl(c.logo.image);
+  c.cover.photo = safeMediaUrl(c.cover.photo);
   c.music.upload = safeMediaUrl(c.music.upload);
   for (const k of ["imageDesktop", "imageMobile", "imageCutout", "ogImage"] as const) c.hero[k] = safeMediaUrl(c.hero[k]);
   for (const who of ["first", "second"] as const) {
@@ -121,12 +129,22 @@ export function sanitizeContent(input: unknown): WeddingContent {
   return c;
 }
 
-/** Starting content for a new client: the theme's layout and texts, their names, no sample photos. */
-export function starterContent(theme: ThemeId, first: string, second: string, eventDate: string): WeddingContent {
+/** Theme sample switched to the requested occasion (texts follow, layouts stay). */
+function themeFor(theme: ThemeId, occasion?: Occasion) {
   const meta = getThemeMeta(theme);
   const c = demoContent(meta.id);
+  if (occasion && occasion !== c.occasion) applyOccasion(c, occasion);
+  return { meta, c };
+}
+
+/** Starting content for a new client: the theme's layout and texts, their names, no sample photos. */
+export function starterContent(theme: ThemeId, first: string, second: string, eventDate: string, occasion?: Occasion): WeddingContent {
+  const { meta, c } = themeFor(theme, occasion);
+  const single = OCCASIONS[c.occasion].single;
+  if (single) second = "";
   c.logo = { mode: "monogram", image: "" };
   c.music = { mode: "library", trackId: meta.defaultTrack, upload: "", uploadName: "" };
+  c.cover = { ...c.cover, photo: "" };
   c.hero = { ...c.hero, firstName: first, secondName: second, imageDesktop: "", imageMobile: "", imageCutout: "", ogImage: "" };
   c.couple = { ...c.couple, first: { fullName: "", parents: "", instagram: "", photo: "" }, second: { fullName: "", parents: "", instagram: "", photo: "" }, videoUrl: "", videoThumb: "" };
   c.story.items = [];
@@ -138,15 +156,12 @@ export function starterContent(theme: ThemeId, first: string, second: string, ev
     mapsUrl: "",
     image: "",
     note: "",
-    schedules: [
-      { id: "j1", label: "Akad Nikah", time: "" },
-      { id: "j2", label: "Resepsi", time: "" },
-    ],
+    schedules: OCCASIONS[c.occasion].schedules.map((label, i) => ({ id: `j${i + 1}`, label, time: "" })),
   };
   c.gallery.photos = [];
   c.gift.accounts = [];
   c.gift.registry = { title: "", body: "", url: "", image: "" };
-  c.closing = { ...c.closing, displayName: `${first} & ${second}`, hashtag: "", image: "" };
+  c.closing = { ...c.closing, displayName: single ? first : `${first} & ${second}`, hashtag: "", image: "" };
   return c;
 }
 
@@ -156,14 +171,15 @@ export function starterContent(theme: ThemeId, first: string, second: string, ev
  * from the sample couple (full names, parents, Instagram, bank numbers) is
  * replaced with neutral placeholders.
  */
-export function sampleContent(theme: ThemeId, first: string, second: string, eventDate: string): WeddingContent {
-  const meta = getThemeMeta(theme);
-  const c = demoContent(meta.id);
+export function sampleContent(theme: ThemeId, first: string, second: string, eventDate: string, occasion?: Occasion): WeddingContent {
+  const { c } = themeFor(theme, occasion);
+  const single = OCCASIONS[c.occasion].single;
+  if (single) second = "";
   c.hero = { ...c.hero, firstName: first, secondName: second };
   const person = (name: string, role: string, photo: string) => ({ fullName: name, parents: `${role} dari Bapak Fulan dan Ibu Fulanah`, instagram: "", photo });
-  c.couple = { ...c.couple, first: person(first, "Putra pertama", c.couple.first.photo), second: person(second, "Putri kedua", c.couple.second.photo) };
+  c.couple = { ...c.couple, first: person(first, single ? "Anak pertama" : "Putra pertama", c.couple.first.photo), second: single ? c.couple.second : person(second, "Putri kedua", c.couple.second.photo) };
   if (/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) c.event.date = eventDate;
-  c.gift.accounts = c.gift.accounts.map((a, i) => ({ ...a, number: i ? "9876 5432 10" : "1234 5678 90", holder: (i ? second : first).toUpperCase() }));
-  c.closing = { ...c.closing, displayName: `${first} & ${second}`, hashtag: "" };
+  c.gift.accounts = c.gift.accounts.map((a, i) => ({ ...a, number: i ? "9876 5432 10" : "1234 5678 90", holder: (i && second ? second : first).toUpperCase() }));
+  c.closing = { ...c.closing, displayName: single ? first : `${first} & ${second}`, hashtag: "" };
   return c;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { getOccasion } from "@/lib/content";
+
 import { uid } from "@/lib/content";
 import { useEditor } from "../context";
 import { AddButton, Area, Field, Group, ImageField, ItemCard, Text } from "../fields";
@@ -29,7 +31,7 @@ export function VenueForm() {
           <ItemCard key={s.id} title={s.label || "Acara"} onRemove={() => update((d) => void d.venue.schedules.splice(i, 1))}>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Nama acara">
-                <Text value={s.label} onChange={(x) => update((d) => void (d.venue.schedules[i].label = x))} placeholder="Akad Nikah" />
+                <Text value={s.label} onChange={(x) => update((d) => void (d.venue.schedules[i].label = x))} placeholder={getOccasion(c.occasion).schedules[i % 2]} />
               </Field>
               <Field label="Waktu">
                 <Text value={s.time} onChange={(x) => update((d) => void (d.venue.schedules[i].time = x))} placeholder="08.00 – 10.00 WIB" />

@@ -2,8 +2,22 @@ import type { SectionKey } from "./schema";
 
 /* Packages (paket). These are defaults: the live values are edited in /studio. */
 
-export type PlanId = "esensial" | "premium" | "eksklusif";
-export const PLAN_IDS: PlanId[] = ["esensial", "premium", "eksklusif"];
+/**
+ * - gratis: try the editor and save a draft; cannot be shared with guests.
+ * - mandiri ("Edit Sendiri"): the client edits, Rayakan.my.id publishes after payment.
+ * - siap ("Siap Pakai"): the admin builds the invitation from the client's data.
+ */
+export type PlanId = "gratis" | "mandiri" | "siap";
+export const PLAN_IDS: PlanId[] = ["gratis", "mandiri", "siap"];
+/** Packages a published invitation can have. */
+export const PAID_PLAN_IDS: PlanId[] = ["mandiri", "siap"];
+
+/** Old package ids (before Nov 2026) → current ones. */
+const LEGACY_PLAN: Record<string, PlanId> = { esensial: "mandiri", premium: "mandiri", eksklusif: "siap" };
+export function toPlanId(v: unknown): PlanId {
+  const s = String(v ?? "");
+  return (PLAN_IDS as string[]).includes(s) ? (s as PlanId) : LEGACY_PLAN[s] ?? "mandiri";
+}
 
 export interface Plan {
   id: PlanId;
@@ -30,76 +44,58 @@ export function activeLabel(p: Pick<Plan, "activeMonths">) {
   return `${p.activeMonths} bulan`;
 }
 
+/** Every package gets the full editor; they differ in who builds it and whether it can be published. */
+const FULL = { galleryLimit: 40, storyLimit: 8, guestLimit: null, locked: [] as SectionKey[], musicUpload: true, customColor: true, activeMonths: null };
+
 /** Default packages. Seeded into the database once; edited later from /studio. */
 export const PLANS: Record<PlanId, Plan> = {
-  esensial: {
-    id: "esensial",
-    name: "Esensial",
-    tagline: "Semua yang penting, tetap premium.",
-    price: 79000,
-    normalPrice: 199000,
-    activeMonths: 6,
-    galleryLimit: 6,
-    storyLimit: 0,
-    guestLimit: 150,
-    locked: ["story", "gift"],
-    musicUpload: false,
-    customColor: false,
+  gratis: {
+    id: "gratis",
+    name: "Coba Gratis",
+    tagline: "Coba semua tema & editor, tanpa daftar.",
+    price: 0,
+    normalPrice: 0,
+    ...FULL,
     benefits: [
-      "Desain premium, tampilan HP & laptop",
-      "Foto utama + profil mempelai",
-      "Hitung mundur, lokasi & jadwal acara",
-      "Galeri hingga 6 foto",
-      "RSVP & ucapan tamu",
-      "Link nama tamu hingga 150 orang",
-      "Musik dari pilihan lagu",
+      "Semua tema, warna, huruf & tata letak",
+      "Edit semua bagian langsung dari HP",
+      "Pratinjau persis seperti yang dilihat tamu",
+      "Simpan draf dengan link edit pribadi",
+      "Belum bisa dikirim ke tamu",
     ],
     highlight: false,
   },
-  premium: {
-    id: "premium",
-    name: "Premium",
-    tagline: "Pilihan paling banyak diambil.",
-    price: 149000,
-    normalPrice: 349000,
-    activeMonths: 12,
-    galleryLimit: 20,
-    storyLimit: 4,
-    guestLimit: null,
-    locked: [],
-    musicUpload: true,
-    customColor: false,
+  mandiri: {
+    id: "mandiri",
+    name: "Edit Sendiri",
+    tagline: "Kamu yang atur, kami yang terbitkan.",
+    price: 69000,
+    normalPrice: 69000,
+    ...FULL,
     benefits: [
-      "Semua di Esensial",
-      "Kisah cinta hingga 4 babak",
-      "Amplop digital (rekening & e-wallet)",
-      "Galeri hingga 20 foto",
-      "Link nama tamu tanpa batas + import Excel",
-      "Unggah lagu sendiri",
-      "Aktif 1 tahun",
+      "Semua fitur editor & semua tema",
+      "Alamat sendiri: rayakan.my.id/nama-kalian",
+      "Kirim ke tamu dengan nama masing-masing",
+      "RSVP, buku ucapan & amplop digital",
+      "Musik, galeri hingga 40 foto, peta lokasi",
+      "Bisa diubah sendiri sampai hari H",
+      "Aktif selamanya",
     ],
     highlight: true,
   },
-  eksklusif: {
-    id: "eksklusif",
-    name: "Eksklusif",
-    tagline: "Terima beres, aktif selamanya.",
-    price: 249000,
-    normalPrice: 599000,
-    activeMonths: null,
-    galleryLimit: 40,
-    storyLimit: 8,
-    guestLimit: null,
-    locked: [],
-    musicUpload: true,
-    customColor: true,
+  siap: {
+    id: "siap",
+    name: "Siap Pakai",
+    tagline: "Kirim data & foto, admin yang menyusun.",
+    price: 149000,
+    normalPrice: 149000,
+    ...FULL,
     benefits: [
-      "Semua di Premium",
-      "Konten diisikan tim Rayakan.my.id",
-      "Warna aksen sesuai seragam / dekorasi",
-      "Galeri hingga 40 foto, kisah hingga 8 babak",
-      "Akses semua tema baru",
-      "Prioritas bantuan via WhatsApp",
+      "Semua di Edit Sendiri",
+      "Undangan disusun admin Rayakan.my.id",
+      "Dibantu pilih tema, warna & tata letak",
+      "Tinggal cek, minta perubahan lewat WhatsApp",
+      "Tetap bisa kamu ubah sendiri kapan saja",
       "Aktif selamanya",
     ],
     highlight: false,

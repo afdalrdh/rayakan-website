@@ -38,9 +38,15 @@ const jakarta = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Rayakan.my.id",
-  description: "Website undangan pernikahan premium yang bisa kamu ubah sendiri dari HP.",
-  icons: { icon: "/brand/logo.png" },
+  title: { default: "Rayakan.my.id · Undangan Digital Nikah, Ulang Tahun & Khitanan", template: "%s · Rayakan.my.id" },
+  description: "Undangan digital pernikahan, ulang tahun, dan khitanan yang bisa kamu buat dan ubah sendiri dari HP. Coba gratis.",
+  applicationName: "Rayakan.my.id",
+  icons: { icon: "/brand/logo.png", apple: "/brand/logo.png" },
+  openGraph: { siteName: "Rayakan.my.id", locale: "id_ID", type: "website" },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
+  // Search Console ownership: set GOOGLE_SITE_VERIFICATION in Vercel (the "content" value of the meta tag).
+  verification: process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : undefined,
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };

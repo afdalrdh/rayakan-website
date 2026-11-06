@@ -1,13 +1,14 @@
 "use client";
 
 import { Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { demoContent, type BlockKey, type Plan, type PlanId, type ThemeId, type WeddingContent } from "@/lib/content";
-import { loadPlan, resetContent, savePlan } from "@/lib/sandbox-store";
+import { resetContent } from "@/lib/sandbox-store";
 import { Canvas, type Device } from "./canvas/Canvas";
 import { BottomNav, Sidebar, Toolbar, TopBar, type Tab } from "./chrome";
 import { EditorCtx, type EditorCtxValue } from "./context";
 import { MobileSheet, SidePanel, type Panel } from "./PanelHost";
+import { SaveDraftDialog } from "./SaveDraft";
 import { DemoGuestsTab, DemoMoreTab, DemoWishesTab } from "./tabs/DemoTabs";
 import { useContentStore, useIsWide } from "./useContentStore";
 
@@ -32,8 +33,15 @@ export interface EditorProps {
 export function EditorApp(props: EditorProps) {
   const { mode, slug } = props;
   const store = useContentStore({ mode, slug, initial: props.initialContent, demoTheme: props.demoTheme });
-  const [planId, setPlanId] = useState<PlanId>(() => (mode === "demo" && typeof window !== "undefined" ? loadPlan() : props.planId));
+  const planId: PlanId = props.planId;
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [saving, setSaving] = useState<null | "save" | "send">(null);
+  // Arriving from "Simpan draf → Lanjut kirim ke admin": open the send panel right away.
+  useEffect(() => {
+    if (mode !== "site" || new URLSearchParams(window.location.search).get("kirim") !== "1") return;
+    const t = setTimeout(() => setPanel({ kind: "publish" }), 0);
+    return () => clearTimeout(t);
+  }, [mode]);
   const [tab, setTab] = useState<Tab>("undangan");
   const [device, setDevice] = useState<Device>("hp");
   const [hint, setHint] = useState(true);
@@ -72,7 +80,15 @@ export function EditorApp(props: EditorProps) {
     <EditorCtx.Provider value={ctx}>
       <div className={`flex h-[100dvh] flex-col bg-rk-ivory font-rk-sans text-rk-ink lg:grid lg:grid-rows-[64px_1fr] ${design ? "lg:grid-cols-[1fr_420px]" : "lg:grid-cols-[232px_1fr_420px]"}`}>
         {!design && <Sidebar tab={tab} setTab={setTab} />}
-        <TopBar design={design} title={props.title} saved={store.saved} previewHref={mode === "demo" ? `/demo?tema=${store.content?.theme ?? "arya"}` : `/${slug}/preview`} isOwner={!!props.isOwner} onPublish={() => setPanel({ kind: "publish" })} />
+        <TopBar
+          design={design}
+          title={props.title}
+          saved={store.saved}
+          previewHref={mode === "demo" ? `/demo?tema=${store.content?.theme ?? "arya"}` : `/${slug}/preview`}
+          isOwner={!!props.isOwner}
+          onPublish={() => (mode === "demo" ? setSaving("send") : setPanel({ kind: "publish" }))}
+          onSave={mode === "demo" ? () => setSaving("save") : undefined}
+        />
 
         {tab === "undangan" ? (
           <section className={`relative flex min-h-0 flex-1 flex-col lg:row-start-2 lg:border-r lg:border-rk-line ${design ? "lg:col-start-1" : "lg:col-start-2"}`}>
@@ -98,12 +114,7 @@ export function EditorApp(props: EditorProps) {
                 {tab === "ucapan" && <DemoWishesTab />}
                 {tab === "lainnya" && (
                   <DemoMoreTab
-                    plan={planId}
-                    plans={props.plans}
-                    setPlan={(p) => {
-                      setPlanId(p);
-                      savePlan(p);
-                    }}
+                    onSave={() => setSaving("save")}
                     onReset={() => {
                       resetContent();
                       store.setContent(demoContent(content.theme));
@@ -118,6 +129,7 @@ export function EditorApp(props: EditorProps) {
         {tab === "undangan" && isWide && <SidePanel design={design} panel={panel} setPanel={setPanel} openBlock={openBlock} />}
         {!design && <BottomNav tab={tab} setTab={setTab} />}
         {!isWide && <MobileSheet panel={panel} setPanel={setPanel} openBlock={openBlock} />}
+        {mode === "demo" && saving && <SaveDraftDialog open intent={saving} content={content} onClose={() => setSaving(null)} />}
       </div>
     </EditorCtx.Provider>
   );

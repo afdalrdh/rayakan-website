@@ -8,7 +8,7 @@ import { canEditSite, isOwner } from "@/lib/server/auth";
 import { findSite, getPlan, getSettings } from "@/lib/server/data";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Admin Undangan · Rayakan.my.id", robots: { index: false } };
+export const metadata = { title: "Admin Undangan", robots: { index: false } };
 
 /** Client admin: login gate + menu frame. Pages inside load their own data. */
 export default async function SiteAdminLayout({ params, children }: { params: Promise<{ slug: string }>; children: React.ReactNode }) {

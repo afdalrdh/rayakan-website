@@ -3,7 +3,9 @@
 import { ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { useState, type ReactNode } from "react";
-import { SECTION_ANCHORS, type Person, type SectionKey } from "@/lib/content";
+import { getOccasion, namesOf, SECTION_ANCHORS, type Person, type SectionKey } from "@/lib/content";
+import { isDecor, type DecorId } from "../decor/catalog";
+import { DecorCorner, DecorDivider, DecorPattern } from "../decor/art";
 import { Block } from "./Block";
 import { Img, useFontPair, useShowEmpty, useTheme } from "./context";
 import { useNavLinks, useWishes, type Wish } from "./hooks";
@@ -45,6 +47,37 @@ export function useHas() {
 
 export const CONTAINER = "mx-auto w-full max-w-[1120px]";
 
+/** The site's ornament set ("none" when it has none). */
+export function useDecor(): DecorId {
+  const d = useTheme().content.style.decor;
+  return isDecor(d) ? d : "none";
+}
+
+/** Which corners get an ornament, varied per section so the page doesn't look stamped. */
+const CORNERS: Record<SectionKey, ("tl" | "tr" | "bl" | "br")[]> = {
+  couple: ["tr", "bl"],
+  story: ["tl", "br"],
+  event: ["tl", "tr"],
+  venue: ["tr", "bl"],
+  gallery: ["tl", "br"],
+  rsvp: ["tl", "br"],
+  gift: ["tr", "bl"],
+};
+
+/** Ornament layer behind a section's content (pattern + two corners). */
+export function SectionDecor({ block }: { block: SectionKey }) {
+  const decor = useDecor();
+  if (decor === "none") return null;
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <DecorPattern decor={decor} opacity={0.06} />
+      {CORNERS[block].map((at) => (
+        <DecorCorner key={at} decor={decor} at={at} className="opacity-90" />
+      ))}
+    </div>
+  );
+}
+
 /** Every section: same anchor, padding and background rules. */
 export function Section({ block, tone = "bg", className = "", pad = true, children, sectionRef, style }: { block: SectionKey; tone?: "bg" | "alt" | "none"; className?: string; pad?: boolean; children: ReactNode; sectionRef?: React.Ref<HTMLElement>; style?: React.CSSProperties }) {
   const { mode } = useTheme();
@@ -53,7 +86,8 @@ export function Section({ block, tone = "bg", className = "", pad = true, childr
   const padding = !pad ? "" : mode === "thumb" ? "px-5 py-12 md:px-8 md:py-16" : "px-5 py-20 md:px-8 md:py-28 lg:py-32";
   return (
     <Block id={block}>
-      <section ref={sectionRef} style={style} id={SECTION_ANCHORS[block]} className={`relative ${colors} ${padding} ${className}`}>
+      <section ref={sectionRef} style={style} id={SECTION_ANCHORS[block]} className={`relative isolate ${colors} ${padding} ${className}`}>
+        {tone !== "none" && <SectionDecor block={block} />}
         {children}
       </section>
     </Block>
@@ -65,6 +99,9 @@ export function Eyebrow({ children, className = "" }: { children: ReactNode; cla
 }
 
 export function Rule({ center = true, className = "" }: { center?: boolean; className?: string }) {
+  const decor = useDecor();
+  // Ornament sets swap the plain hairline for their own small divider (centred rules only).
+  if (decor !== "none" && center) return <DecorDivider decor={decor} className={className} />;
   return <div className={`h-px w-12 bg-t-muted/50 ${center ? "mx-auto" : ""} ${className}`} />;
 }
 
@@ -118,11 +155,18 @@ export function Ornament({ className = "" }: { className?: string }) {
 export function useNameFit(designedFor: number) {
   const { content: c } = useTheme();
   const pair = useFontPair();
-  const first = c.hero.firstName.trim() || "Nama";
-  const second = c.hero.secondName.trim() || "Nama";
+  const n = namesOf(c);
+  const first = n.first || "Nama";
+  const second = n.single ? "" : n.second || "Nama";
   const longest = Math.max(first.length, second.length);
   const fit = designedFor * (pair.fit / 7);
-  return { first, second, k: Math.min(1, fit / Math.max(longest, 1)) };
+  return { first, second, single: n.single, k: Math.min(1, fit / Math.max(longest, 1)) };
+}
+
+/** Text above the names ("The Wedding of", "Ulang Tahun ke-5"…). */
+export function useEyebrow() {
+  const { content: c } = useTheme();
+  return c.hero.eyebrow?.trim() || getOccasion(c.occasion).eyebrow;
 }
 
 /** Hero photo for laptop and phone, with skeleton placeholders when empty. */
@@ -273,10 +317,11 @@ export function Instagram({ p, className = "" }: { p: Person; className?: string
 /** Full name + parents, with placeholders. */
 export function PersonText({ p, which, nameClass = "", parentsClass = "" }: { p: Person; which: 1 | 2; nameClass?: string; parentsClass?: string }) {
   const has = useHas();
+  const o = getOccasion(useTheme().content.occasion);
   return (
     <>
       <h3 className={`t-head leading-[1.2] text-t-accent ${nameClass}`}>
-        <T v={p.fullName} ph={`Nama lengkap mempelai ${which}`} />
+        <T v={p.fullName} ph={o.single ? "Nama lengkap" : `Nama lengkap ${o.person[which - 1].toLowerCase()}`} />
       </h3>
       {has(p.parents) && (
         <p className={`leading-[1.6] text-t-fg2 ${parentsClass}`}>
@@ -339,7 +384,7 @@ export function RsvpFields({ w }: { w: WishesState }) {
       )}
       <label className="mt-4 block">
         <span className={labelCls}>Ucapan atau Doa</span>
-        <textarea value={w.form.message} onChange={(e) => w.set("message", e.target.value)} required maxLength={600} rows={3} placeholder="Tuliskan ucapan dan doa terbaik untuk kedua mempelai..." className={`${inputCls} h-auto min-h-[96px] resize-none py-3 leading-relaxed`} />
+        <textarea value={w.form.message} onChange={(e) => w.set("message", e.target.value)} required maxLength={600} rows={3} placeholder={`Tuliskan ucapan dan doa terbaik untuk ${getOccasion(c.occasion).wishFor}...`} className={`${inputCls} h-auto min-h-[96px] resize-none py-3 leading-relaxed`} />
       </label>
       {w.status && <p className={`mt-4 rounded-[10px] px-4 py-2.5 text-[13px] font-semibold ${w.status.ok ? "bg-emerald-500/12 text-emerald-600" : "bg-red-500/12 text-red-600"}`}>{w.status.text}</p>}
       <button type="submit" disabled={w.busy} className="mt-6 h-[52px] w-full rounded-[12px] bg-t-accent text-[14px] font-bold uppercase tracking-[2px] text-t-on-accent transition hover:brightness-95 disabled:opacity-50">

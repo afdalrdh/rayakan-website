@@ -1,34 +1,37 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Plus } from "lucide-react";
+import { ArrowRight, Check, Heart, Lock, Palette, Plus, Sparkles, Wand2 } from "lucide-react";
 import { contactHref, Eyebrow, GENERAL_ENQUIRY, LandingFooter, LandingNav, portfolioCards, Title } from "@/components/landing/chrome";
 import { Hero } from "@/components/landing/Hero";
-import { DeviceDuo, DuoStage } from "@/components/landing/DeviceDuo";
 import { Envelope, Rings } from "@/components/landing/illustrations";
 import { Bloom, Branch, Breath } from "@/components/landing/paintings";
 import { Features } from "@/components/landing/Features";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
 import { Reveal } from "@/components/landing/Reveal";
-import { activeLabel, FONT_PAIR_IDS, PALETTE_IDS, rupiah, THEMES, themeSwatch, type Plan } from "@/lib/content";
-import { getPlans, getSettings } from "@/lib/server/data";
+import { ReviewGrid, ReviewSummary } from "@/components/landing/Reviews";
+import { ThemeCatalog } from "@/components/landing/ThemeCatalog";
+import { activeLabel, DECOR_IDS, FONT_PAIR_IDS, PALETTE_IDS, rupiah, THEME_IDS, type Plan } from "@/lib/content";
+import { countSites, getPlans, getSettings, getShownReviews } from "@/lib/server/data";
+import { faqLd, JsonLd, organizationLd, serviceLd, websiteLd } from "@/lib/seo/jsonld";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Rayakan.my.id · Website Undangan Pernikahan Premium",
-  description: "Undangan pernikahan digital dengan desain premium yang tidak terlihat template. Ubah sendiri dari HP, kirim ke tamu dengan nama masing-masing, RSVP & amplop digital. Mulai Rp79rb.",
+  title: { absolute: "Undangan Digital Nikah, Ulang Tahun & Khitanan · Coba Gratis | Rayakan.my.id" },
+  description:
+    "Buat undangan digital pernikahan, ulang tahun, dan khitanan sendiri dari HP. Tema adat Jawa & Sunda, lukisan & ilustrasi, animasi pembuka, RSVP & amplop digital. Coba gratis, mulai Rp69rb, aktif selamanya.",
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Rayakan.my.id · Desain premium untuk momen bahagiamu",
-    description: "Website undangan pernikahan yang bisa kamu ubah sendiri dari HP.",
-    images: [{ url: "/demo/afdal/og.jpg", width: 1200, height: 630 }],
-    locale: "id_ID",
-    type: "website",
+    title: "Undangan Digital Nikah, Ulang Tahun & Khitanan",
+    description: "Coba gratis, atur sendiri dari HP, kirim ke tamu dengan nama masing-masing. Mulai Rp69rb, aktif selamanya.",
+    url: "/",
+    images: [{ url: "/demo/afdal/og.jpg", width: 1200, height: 630, alt: "Contoh undangan digital Rayakan.my.id" }],
   },
 };
 
 const SECTIONS = [
-  { src: "/landing/sec-arya-invitation.webp", label: "Profil mempelai" },
+  { src: "/landing/sec-arya-invitation.webp", label: "Profil" },
   { src: "/landing/sec-arya-story.webp", label: "Kisah cinta" },
   { src: "/landing/sec-arya-date.webp", label: "Hitung mundur" },
   { src: "/landing/sec-arya-venue.webp", label: "Lokasi & jadwal" },
@@ -37,14 +40,23 @@ const SECTIONS = [
 ];
 
 const FAQ = [
-  ["Berapa lama undangan bisa jadi?", "Begitu pembayaran dikonfirmasi, kamu langsung dapat akses editor. Kebanyakan pasangan selesai mengisi dalam 15–30 menit. Paket Eksklusif kami isikan untukmu."],
-  ["Apakah perlu install aplikasi?", "Tidak. Editor dibuka dari browser HP atau laptop. Cukup ketuk bagian undangan, ganti foto dan teks, semuanya tersimpan otomatis."],
-  ["Bisa diubah setelah dibagikan?", "Bisa, kapan saja selama masa aktif. Link undangan tetap sama, jadi tamu langsung melihat versi terbaru."],
+  ["Apa bedanya Coba Gratis, Edit Sendiri, dan Siap Pakai?", "Coba Gratis: pakai semua tema dan editor, lalu simpan draf, tapi belum bisa dikirim ke tamu. Edit Sendiri (Rp69rb): kamu yang mengatur, kami terbitkan. Siap Pakai (Rp149rb): kirim data & foto, admin yang menyusunkan sampai jadi."],
+  ["Bisa untuk acara selain pernikahan?", "Bisa. Ada tema khusus ulang tahun dan khitanan, dan semua tema bisa dipakai untuk acara apa pun. Label, jumlah nama, dan teks bawaan menyesuaikan jenis acaranya."],
+  ["Saya tidak punya foto prewedding. Bagaimana?", "Pakai tema lukisan seperti Dua Sejoli, Taman Lukis, atau tema adat: foto utamanya diganti lukisan atau ilustrasi AI kalian. Tidak ingin memakai gambar wajah sama sekali? Pilih tata letak Ilustrasi tanpa wajah. Bisa juga memakai foto masa kecil atau versi anak-anak buatan AI dengan tema Kenangan Kecil."],
+  ["Berapa lama undangan bisa jadi?", "Pilih tema, isi nama dan tanggal, undangan langsung tampil. Kebanyakan selesai dilengkapi dalam 15–30 menit. Di paket Siap Pakai, admin yang menyusunkan untukmu."],
+  ["Apakah perlu install aplikasi atau daftar akun?", "Tidak. Editor dibuka dari browser HP atau laptop. Untuk menyimpan draf cukup isi nama dan nomor WhatsApp."],
+  ["Bisa diubah setelah dibagikan?", "Bisa, kapan saja sampai hari H dan sesudahnya. Link undangan tetap sama, jadi tamu langsung melihat versi terbaru."],
   ["Bagaimana mengirim ke tamu dengan nama masing-masing?", "Masukkan daftar tamu (atau import dari Excel), lalu tekan tombol WhatsApp di samping nama. Pesan dan link berisi nama tamu sudah otomatis terisi."],
-  ["Apakah cocok untuk pernikahan non-muslim?", "Cocok. Kaligrafi dan ayat bisa dimatikan atau diganti dengan kutipan lain, misalnya ayat Alkitab atau kutipan favorit kalian."],
-  ["Bagaimana cara bayar?", "Pilih paket lalu chat kami di WhatsApp. Pembayaran lewat transfer bank atau e-wallet, undangan aktif setelah dikonfirmasi."],
-  ["Apa yang terjadi setelah masa aktif habis?", "Undangan tidak lagi bisa dibuka tamu, dan bisa diperpanjang kapan saja. Paket Eksklusif aktif selamanya."],
+  ["Bagaimana cara bayar?", "Tekan Kirim ke admin di editor dan pilih paket. Admin membalas lewat WhatsApp dengan info pembayaran (transfer bank / e-wallet). Undangan terbit setelah dikonfirmasi dan aktif selamanya."],
 ];
+
+const PILLARS = [
+  { icon: Wand2, title: "Gampang dibuat", body: "Pilih tema, isi nama dan tanggal, undangan langsung jadi. Edit cukup dengan mengetuk bagian yang ingin diubah." },
+  { icon: Palette, title: "Custom sesukamu", body: `Campur tata letak tiap bagian, ${PALETTE_IDS.length} palet warna, ${FONT_PAIR_IDS.length} pasangan huruf, dan ${DECOR_IDS.length - 1} set ornamen beranimasi.` },
+  { icon: Sparkles, title: "Tema yang memikat", body: "Adat Jawa & Sunda, lukisan cat air, stiker foto masa kecil, sampai pesta ulang tahun anak. Dibuka dengan animasi amplop, gerbang, atau stiker." },
+];
+
+const TRUST = ["Coba gratis tanpa daftar", "Bayar setelah jadi", "Bisa diubah sampai hari H", "Aktif selamanya"];
 
 /** Promo runs until the end of `endsAt` (WIB). No end date means always on. */
 function promoEnd(endsAt: string) {
@@ -65,18 +77,69 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
 }
 
 export default async function Landing() {
-  const [plans, settings] = await Promise.all([getPlans(), getSettings()]);
-  const cheapest = Math.min(...plans.map((p) => p.price));
+  const [plans, settings, reviews, made] = await Promise.all([getPlans(), getSettings(), getShownReviews(), countSites()]);
+  const cheapest = Math.min(...plans.filter((p) => p.price > 0).map((p) => p.price));
   const promoEnds = promoEnd(settings.promoEndsAt);
   const promoActive = isPromoActive(promoEnds);
   const order = (p?: Plan) => contactHref(settings, p ? `Halo Rayakan.my.id, saya tertarik paket ${p.name} (${rupiah(p.price)}). Boleh dibantu?` : GENERAL_ENQUIRY);
+  const consult = contactHref(settings, "Halo Rayakan.my.id, saya mau konsultasi undangan digital.");
+  const planCta = (p: Plan) => (p.id === "siap" ? { href: order(p), label: `Pesan ${p.name}`, external: true } : { href: "/buat", label: p.price ? `Mulai ${p.name}` : "Coba gratis sekarang", external: false });
   const portfolio = portfolioCards(settings).slice(0, 4);
 
   return (
     <div className="overflow-x-clip bg-rk-paper font-rk-sans text-rk-ink selection:bg-rk-sand selection:text-rk-ink">
-      <LandingNav orderHref={order()} overlay />
+      <JsonLd data={[organizationLd(settings.instagram ? [`https://instagram.com/${settings.instagram}`] : []), websiteLd(), serviceLd(plans), faqLd(FAQ)]} />
+      <LandingNav orderHref={consult} overlay />
 
-      <Hero orderHref={order()} consultHref={order()} priceFrom={rupiah(cheapest)} />
+      <Hero tryHref="/buat" consultHref={consult} priceFrom={rupiah(cheapest)} />
+
+      {/* ------------------------------ Pillars + trust ------------------------------ */}
+      <section className="relative px-4 pb-6 pt-20 sm:px-6 lg:pt-28">
+        <div className="mx-auto max-w-[1200px]">
+          <Reveal variant="blur" className="text-center">
+            <Eyebrow>Kenapa Rayakan.my.id</Eyebrow>
+            <Title className="mx-auto mt-4 max-w-[760px] text-[clamp(38px,5.4vw,66px)]">Gampang dibuat, bebas diatur, cantik dilihat.</Title>
+          </Reveal>
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {PILLARS.map(({ icon: Icon, title, body }, i) => (
+              <Reveal key={title} delay={i * 100} className="flex gap-4 rounded-[24px] border border-rk-line/80 bg-[#fffdf9] p-5 sm:p-7 md:flex-col">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rk-ink text-[#f3d8a7]">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span>
+                  <span className="block text-[18px] font-semibold">{title}</span>
+                  <span className="mt-1.5 block text-[14px] leading-relaxed text-rk-ink/65">{body}</span>
+                </span>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2.5 rounded-[22px] bg-[#efe7da] px-5 py-4 text-[13.5px] font-semibold text-rk-ink/80">
+            {TRUST.map((t) => (
+              <span key={t} className="inline-flex items-center gap-2">
+                <Check className="h-4 w-4 text-rk-bronze" /> {t}
+              </span>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ------------------------------ Theme catalogue ------------------------------ */}
+      <section id="tema" className="relative scroll-mt-16 overflow-hidden px-4 py-20 sm:px-6 lg:py-28">
+        <div className="pointer-events-none absolute left-[3%] top-14 hidden w-[130px] -rotate-12 lg:block xl:left-[6%]">
+          <Bloom className="rk-sway h-auto w-full" />
+        </div>
+        <div className="relative mx-auto max-w-[1200px]">
+          <Reveal variant="blur" className="text-center">
+            <Eyebrow>{THEME_IDS.length} tema pilihan</Eyebrow>
+            <Title className="mx-auto mt-4 max-w-[720px] text-[clamp(40px,5.5vw,68px)]">Satu tema untuk setiap momen.</Title>
+            <p className="mx-auto mt-4 max-w-[560px] text-[15px] text-rk-ink/60">Elegan, adat, lukisan & ilustrasi, foto masa kecil, sampai pesta anak. Ketuk untuk melihat contohnya, lalu pakai dan atur sesukamu.</p>
+          </Reveal>
+          <div className="mt-10">
+            <ThemeCatalog />
+          </div>
+          <p className="mt-10 text-center text-[13px] text-rk-mute">Semua tema bisa dipakai untuk acara apa pun, dan tiap bagian bisa diganti tata letaknya kapan saja.</p>
+        </div>
+      </section>
 
       <Features />
 
@@ -104,63 +167,31 @@ export default async function Landing() {
         </div>
       </section>
 
-      {/* ------------------------------ Themes ------------------------------ */}
-      <section id="tema" className="relative scroll-mt-16 overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
-        <div className="pointer-events-none absolute left-[3%] top-14 hidden w-[130px] -rotate-12 lg:block xl:left-[6%]">
-          <Bloom className="rk-sway h-auto w-full" />
-        </div>
-        <div className="relative mx-auto max-w-[1200px]">
-          <Reveal variant="blur" className="text-center">
-            <Eyebrow>Pilihan tema</Eyebrow>
-            <Title className="mx-auto mt-4 max-w-[680px] text-[clamp(40px,5.5vw,68px)]">Mulai dari tema, atur sesukamu.</Title>
-            <p className="mx-auto mt-4 max-w-[520px] text-[15px] text-rk-ink/60">Tiap bagian punya beberapa pilihan tata letak, {PALETTE_IDS.length} palet warna terang &amp; gelap, dan {FONT_PAIR_IDS.length} pasangan huruf. Ganti kapan saja tanpa mengisi ulang.</p>
-          </Reveal>
-          <div className="mt-14 grid gap-5 md:grid-cols-2">
-            {Object.values(THEMES).map((t, i) => (
-              <Reveal key={t.id} delay={i * 120} className="group overflow-hidden rounded-[28px] border border-rk-line/80 bg-[#fffdf9]">
-                <DuoStage backdrop={t.preview.backdrop} className="aspect-[16/11] px-8 py-8 sm:px-12">
-                  <DeviceDuo desktop={t.preview.desktop} mobile={t.preview.mobile} alt={`Tema ${t.name}`} className="transition duration-700 group-hover:scale-[1.02]" />
-                </DuoStage>
-                <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="font-rk-display text-[34px] font-light leading-none tracking-[-0.02em]">{t.name}</p>
-                    <p className="mt-2 text-[13px] text-rk-mute">
-                      {t.tagline} · huruf {themeSwatch(t).fonts}
-                    </p>
-                    <div className="mt-3 flex gap-1.5" aria-hidden="true">
-                      {(["bg", "accent", "muted"] as const).map((k) => (
-                        <span key={k} className="h-4 w-4 rounded-full ring-1 ring-black/10" style={{ background: themeSwatch(t)[k] }} />
-                      ))}
-                    </div>
-                  </div>
-                  <Link prefetch={false} href={`/tema/${t.id}`} className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-rk-ink px-5 text-[13px] font-semibold text-white">
-                    Lihat demo <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------ Portfolio ------------------------------ */}
-      <section id="portofolio" className="relative scroll-mt-16 overflow-hidden bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
+      {/* ------------------------------ Portfolio + reviews ------------------------------ */}
+      <section id="ulasan" className="relative scroll-mt-16 overflow-hidden bg-[#efe7da] px-4 py-24 sm:px-6 lg:py-32">
         <div className="rk-parallax pointer-events-none absolute left-[42%] top-14 hidden text-rk-bronze/45 lg:block">
           <Rings className="rk-float h-[110px] w-auto" />
         </div>
         <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <Eyebrow>Portofolio</Eyebrow>
+              <Eyebrow>Portofolio & ulasan</Eyebrow>
               <Title className="mt-4 text-[clamp(44px,6.5vw,84px)]">
                 Momen bahagia, <em className="text-rk-bronze">dirayakan.</em>
               </Title>
             </div>
-            <Link prefetch={false} href="/portofolio" className="inline-flex h-11 items-center gap-2 self-start rounded-full border border-rk-ink/15 bg-white px-5 text-[14px] font-semibold transition hover:border-rk-ink/40 md:self-auto">
-              Lihat semua <ArrowRight className="h-4 w-4" />
-            </Link>
+            {reviews.length > 0 && <ReviewSummary reviews={reviews} made={made} />}
           </Reveal>
-          <PortfolioGrid items={portfolio} fillTo={4} ctaHref={order()} className="mt-14" />
+          <PortfolioGrid items={portfolio} fillTo={portfolio.length < 3 ? 3 : 4} ctaHref="/buat" className="mt-14" />
+          {reviews.length > 0 && (
+            <div className="mt-16">
+              <ReviewGrid reviews={reviews.slice(0, 9)} />
+            </div>
+          )}
+          <p className="mx-auto mt-10 flex max-w-[620px] items-start justify-center gap-2 text-center text-[13px] leading-relaxed text-rk-mute">
+            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            Sebagian besar undangan bersifat privat. Kami hanya menampilkan undangan yang sudah diizinkan pemiliknya.
+          </p>
         </div>
       </section>
 
@@ -174,7 +205,7 @@ export default async function Landing() {
               {[
                 ["Langsung di atas desain", "Tidak ada formulir panjang. Kamu melihat undangannya sendiri, ketuk foto atau nama, lalu ubah di panel kecil."],
                 ["Foto otomatis ringan", "Foto dari kamera HP diperkecil otomatis, jadi undangan tetap cepat dibuka tamu meski sinyal lemah."],
-                ["Warna, logo, dan lagu", "Pilih palet warna, logo inisial nama kalian, dan lagu latar. Bagian yang tidak perlu bisa disembunyikan."],
+                ["Tema, ornamen, dan lagu", "Ganti tema kapan saja, pilih ornamen beranimasi, warna, logo inisial, dan lagu latar. Bagian yang tidak perlu bisa disembunyikan."],
                 ["Tersimpan otomatis", "Setiap perubahan langsung tersimpan dan tampil di link yang sama."],
               ].map(([t, d], i) => (
                 <li key={t} className="grid grid-cols-[44px_1fr] gap-4">
@@ -186,8 +217,8 @@ export default async function Landing() {
                 </li>
               ))}
             </ol>
-            <Link prefetch={false} href="/demo/admin?tema=afdal" className="mt-10 inline-flex h-12 items-center gap-2 rounded-full bg-rk-ink px-6 text-[14px] font-semibold text-white">
-              Coba editornya sekarang <ArrowRight className="h-4 w-4" />
+            <Link prefetch={false} href="/buat" className="mt-10 inline-flex h-12 items-center gap-2 rounded-full bg-rk-ink px-6 text-[14px] font-semibold text-white">
+              Coba gratis sekarang <ArrowRight className="h-4 w-4" />
             </Link>
           </Reveal>
           <Reveal variant="right" delay={150} className="mx-auto w-full max-w-[320px]">
@@ -255,13 +286,13 @@ export default async function Landing() {
         <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur">
             <Eyebrow>Cara pesan</Eyebrow>
-            <Title className="mt-4 max-w-[640px] text-[clamp(40px,5.5vw,68px)]">Tiga langkah, undangan siap dibagikan.</Title>
+            <Title className="mt-4 max-w-[640px] text-[clamp(40px,5.5vw,68px)]">Coba dulu, bayar saat siap disebar.</Title>
           </Reveal>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
             {[
-              ["Pilih paket", "Chat kami di WhatsApp. Kamu langsung mendapat link editor dan password."],
-              ["Isi undangan", "Ganti foto dan teks dari HP. Di paket Eksklusif, tim kami yang mengisikan."],
-              ["Terbitkan & bagikan", "Setelah pembayaran dikonfirmasi, undangan aktif. Kirim ke tamu lewat WhatsApp."],
+              ["Pilih tema & coba gratis", "Pilih acara dan tema, isi nama dan tanggal. Undangan kamu langsung tampil, tanpa daftar akun."],
+              ["Atur & simpan draf", "Ganti foto, teks, warna, ornamen, dan tata letak dari HP. Simpan draf dengan nama dan nomor WhatsApp."],
+              ["Kirim ke admin & bagikan", "Pilih Edit Sendiri atau Siap Pakai. Setelah pembayaran dikonfirmasi, undangan terbit dan aktif selamanya."],
             ].map(([t, d], i) => (
               <Reveal key={t} delay={i * 100} className="rounded-[26px] border border-rk-line/80 bg-[#fffdf9] p-7 sm:p-9">
                 <span className="font-rk-display text-[64px] font-light leading-none text-rk-bronze/70">{i + 1}</span>
@@ -280,20 +311,20 @@ export default async function Landing() {
         </div>
         <div className="relative mx-auto max-w-[1200px]">
           <Reveal variant="blur" className="text-center">
-            <Eyebrow>Harga paket</Eyebrow>
-            <Title className="mt-4 text-[clamp(40px,6vw,76px)]">Satu kali bayar. Tanpa biaya bulanan.</Title>
-            <p className="mx-auto mt-4 max-w-[520px] text-[15px] text-rk-ink/60">Semua paket memakai desain yang sama premiumnya. Bedanya ada di fitur dan masa aktif.</p>
+            <Eyebrow>Harga</Eyebrow>
+            <Title className="mt-4 text-[clamp(40px,6vw,76px)]">Sekali bayar, aktif selamanya.</Title>
+            <p className="mx-auto mt-4 max-w-[540px] text-[15px] text-rk-ink/60">Semua tema dan fitur sama di setiap paket. Bedanya hanya siapa yang menyusun undangannya.</p>
           </Reveal>
           <div className="mt-14 grid gap-5 lg:grid-cols-3">
             {plans.map((p, i) => (
               <Reveal key={p.id} delay={i * 90} className={`relative flex flex-col rounded-[28px] p-7 ${p.highlight ? "bg-rk-ink text-rk-ivory shadow-[0_40px_80px_-40px_rgba(18,13,16,0.8)] lg:-my-4 lg:py-11" : "border border-rk-line bg-[#fffdf9]"}`}>
-                {p.highlight && <span className="absolute right-6 top-6 rounded-full bg-rk-sand px-3 py-1 text-[11px] font-bold text-rk-ink">Paling laris</span>}
+                {p.highlight && <span className="absolute right-6 top-6 rounded-full bg-rk-sand px-3 py-1 text-[11px] font-bold text-rk-ink">Paling hemat</span>}
                 <p className="font-rk-display text-[38px] font-light leading-none tracking-[-0.02em]">{p.name}</p>
                 <p className={`mt-2 text-[14px] ${p.highlight ? "text-rk-ivory/60" : "text-rk-mute"}`}>{p.tagline}</p>
                 <div className="mt-7">
                   {promoActive && p.normalPrice > p.price && <p className={`text-[14px] line-through ${p.highlight ? "text-rk-ivory/40" : "text-rk-mute"}`}>{rupiah(p.normalPrice)}</p>}
-                  <p className="text-[42px] font-semibold leading-none tracking-tight">{rupiah(promoActive ? p.price : p.normalPrice)}</p>
-                  <p className={`mt-2 text-[13px] ${p.highlight ? "text-rk-ivory/60" : "text-rk-mute"}`}>Aktif {activeLabel(p).toLowerCase()}</p>
+                  <p className="text-[42px] font-semibold leading-none tracking-tight">{p.price === 0 ? "Gratis" : rupiah(promoActive ? p.price : p.normalPrice)}</p>
+                  <p className={`mt-2 text-[13px] ${p.highlight ? "text-rk-ivory/60" : "text-rk-mute"}`}>{p.price === 0 ? "Simpan sebagai draf" : `Aktif ${activeLabel(p).toLowerCase()}`}</p>
                 </div>
                 <ul className="mt-7 flex-1 space-y-3 text-[14px]">
                   {p.benefits.map((b) => (
@@ -303,22 +334,27 @@ export default async function Landing() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href={order(p)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`mt-8 inline-flex h-12 items-center justify-center rounded-full text-[14px] font-semibold transition ${p.highlight ? "bg-rk-sand text-rk-ink hover:bg-rk-ivory" : "bg-rk-ink text-white hover:bg-rk-plum"}`}
-                >
-                  Pesan {p.name}
-                </a>
+                {(() => {
+                  const cta = planCta(p);
+                  const cls = `mt-8 inline-flex h-12 items-center justify-center rounded-full text-[14px] font-semibold transition ${p.highlight ? "bg-rk-sand text-rk-ink hover:bg-rk-ivory" : "bg-rk-ink text-white hover:bg-rk-plum"}`;
+                  return cta.external ? (
+                    <a href={cta.href} target="_blank" rel="noreferrer" className={cls}>
+                      {cta.label}
+                    </a>
+                  ) : (
+                    <Link prefetch={false} href={cta.href} className={cls}>
+                      {cta.label}
+                    </Link>
+                  );
+                })()}
               </Reveal>
             ))}
           </div>
           <p className="mt-10 text-center text-[13px] text-rk-mute">
-            Pembayaran via transfer bank / e-wallet. Ingin lihat dulu?{" "}
-            <Link prefetch={false} href="/demo/admin?tema=afdal" className="font-semibold text-rk-ink underline underline-offset-4">
-              Coba editornya gratis
-            </Link>
+            Pembayaran via transfer bank / e-wallet setelah admin membalas. Bingung pilih yang mana?{" "}
+            <a href={consult} target="_blank" rel="noreferrer" className="font-semibold text-rk-ink underline underline-offset-4">
+              Konsultasi gratis
+            </a>
             .
           </p>
         </div>
@@ -335,7 +371,7 @@ export default async function Landing() {
             <Title className="mt-4 text-[clamp(40px,5.5vw,68px)]">Yang sering ditanyakan.</Title>
             <p className="mt-5 max-w-[340px] text-[15px] leading-relaxed text-rk-ink/60">
               Masih ada pertanyaan?{" "}
-              <a href={order()} target="_blank" rel="noreferrer" className="text-rk-ink underline underline-offset-4">
+              <a href={consult} target="_blank" rel="noreferrer" className="text-rk-ink underline underline-offset-4">
                 Chat kami di WhatsApp
               </a>
               .
@@ -361,20 +397,20 @@ export default async function Landing() {
           <Image src="/demo/afdal/closing.webp" alt="" fill sizes="1200px" className="rk-zoom-in object-cover object-[center_40%]" />
           <div className="absolute inset-0 bg-[#1d1714]/65" />
           <div className="relative px-6 py-20 text-center text-white sm:py-28">
-            <h2 className="mx-auto max-w-[760px] font-rk-display text-[clamp(42px,6.5vw,84px)] font-light leading-[1] tracking-[-0.02em]">Siap merayakan momen kalian?</h2>
-            <p className="mx-auto mt-5 max-w-[440px] text-[15px] text-white/75">Buat undangan yang akan diingat tamu, dan tetap mudah kamu kelola sendiri.</p>
+            <h2 className="mx-auto max-w-[760px] font-rk-display text-[clamp(42px,6.5vw,84px)] font-light leading-[1] tracking-[-0.02em]">Siap merayakan momenmu?</h2>
+            <p className="mx-auto mt-5 max-w-[440px] text-[15px] text-white/75">Coba gratis sekarang. Undanganmu langsung jadi, dan baru bayar saat siap disebar.</p>
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href={order()} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-[15px] font-semibold text-rk-ink">
-                Pesan via WhatsApp
-              </a>
-              <Link prefetch={false} href="/tema/afdal" className="inline-flex h-12 items-center justify-center rounded-full border border-white/35 px-7 text-[15px] font-semibold">
-                Lihat contoh
+              <Link prefetch={false} href="/buat" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-[15px] font-semibold text-rk-ink">
+                <Heart className="h-4 w-4" /> Coba gratis
               </Link>
+              <a href={consult} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center justify-center rounded-full border border-white/35 px-7 text-[15px] font-semibold">
+                Konsultasi sekarang
+              </a>
             </div>
           </div>
         </Reveal>
       </section>
-      <LandingFooter settings={settings} orderHref={order()} />
+      <LandingFooter settings={settings} orderHref={consult} />
     </div>
   );
 }

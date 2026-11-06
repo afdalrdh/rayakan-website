@@ -12,7 +12,7 @@ import { useSrc, useTheme } from "./context";
  *  - live: a fixed overlay that also starts the music,
  *  - edit / thumb: an inline, tappable section.
  */
-export type CoverFace = (p: { guestName: string; onOpen?: () => void }) => React.JSX.Element;
+export type CoverFace = (p: { guestName: string; onOpen?: (delayMs?: number) => void }) => React.JSX.Element;
 
 export function CoverInline({ guestName, Face }: { guestName: string; Face: CoverFace }) {
   return (
@@ -71,9 +71,11 @@ export function CoverOverlay({ guestName, Face }: { guestName: string; Face: Cov
           <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }} className="fixed inset-0 z-[100] overflow-y-auto">
             <Face
               guestName={guestName}
-              onOpen={() => {
+              onOpen={(delay = 0) => {
+                // Music must start inside the tap; animated covers finish their opening before the overlay fades.
                 play();
-                setOpen(true);
+                if (delay > 0) setTimeout(() => setOpen(true), delay);
+                else setOpen(true);
               }}
             />
           </motion.div>

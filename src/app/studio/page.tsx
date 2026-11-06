@@ -3,10 +3,10 @@ import { LoginCard } from "@/components/auth/LoginCard";
 import { StudioApp, type SiteSummary } from "@/components/studio/StudioApp";
 import { isOwner, ownerCredentials } from "@/lib/server/auth";
 import { storageProvider } from "@/lib/server/media";
-import { getPlans, getSettings, listSites } from "@/lib/server/data";
+import { getPlans, getSettings, listReviews, listSites } from "@/lib/server/data";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Studio · Rayakan.my.id", robots: { index: false } };
+export const metadata = { title: "Studio", robots: { index: false } };
 
 export default async function StudioPage() {
   if (!(await isOwner())) {
@@ -24,7 +24,7 @@ export default async function StudioPage() {
       />
     );
   }
-  const [sites, plans, settings] = await Promise.all([listSites(), getPlans(), getSettings()]);
+  const [sites, plans, settings, reviews] = await Promise.all([listSites(), getPlans(), getSettings(), listReviews().catch(() => [])]);
   const summary: SiteSummary[] = sites.map((s) => ({
     slug: s.slug,
     title: s.title,
@@ -40,6 +40,10 @@ export default async function StudioPage() {
     guests: s.guests,
     wishes: s.wishes,
     eventDate: s.content.event.date,
+    occasion: s.content.occasion,
+    source: s.source,
+    requestPlan: s.requestPlan,
+    requestedAt: s.requestedAt,
   }));
   const env = {
     database: !!process.env.DATABASE_URL,
@@ -48,5 +52,5 @@ export default async function StudioPage() {
     studioPassword: !ownerCredentials()?.isDefault,
     siteUrl: !!process.env.NEXT_PUBLIC_SITE_URL,
   };
-  return <StudioApp sites={summary} plans={plans} settings={settings} env={env} />;
+  return <StudioApp sites={summary} plans={plans} settings={settings} env={env} reviews={reviews} />;
 }

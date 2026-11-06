@@ -8,7 +8,9 @@ Panduan singkat agar menambah fitur atau tema tidak perlu membaca seluruh kode.
 2. **Tampilan = gaya + tata letak.** `content.style` (mode terang/gelap, palet, pasangan huruf, aksen) dan `content.layouts` (satu id tata letak per bagian). Tema (`themes/meta.ts`) hanya preset awal untuk keduanya.
 3. **Tata letak tidak tahu soal database.** Layout hanya menerima `content` lewat `ThemeProvider` (`src/themes/shared/context.tsx`). Halaman publik, editor, admin, dan demo memakai `ThemeRenderer` yang sama.
 4. **Server selalu memvalidasi.** Apa pun yang dikirim editor dibersihkan di `src/lib/server/validate.ts` sebelum disimpan. Batas paket diterapkan lagi saat dirender untuk tamu (`components/site/PublicSite.tsx`).
-5. **Data lama tetap terbaca.** `normalizeContent()` mengisi kolom baru dengan nilai bawaan dan mengubah `palette` lama menjadi `style` + `layouts`, jadi skema bisa bertambah tanpa migrasi database.
+5. **Satu model untuk semua acara.** `content.occasion` (`nikah` | `ultah` | `khitan`, lihat `lib/content/occasion.ts`) menentukan label, teks bawaan, dan apakah ada satu atau dua nama. Layout memakai helper `namesOf`, `peopleOf`, `useEyebrow` alih-alih menulis "The Wedding of" atau mengasumsikan dua mempelai.
+6. **Ornamen adalah bagian gaya.** `content.style.decor` memilih set ornamen & animasi (`themes/decor/`). `Section` otomatis menggambar sudut + pola, `Rule` di judul berganti jadi pemisah ornamen, dan `ThemeRenderer` menambah lapisan partikel. Layout tanpa foto (Ilustrasi, Medali, sampul beranimasi) mengambil gambarnya dari set yang sama.
+7. **Data lama tetap terbaca.** `normalizeContent()` mengisi kolom baru dengan nilai bawaan dan mengubah `palette` lama menjadi `style` + `layouts`, jadi skema bisa bertambah tanpa migrasi database.
 
 ## Peta folder
 
@@ -16,13 +18,14 @@ Panduan singkat agar menambah fitur atau tema tidak perlu membaca seluruh kode.
 src/
 ├─ app/                       Routing (Next.js App Router)
 │  ├─ page.tsx                Landing page (bagian-bagiannya di components/landing/)
+│  ├─ buat/                   Wizard Coba Gratis: pilih acara → tema → isi 3 data → editor sandbox
 │  ├─ portofolio/             Daftar semua portofolio
 │  ├─ tema/[id]/              Contoh asli tiap tema (statis), mis. /tema/afdal
 │  ├─ demo/ · demo/admin/     Sandbox: editor & hasilnya, disimpan di browser
 │  ├─ studio/                 Dashboard pemilik
 │  ├─ [slug]/…                Undangan klien, /[slug]/[tamu], /admin, /preview
 │  ├─ canvas/                 Isi iframe pratinjau di editor
-│  ├─ actions/                Server actions: site.ts (klien), studio.ts (pemilik)
+│  ├─ actions/                Server actions: site.ts (klien), studio.ts (pemilik), draft.ts (simpan draf publik)
 │  └─ api/                    Upload, media lokal, ucapan, impor/template Excel
 ├─ lib/
 │  ├─ content/                Skema, paket, helper, contoh isi (tanpa React)
@@ -31,7 +34,8 @@ src/
 │  ├─ upload-client.ts        Kompres foto & buat gambar OG di browser
 │  └─ messages.ts             Teks WhatsApp & URL situs
 ├─ themes/
-│  ├─ style.ts                Design system: 12 palet (terang & gelap), 8 pasangan huruf, token CSS
+│  ├─ style.ts                Design system: 16 palet (terang & gelap), 9 pasangan huruf, token CSS
+│  ├─ decor/                  Ornamen & animasi: catalog.ts (id), art.tsx (sudut, pemisah, pola, partikel, adegan), figures.tsx (figur tanpa wajah)
 │  ├─ meta.ts                 Preset tema (gaya + tata letak awal), musik bawaan
 │  ├─ index.tsx               ThemeRenderer + LayoutPreview (satu-satunya pintu masuk)
 │  ├─ layouts/                catalog.ts (daftar & id) + satu file per bagian (hero.tsx, couple.tsx, …)
@@ -60,9 +64,37 @@ src/
 
 ### Menambah preset tema
 
-1. `src/themes/meta.ts`: tambahkan id ke `THEME_IDS` dan isi `THEMES[id]` (gaya, tata letak, musik, gambar pratinjau).
-2. `src/lib/content/demo.ts`: tambahkan contoh isi di `DEMO_BY_THEME` (boleh memakai `presetDemo`).
-3. Ambil tangkapan layar `/tema/<id>` ke `public/landing/<id>-desktop.webp` dan `-mobile.webp`.
+1. `src/themes/meta.ts`: tambahkan id ke `THEME_IDS` dan isi `THEMES[id]` (acara utama, tag filter, gaya + ornamen, tata letak, musik). `preview(id)` menunjuk ke tangkapan layar.
+2. Contoh isi: tema lama di `lib/content/demo.ts`, tema baru di `lib/content/demo-extra.ts` (`build(theme, occasion, {...})`). Pakai orang & data fiktif.
+3. Ambil tangkapan layar `/tema/<id>` sesudah sampul dibuka: `public/landing/<id>-mobile.webp` (390×844 @2x) dan `-desktop.webp` (1440×900).
+
+### Gambar contoh AI (lukisan & foto anak)
+
+- `public/demo/ilustrasi/<tema>.webp` (2:3) dipakai hero **Lukisan** tema Jawa, Sunda, Sejoli, Lukis, Konfeti, Angkasa, Khitan; `<tema>-og.webp` (1200×630) untuk pratinjau WhatsApp.
+- `public/demo/kecil/`: `kid-boy.webp` / `kid-girl.webp` (polaroid & profil), `pair-cutout.webp` (PNG tanpa latar untuk sampul **Stiker**), `og.webp`.
+- Semua wajah di gambar ini buatan AI dan fiktif (bukan foto klien). Sumber resolusi penuhnya ada di file Figma https://www.figma.com/design/g7ZicoVuaLWEjiN01wkPuQ. Path `/demo/` otomatis muncul sebagai pengingat "masih foto contoh" sebelum terbit.
+- Sampul **Stiker** membaca `cover.photo` + `cover.kicker/title/bubbleA/bubbleB` (kosong = teks bawaan acara di `OCCASIONS[*].sticker`, gelembung kosong disembunyikan). Garis putihnya dari kelas CSS `.t-sticker`, jadi PNG klien tidak perlu diberi garis sendiri.
+- Ganti gambar contoh dengan nama file baru (bukan menimpa), karena optimasi gambar Next menyimpan cache per URL.
+
+### Menambah set ornamen
+
+1. `themes/decor/catalog.ts`: tambah id di `DECOR_IDS` + nama, deskripsi, jenis partikel.
+2. `themes/decor/art.tsx`: tambah gambar di `CornerArt`, `DecorDivider`, (opsional) `DecorPattern`, `Backdrop`, `PortalFrame` dan bentuk `PORTAL`. Warnai dengan `var(--t-accent)` / `var(--t-muted)` agar ikut palet; animasi pakai kelas `t-*` di `globals.css` (otomatis mati untuk reduced motion).
+
+### Menambah jenis acara
+
+`lib/content/occasion.ts`: tambah id dan teksnya (label, teks bawaan, jadwal). `applyOccasion` mengganti teks yang masih bawaan saat klien berpindah acara.
+
+### Alur Coba Gratis → draf → terbit
+
+1. `/buat` menulis isi ke sandbox browser lalu membuka `/demo/admin`.
+2. **Simpan draf** (`components/editor/SaveDraft.tsx` → `actions/draft.ts`): membuat situs `status=draft`, `plan_id=gratis`, `source=self`, login otomatis, lalu memindahkan foto dari IndexedDB ke server.
+3. **Kirim ke admin** (`PublishPanel` → `requestPublishAction`): menyimpan `request_plan` + `requested_at` dan membuka WhatsApp admin. Studio → Permintaan menampilkannya.
+4. Studio → Terbitkan: paket `gratis` diganti paket yang diminta, masa aktif mulai.
+
+### Ulasan
+
+Tabel `reviews`. Klien menulis dari Admin → Pengaturan (status `pending`), pemilik menyetujui/menambah di Studio → Ulasan. Landing hanya menampilkan `shown` (cache tag `reviews`). Link "Lihat website" hanya bila pemiliknya mengizinkan; selain itu tampil "Privat". Jangan memasukkan ulasan karangan.
 
 ### Menambah palet atau pasangan huruf
 

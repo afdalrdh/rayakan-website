@@ -1,6 +1,6 @@
 "use client";
 
-import { initials } from "@/lib/content";
+import { initials, namesOf } from "@/lib/content";
 import { Img, useTheme } from "./context";
 
 /**
@@ -15,9 +15,20 @@ export function CoupleLogo({ className = "", underline = false, tone = "light" }
     const darken = tone === "dark" && c.style.mode === "light";
     return <Img src={c.logo.image} alt="Logo" width={340} height={144} priority className={`object-contain ${darken ? "brightness-0" : ""} ${className}`} />;
   }
-  const [a = "", b = ""] = initials(c.hero.firstName, c.hero.secondName);
+  const n = namesOf(c);
+  const [a = "", b = ""] = initials(n.first, n.second);
   const ink = tone === "light" ? "#fff" : "var(--t-accent)";
   const font = "'Cormorant Garamond', Georgia, serif";
+  if (n.single) {
+    return (
+      <svg viewBox="0 0 120 102" className={className} role="img" aria-label={a}>
+        <circle cx="60" cy="52" r="40" fill="none" stroke={tone === "light" ? "rgba(255,255,255,0.6)" : "var(--t-muted)"} strokeWidth="1.5" />
+        <text x="60" y="78" textAnchor="middle" fontFamily={font} fontSize="72" fontWeight="500" fill={ink}>
+          {a}
+        </text>
+      </svg>
+    );
+  }
   return (
     <svg viewBox="0 0 120 102" className={className} role="img" aria-label={`${a} & ${b}`}>
       <text x="34" y="70" textAnchor="middle" fontFamily={font} fontSize="78" fontWeight="500" fill={ink}>

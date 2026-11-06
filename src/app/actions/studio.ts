@@ -3,7 +3,7 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { timingSafeEqual } from "crypto";
-import { DEFAULT_LAYOUTS, FONT_PAIR_IDS, PALETTE_IDS, PLAN_IDS, PLANS, SECTION_KEYS, slugify, THEME_IDS, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
+import { DEFAULT_LAYOUTS, FONT_PAIR_IDS, isOccasion, OCCASIONS, PALETTE_IDS, PLAN_IDS, PLANS, SECTION_KEYS, slugify, THEME_IDS, type Occasion, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
 import {
   clearLoginFailures,
   clearSession,
@@ -18,15 +18,20 @@ import {
 } from "@/lib/server/auth";
 import {
   computeExpiry,
+  deleteReview,
   deleteSite,
   findSite,
   getPlan,
+  insertReview,
   insertSite,
   RESERVED_SLUGS,
   saveSettings,
   savePlan,
+  setReviewStatus,
+  updateReview,
   updateSiteFields,
   type AppSettings,
+  type ReviewStatus,
 } from "@/lib/server/data";
 import { sampleContent, starterContent } from "@/lib/server/validate";
 
@@ -79,24 +84,27 @@ export async function createSiteAction(input: {
   sample?: boolean;
   /** "Custom" start: own mode, palette and font pair with standard layouts. */
   style?: { mode: string; palette: string; fonts: string };
+  occasion?: Occasion;
 }): Promise<Result<{ slug: string; password: string }>> {
   try {
     await requireOwner();
+    const occasion: Occasion = isOccasion(input.occasion) ? input.occasion : "nikah";
+    const single = OCCASIONS[occasion].single;
     const first = input.firstName.trim().slice(0, 20);
-    const second = input.secondName.trim().slice(0, 20);
-    if (!first || !second) throw new Error("Nama panggilan kedua mempelai wajib diisi.");
-    const check = await checkSlugAction(input.slug || `${first}-${second}`);
+    const second = single ? "" : input.secondName.trim().slice(0, 20);
+    if (!first || (!single && !second)) throw new Error(single ? "Nama panggilan wajib diisi." : "Nama panggilan kedua mempelai wajib diisi.");
+    const check = await checkSlugAction(input.slug || (single ? first : `${first}-${second}`));
     if (!check.available) throw new Error(`Alamat tidak bisa dipakai: ${check.reason}`);
-    const planId = (PLAN_IDS as string[]).includes(input.planId) ? input.planId : "premium";
+    const planId = (PLAN_IDS as string[]).includes(input.planId) ? input.planId : "mandiri";
     const password = generatePassword();
-    const content = (input.sample ? sampleContent : starterContent)((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate);
+    const content = (input.sample ? sampleContent : starterContent)((THEME_IDS as readonly string[]).includes(input.theme) ? input.theme : "arya", first, second, input.eventDate, occasion);
     if (input.style) {
-      content.style = { mode: input.style.mode === "dark" ? "dark" : "light", palette: PALETTE_IDS.includes(input.style.palette) ? input.style.palette : "marun", fonts: FONT_PAIR_IDS.includes(input.style.fonts) ? input.style.fonts : "klasik", accent: "" };
+      content.style = { mode: input.style.mode === "dark" ? "dark" : "light", palette: PALETTE_IDS.includes(input.style.palette) ? input.style.palette : "marun", fonts: FONT_PAIR_IDS.includes(input.style.fonts) ? input.style.fonts : "klasik", accent: "", decor: "none" };
       content.layouts = { ...DEFAULT_LAYOUTS };
     }
     await insertSite({
       slug: check.slug,
-      title: `${first} & ${second}`,
+      title: single ? first : `${first} & ${second}`,
       planId,
       content,
       passwordHash: await hashPassword(password),
@@ -118,9 +126,12 @@ export async function setPublishedAction(slug: string, publish: boolean): Promis
     const site = await findSite(slug);
     if (!site) throw new Error("Undangan tidak ditemukan.");
     if (publish) {
-      const plan = await getPlan(site.planId);
+      // A free draft gets the package the client asked for (or Edit Sendiri) when it goes live.
+      const planId = site.planId === "gratis" ? site.requestPlan ?? "mandiri" : site.planId;
+      const plan = await getPlan(planId);
       const start = site.publishedAt ? new Date(site.publishedAt) : new Date();
-      await updateSiteFields(slug, { status: "published", publishedAt: start.toISOString(), expiresAt: computeExpiry(plan, start) });
+      await updateSiteFields(slug, { planId, status: "published", publishedAt: start.toISOString(), expiresAt: computeExpiry(plan, start) });
+      updateTag("stats");
     } else {
       await updateSiteFields(slug, { status: "draft" });
     }
@@ -225,6 +236,69 @@ export async function saveSettingsAction(s: AppSettings): Promise<Result> {
       promoEndsAt: /^\d{4}-\d{2}-\d{2}$/.test(s.promoEndsAt) ? s.promoEndsAt : "",
     });
     updateTag("settings");
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/* ------------------------------ Reviews ------------------------------ */
+
+function cleanReview(f: { name: string; occasion: string; city: string; rating: number; message: string; link: string }) {
+  const name = f.name.replace(/\s+/g, " ").trim().slice(0, 60);
+  const message = f.message.trim().slice(0, 600);
+  if (!name || message.length < 5) throw new Error("Nama dan isi ulasan wajib diisi.");
+  let link: string | null = null;
+  if (f.link.trim()) {
+    try {
+      const u = new URL(f.link.trim());
+      if (u.protocol === "https:") link = u.toString().slice(0, 300);
+    } catch {
+      throw new Error("Link harus diawali https://");
+    }
+  }
+  return {
+    name,
+    occasion: isOccasion(f.occasion) ? f.occasion : "nikah",
+    city: f.city.trim().slice(0, 40) || null,
+    rating: Math.min(5, Math.max(1, Math.round(Number(f.rating) || 5))),
+    message,
+    link,
+  };
+}
+
+/** Owner adds or edits a review (e.g. copied from a client's WhatsApp message, with their permission). */
+export async function saveReviewAction(id: number | null, f: { name: string; occasion: string; city: string; rating: number; message: string; link: string; status: ReviewStatus }): Promise<Result> {
+  try {
+    await requireOwner();
+    const clean = cleanReview(f);
+    const status: ReviewStatus = ["pending", "shown", "hidden"].includes(f.status) ? f.status : "shown";
+    if (id) await updateReview(id, { ...clean, status });
+    else await insertReview(null, clean, status);
+    updateTag("reviews");
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function setReviewStatusAction(id: number, status: ReviewStatus): Promise<Result> {
+  try {
+    await requireOwner();
+    if (!["pending", "shown", "hidden"].includes(status)) throw new Error("Status tidak dikenal.");
+    await setReviewStatus(id, status);
+    updateTag("reviews");
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function deleteReviewAction(id: number): Promise<Result> {
+  try {
+    await requireOwner();
+    await deleteReview(id);
+    updateTag("reviews");
     return { ok: true };
   } catch (e) {
     return fail(e);

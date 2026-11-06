@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 
 const LINKS = [
   ["/#tema", "Tema"],
-  ["/portofolio", "Portofolio"],
-  ["/#fitur", "Fitur"],
   ["/#harga", "Harga"],
+  ["/#ulasan", "Ulasan"],
   ["/#faq", "FAQ"],
+  ["/buat", "Coba gratis"],
 ] as const;
 
 /**
@@ -47,7 +47,7 @@ export function LandingNav({ orderHref, overlay = false }: { orderHref: string; 
           rel="noreferrer"
           className={`ml-auto rounded-full px-4 py-2 text-[13px] font-semibold transition md:ml-0 ${dark ? "bg-[#f3eadb] text-rk-ink hover:bg-white" : "border border-rk-ink/15 bg-white text-rk-ink hover:border-rk-ink/40"}`}
         >
-          Pesan sekarang
+          Konsultasi sekarang
         </a>
       </nav>
     </header>

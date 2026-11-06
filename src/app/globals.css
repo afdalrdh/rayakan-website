@@ -19,6 +19,8 @@
 @font-face { font-family: 'Raleway'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/raleway-latin.woff2') format('woff2'); }
 @font-face { font-family: 'Bodoni Moda'; font-style: normal; font-weight: 400 900; font-display: swap; src: url('/fonts/bodoni-moda-latin.woff2') format('woff2'); }
 @font-face { font-family: 'Bodoni Moda'; font-style: italic; font-weight: 400 900; font-display: swap; src: url('/fonts/bodoni-moda-italic-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/fredoka-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Nunito'; font-style: normal; font-weight: 200 1000; font-display: swap; src: url('/fonts/nunito-latin.woff2') format('woff2'); }
 @font-face { font-family: 'Jost'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/jost-latin.woff2') format('woff2'); }
 
 /* Invitation tokens: colours and fonts come from CSS variables set per site (themes/style.ts). */
@@ -71,6 +73,34 @@ html { scroll-behavior: smooth; }
 /* Couple names: case and size follow the chosen font pair. */
 .t-display { font-family: var(--t-font-display); text-transform: var(--t-display-case, none); }
 .t-head { font-family: var(--t-font-head); font-weight: var(--t-head-weight, 600); }
+
+/* ---------------- Invitation ornaments & animation sets (themes/decor) ---------------- */
+@keyframes t-sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes t-swing { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes t-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes t-drift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(14px); } }
+@keyframes t-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.012); } }
+@keyframes t-orbit { to { transform: rotate(360deg); } }
+@keyframes t-flicker { 0%, 100% { transform: scaleY(1); opacity: 1; } 50% { transform: scaleY(1.35); opacity: 0.75; } }
+@keyframes t-fall { 0% { transform: translate3d(0, -6vh, 0) rotate(0deg); } 100% { transform: translate3d(var(--dx, 30px), 112vh, 0) rotate(var(--rot, 300deg)); } }
+@keyframes t-rise { 0% { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; } 12% { opacity: 0.9; } 100% { transform: translate3d(var(--dx, 20px), -112vh, 0) scale(1.05); opacity: 0; } }
+@keyframes t-twinkle { 0%, 100% { opacity: 0.25; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.1); } }
+.t-sway { animation: t-sway 6s ease-in-out infinite; }
+.t-swing { animation: t-swing 4.5s ease-in-out infinite; }
+.t-bob { animation: t-bob 5s ease-in-out infinite; }
+.t-drift { animation: t-drift 11s ease-in-out infinite; }
+.t-breathe { animation: t-breathe 5s ease-in-out infinite; }
+.t-orbit { animation: t-orbit 22s linear infinite; }
+.t-flicker { animation: t-flicker 0.35s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0%; }
+.t-fall { animation: t-fall 14s linear infinite; will-change: transform; }
+.t-rise { animation: t-rise 14s ease-in infinite; will-change: transform; }
+.t-twinkle { animation: t-twinkle 3.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+/* White die-cut outline around a transparent PNG (the "Stiker" cover): four offset shadows dilate the shape. */
+.t-sticker { filter: drop-shadow(5px 0 0 #fff) drop-shadow(-5px 0 0 #fff) drop-shadow(0 5px 0 #fff) drop-shadow(0 -5px 0 #fff) drop-shadow(0 16px 18px rgba(40, 20, 30, 0.22)); }
+@media (prefers-reduced-motion: reduce) {
+  .t-anim { animation: none !important; }
+  .t-particles { display: none; }
+}
 
 /* Empty photo slots in the editor */
 @keyframes t-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }

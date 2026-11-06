@@ -9,3 +9,4 @@ export { BankCard } from "./BankCard";
 export * from "./kit";
 export * from "./hooks";
 export * from "./icons";
+export { DecorCorner, DecorDivider, DecorFrame, DecorParticles, DecorPattern, DecorScene } from "../decor/art";

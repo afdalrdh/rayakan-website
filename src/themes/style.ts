@@ -86,6 +86,31 @@ export const PALETTES: Record<string, PaletteDef> = {
     light: { bg: "#FFFFFF", alt: "#F5F9F7", card: "#F2F7F4", input: "#E6EFEA", accent: "#1E4A38", muted: "#6D877A" },
     dark: { bg: "#08100C", alt: "#0E1813", card: "#111C16", input: "#17251D", accent: "#A6DCBE", muted: "#73A88A" },
   },
+  sogan: {
+    name: "Sogan",
+    light: { bg: "#FCF8F1", alt: "#F6EEDF", card: "#FAF3E6", input: "#EFE4D0", accent: "#5A3519", muted: "#9A7440" },
+    dark: { bg: "#140D08", alt: "#1C130C", card: "#20160E", input: "#2A1D13", accent: "#E3BA72", muted: "#B58D52" },
+  },
+  padi: {
+    name: "Hijau Padi",
+    light: { bg: "#FBFAF4", alt: "#F3F2E6", card: "#F6F5EC", input: "#E9E8D8", accent: "#2E5131", muted: "#8E7740" },
+    dark: { bg: "#0C110B", alt: "#121911", card: "#151D14", input: "#1C271B", accent: "#E0C878", muted: "#9FB283" },
+  },
+  ceria: {
+    name: "Ceria",
+    light: { bg: "#FFFCF7", alt: "#FFF4E8", card: "#FFF6EC", input: "#FBE9DA", accent: "#C23B2A", muted: "#A1680F" },
+    dark: { bg: "#150D0B", alt: "#1E1310", card: "#221613", input: "#2C1D19", accent: "#FF9B7A", muted: "#F2C14E" },
+  },
+  angkasa: {
+    name: "Angkasa",
+    light: { bg: "#F8F9FF", alt: "#EEF1FF", card: "#F2F4FF", input: "#E3E8FB", accent: "#2B2F7A", muted: "#5F66AE" },
+    dark: { bg: "#0A0D24", alt: "#10143A", card: "#141942", input: "#1C2250", accent: "#FFD166", muted: "#9AA6FF" },
+  },
+  permen: {
+    name: "Permen",
+    light: { bg: "#FFFBF8", alt: "#FFF1F3", card: "#FFF5F6", input: "#FBE4E8", accent: "#C93A6C", muted: "#24897C" },
+    dark: { bg: "#140C10", alt: "#1C1116", card: "#21141A", input: "#2B1A22", accent: "#FF9FC0", muted: "#7FD6C8" },
+  },
   monokrom: {
     name: "Monokrom",
     light: { bg: "#FFFFFF", alt: "#FAFAF9", card: "#F7F7F6", input: "#EEEEEC", accent: "#1C1A17", muted: "#7B7772" },
@@ -130,6 +155,8 @@ const stack = {
   jakarta: "var(--font-jakarta), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif",
   bodoni: "'Bodoni Moda', 'Didot', Georgia, serif",
   jost: "'Jost', ui-sans-serif, system-ui, sans-serif",
+  fredoka: "'Fredoka', 'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif",
+  nunito: "'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif",
 };
 
 /** Proven heading + body combinations. Clients pick a pair, not single fonts, so typography stays tidy. */
@@ -142,6 +169,7 @@ export const FONT_PAIRS: Record<string, FontPair> = {
   agung: { id: "agung", name: "Agung", desc: "Cinzel · Raleway", display: stack.cinzel, head: stack.cinzel, body: stack.raleway, displayUpper: true, displayScale: 0.78, headWeight: 600, fit: 6 },
   kontemporer: { id: "kontemporer", name: "Kontemporer", desc: "Instrument Serif · Plus Jakarta Sans", display: stack.instrument, head: stack.instrument, body: stack.jakarta, displayUpper: false, displayScale: 1.05, headWeight: 400, fit: 8 },
   mewah: { id: "mewah", name: "Mewah", desc: "Bodoni Moda · Jost", display: stack.bodoni, head: stack.bodoni, body: stack.jost, displayUpper: false, displayScale: 0.9, headWeight: 500, fit: 7 },
+  ceria: { id: "ceria", name: "Ceria", desc: "Fredoka · Nunito", display: stack.fredoka, head: stack.fredoka, body: stack.nunito, displayUpper: false, displayScale: 0.92, headWeight: 600, fit: 7 },
 };
 export const FONT_PAIR_IDS = Object.keys(FONT_PAIRS);
 
@@ -151,6 +179,8 @@ export interface SiteStyle {
   fonts: string;
   /** Optional own accent colour (#rrggbb), empty = palette accent. */
   accent: string;
+  /** Ornament & animation set (themes/decor/catalog.ts), "none" = clean. */
+  decor: string;
 }
 
 export interface Tokens extends Surface {
@@ -250,5 +280,6 @@ export function legacyStyle(theme: string, palette: string, customAccent?: strin
     palette: LEGACY_PALETTE[palette] ?? (dark ? "emas" : "marun"),
     fonts: dark ? "klasik" : "tegas",
     accent: palette === "custom" && customAccent && /^#[0-9a-f]{6}$/i.test(customAccent) ? customAccent : "",
+    decor: "none",
   };
 }

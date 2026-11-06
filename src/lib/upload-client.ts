@@ -35,7 +35,9 @@ export async function makeOgBlob(file: File): Promise<Blob | null> {
   canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
-  ctx.drawImage(bmp, (bmp.width - sw) / 2, (bmp.height - sh) / 2, sw, sh, 0, 0, W, H);
+  // Portrait pictures (paintings, phone photos) usually have the faces in the upper part.
+  const sy = (bmp.height - sh) * (bmp.height > bmp.width ? 0.35 : 0.5);
+  ctx.drawImage(bmp, (bmp.width - sw) / 2, sy, sw, sh, 0, 0, W, H);
   return new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.8));
 }
 

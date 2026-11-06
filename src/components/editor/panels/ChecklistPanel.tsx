@@ -2,8 +2,9 @@
 
 import { Check, ChevronRight, EyeOff, Lock } from "lucide-react";
 import {
-  BLOCK_LABELS,
+  blockLabel,
   blockStatus,
+  samplePhotos,
   SECTION_KEYS,
   type BlockKey,
 } from "@/lib/content";
@@ -34,8 +35,14 @@ export function ChecklistPanel({ onOpen }: { onOpen: (k: BlockKey) => void }) {
           : [...d.hidden, k as (typeof d.hidden)[number]]),
     );
   const locked = plan.locked as BlockKey[];
+  const samples = samplePhotos(c);
   return (
     <div className="space-y-4">
+      {samples.length > 0 && (
+        <p className="rounded-2xl bg-rk-gold/15 p-3.5 font-rk-sans text-[12.5px] leading-snug text-rk-ink">
+          <b>Masih memakai foto contoh:</b> {samples.join(", ")}. Ganti dengan foto kamu, atau sembunyikan bagiannya, sebelum dikirim ke tamu.
+        </p>
+      )}
       <div>
         <div className="flex items-baseline justify-between font-rk-sans">
           <span className="text-[14px] font-semibold text-rk-ink">
@@ -80,7 +87,7 @@ export function ChecklistPanel({ onOpen }: { onOpen: (k: BlockKey) => void }) {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-rk-sans text-[14px] font-semibold text-rk-ink">
-                    {BLOCK_LABELS[k]}
+                    {blockLabel(k, c.occasion)}
                   </span>
                   <span className="block truncate font-rk-sans text-[12px] text-rk-mute">
                     {isLocked
@@ -101,7 +108,7 @@ export function ChecklistPanel({ onOpen }: { onOpen: (k: BlockKey) => void }) {
                   type="button"
                   role="switch"
                   aria-checked={!isHidden}
-                  aria-label={`${isHidden ? "Tampilkan" : "Sembunyikan"} ${BLOCK_LABELS[k]}`}
+                  aria-label={`${isHidden ? "Tampilkan" : "Sembunyikan"} ${blockLabel(k, c.occasion)}`}
                   title={isHidden ? "Tampilkan bagian" : "Sembunyikan bagian"}
                   onClick={() => toggle(k, isHidden)}
                   className="flex h-full shrink-0 items-center py-3.5 pl-2 pr-4"
