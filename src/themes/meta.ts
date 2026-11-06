@@ -204,9 +204,25 @@ export interface MusicTrack {
   title: string;
   artist: string;
   src: string;
+  /** Occasions the track suits; the editor lists these first. */
+  occasions: Occasion[];
+  /** Short mood shown in the editor, e.g. "Piano · romantis". */
+  mood: string;
 }
 
+/**
+ * Background music anyone can pick. Only add tracks you have the right to use
+ * for every client (own recordings, or royalty-free music whose licence allows
+ * it, e.g. Pixabay Music or YouTube Audio Library). Popular songs are
+ * copyrighted: clients who want one upload it themselves. See public/music/README.md.
+ */
 export const MUSIC_LIBRARY: MusicTrack[] = [
-  { id: "arya-background", title: "Piano Romantis", artist: "Instrumental", src: "/music/arya-background.m4a" },
-  { id: "afdal-background", title: "Akustik Hangat", artist: "Instrumental", src: "/music/afdal-background.mp3" },
+  { id: "arya-background", title: "Piano Romantis", artist: "Instrumental", src: "/music/arya-background.m4a", occasions: ["nikah"], mood: "Piano · romantis" },
+  { id: "afdal-background", title: "Akustik Hangat", artist: "Instrumental", src: "/music/afdal-background.mp3", occasions: ["nikah", "ultah", "khitan"], mood: "Gitar akustik · hangat" },
 ];
+
+/** Tracks for an occasion first, then the rest. */
+export function musicFor(occasion: Occasion) {
+  const fits = (t: MusicTrack) => t.occasions.includes(occasion);
+  return { suggested: MUSIC_LIBRARY.filter(fits), others: MUSIC_LIBRARY.filter((t) => !fits(t)) };
+}

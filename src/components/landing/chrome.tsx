@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { THEMES } from "@/lib/content";
+import { OCCASION_PAGE_LIST } from "@/lib/marketing";
 import { portfolioNewestFirst } from "@/lib/portfolio";
-import type { AppSettings } from "@/lib/server/data";
+import type { AppSettings } from "@/lib/records";
 import type { PortfolioCard } from "./Portfolio";
 
 /** WhatsApp chat with the admin, or Instagram when no number is set yet. */
@@ -14,23 +15,83 @@ export const GENERAL_ENQUIRY = "Halo Rayakan.my.id, saya ingin tanya-tanya soal 
 
 export { LandingNav } from "./Nav";
 
+const FOOTER_THEMES = ["jawa", "sunda", "lukis", "kecil", "konfeti", "khitan"] as const;
+
+/** Footer with links to every public page (helps visitors and search engines find them). */
 export function LandingFooter({ settings, orderHref }: { settings: Pick<AppSettings, "instagram">; orderHref: string }) {
+  const heading = "text-[12px] font-semibold uppercase tracking-[2px] text-rk-ink";
+  const link = "text-rk-ink/65 transition hover:text-rk-ink";
   return (
-    <footer className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-4 px-4 pb-10 pt-10 text-[13px] text-rk-mute sm:flex-row sm:px-6">
-      <span className="flex items-center gap-2">
-        <Image src="/brand/logo.png" alt="" width={22} height={18} className="h-4 w-auto" /> © {new Date().getFullYear()} Rayakan.my.id
-      </span>
-      <span className="flex gap-6">
-        <Link href="/portofolio" className="hover:text-rk-ink">
-          Portofolio
-        </Link>
-        <a href={`https://instagram.com/${settings.instagram}`} target="_blank" rel="noreferrer" className="hover:text-rk-ink">
-          Instagram
-        </a>
-        <a href={orderHref} target="_blank" rel="noreferrer" className="hover:text-rk-ink">
-          WhatsApp
-        </a>
-      </span>
+    <footer className="mt-16 border-t border-rk-line/70 bg-[#fbf8f2]">
+      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-14 text-[14px] sm:px-6 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
+        <div>
+          <Link href="/" className="flex items-center gap-2.5">
+            <Image src="/brand/logo.png" alt="" width={30} height={24} className="h-6 w-auto" />
+            <span className="font-rk-display text-[22px] font-light leading-none">Rayakan.my.id</span>
+          </Link>
+          <p className="mt-4 max-w-[300px] leading-relaxed text-rk-ink/65">Undangan digital pernikahan, ulang tahun, dan khitanan yang bisa kamu buat dan atur sendiri dari HP.</p>
+        </div>
+        <nav aria-label="Jenis undangan">
+          <p className={heading}>Undangan</p>
+          <ul className="mt-4 space-y-2.5">
+            {OCCASION_PAGE_LIST.map((p) => (
+              <li key={p.path}>
+                <Link href={p.path} prefetch={false} className={link}>
+                  {p.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav aria-label="Tema">
+          <p className={heading}>Tema</p>
+          <ul className="mt-4 space-y-2.5">
+            {FOOTER_THEMES.map((id) => (
+              <li key={id}>
+                <Link href={`/tema/${id}`} prefetch={false} className={link}>
+                  {THEMES[id].name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav aria-label="Rayakan.my.id">
+          <p className={heading}>Rayakan</p>
+          <ul className="mt-4 space-y-2.5">
+            <li>
+              <Link href="/buat" prefetch={false} className={link}>
+                Coba gratis
+              </Link>
+            </li>
+            <li>
+              <Link href="/portofolio" prefetch={false} className={link}>
+                Portofolio
+              </Link>
+            </li>
+            <li>
+              <Link href="/ulasan" prefetch={false} className={link}>
+                Ulasan
+              </Link>
+            </li>
+            <li>
+              <Link href="/#harga" prefetch={false} className={link}>
+                Harga
+              </Link>
+            </li>
+            <li>
+              <a href={orderHref} target="_blank" rel="noreferrer" className={link}>
+                WhatsApp
+              </a>
+            </li>
+            <li>
+              <a href={`https://instagram.com/${settings.instagram}`} target="_blank" rel="noreferrer" className={link}>
+                Instagram
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <p className="border-t border-rk-line/70 px-4 py-6 text-center text-[12.5px] text-rk-ink/60">© {new Date().getFullYear()} Rayakan.my.id · Dibuat dengan sepenuh hati di Indonesia</p>
     </footer>
   );
 }

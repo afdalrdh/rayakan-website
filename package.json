@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && next build"
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm run test && next build"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.14",
@@ -31,6 +32,7 @@
     "eslint-config-next": "^16.2.6",
     "eslint-plugin-unused-imports": "^4.4.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }

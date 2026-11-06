@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PLANS, type WeddingContent } from "@/lib/content";
 import { loadAllMedia, loadContent, loadPlan } from "@/lib/sandbox-store";
+import { InvitationSkeleton } from "@/components/ui/Skeleton";
 import { ThemeRenderer } from "@/themes";
 
 /** /demo — shows what the sandbox editor saved in this browser. */
@@ -17,8 +18,8 @@ export function LiveSite() {
     loadAllMedia().then((media) => setState({ content, media }));
   }, [params]);
 
-  if (!state) return <div className="min-h-screen bg-neutral-950" />;
+  if (!state) return <InvitationSkeleton />;
   const to = params.get("to");
   const guest = to ? to.replace(/[-_]+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) : undefined;
-  return <ThemeRenderer content={state.content} media={state.media} mode="live" guestName={guest} />;
+  return <ThemeRenderer content={state.content} media={state.media} mode="live" guestName={guest} trial />;
 }

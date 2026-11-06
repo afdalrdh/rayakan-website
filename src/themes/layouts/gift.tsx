@@ -125,7 +125,7 @@ function AccountRow({ a }: { a: BankAccount }) {
         <p className="mt-1 truncate text-[18px] font-semibold tabular-nums text-t-fg">{a.number || "0000 0000"}</p>
         <p className="truncate text-[13px] text-t-fg2">a.n. {a.holder || "Nama pemilik"}</p>
       </div>
-      <button type="button" onClick={() => copy(a.number.replace(/\s/g, ""), a.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-[10px] border border-t-line px-3 py-2 text-[12px] font-semibold text-t-accent transition hover:bg-t-input">
+      <button type="button" data-paid onClick={() => copy(a.number.replace(/\s/g, ""), a.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-[10px] border border-t-line px-3 py-2 text-[12px] font-semibold text-t-accent transition hover:bg-t-input">
         <CopyIcon size={15} />
         {copied === a.id ? "Disalin" : "Salin"}
       </button>

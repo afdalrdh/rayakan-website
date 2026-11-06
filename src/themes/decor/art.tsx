@@ -237,10 +237,28 @@ function CornerArt({ decor }: { decor: DecorId }) {
 }
 
 /** Corner ornament for a section. `at` picks the corner; the art is mirrored to fit. */
-export function DecorCorner({ decor, at, className = "", sizeClass = "w-[34vw] max-w-[190px] min-w-[110px] md:w-[200px] md:max-w-none" }: { decor: DecorId; at: "tl" | "tr" | "bl" | "br"; className?: string; sizeClass?: string }) {
+/** Where corners sit. "hero" keeps them clear of the header bar and the scroll link at the bottom. */
+const CORNER_POS = {
+  edge: { tl: "left-0 top-0", tr: "right-0 top-0", bl: "left-0 bottom-0", br: "right-0 bottom-0" },
+  hero: { tl: "left-0 top-[64px] md:top-[84px]", tr: "right-0 top-[64px] md:top-[84px]", bl: "left-0 bottom-[70px] md:bottom-[82px]", br: "right-0 bottom-[70px] md:bottom-[82px]" },
+} as const;
+
+export function DecorCorner({
+  decor,
+  at,
+  className = "",
+  sizeClass = "w-[34vw] max-w-[190px] min-w-[110px] md:w-[200px] md:max-w-none",
+  inset = "edge",
+}: {
+  decor: DecorId;
+  at: "tl" | "tr" | "bl" | "br";
+  className?: string;
+  sizeClass?: string;
+  inset?: keyof typeof CORNER_POS;
+}) {
   if (decor === "none") return null;
   const flip = { tl: "", tr: "-scale-x-100", bl: "-scale-y-100", br: "-scale-100" }[at];
-  const pos = { tl: "left-0 top-0", tr: "right-0 top-0", bl: "left-0 bottom-0", br: "right-0 bottom-0" }[at];
+  const pos = CORNER_POS[inset][at];
   // Hanging lanterns and bunting only make sense from the top edge.
   if ((decor === "islami" || decor === "pesta") && (at === "bl" || at === "br")) return null;
   return (
@@ -690,14 +708,16 @@ export function DecorScene({ decor, occasion, photo, className = "" }: { decor: 
 }
 
 /** Wrapper used by covers and photo-free sections: pattern + four corners. */
-export function DecorFrame({ decor, children, corners = ["tl", "tr", "bl", "br"] }: { decor: DecorId; children?: ReactNode; corners?: ("tl" | "tr" | "bl" | "br")[] }) {
+export function DecorFrame({ decor, children, corners = ["tl", "tr", "bl", "br"], inset = "edge" }: { decor: DecorId; children?: ReactNode; corners?: ("tl" | "tr" | "bl" | "br")[]; inset?: "edge" | "hero" }) {
   if (decor === "none") return <>{children}</>;
+  // Under a header the corners are a bit smaller so they frame the content instead of crowding it.
+  const size = inset === "hero" ? "w-[28vw] max-w-[150px] min-w-[96px] md:w-[170px] md:max-w-none" : undefined;
   return (
     <>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <DecorPattern decor={decor} />
         {corners.map((c) => (
-          <DecorCorner key={c} decor={decor} at={c} />
+          <DecorCorner key={c} decor={decor} at={c} inset={inset} sizeClass={size} />
         ))}
       </div>
       {children}

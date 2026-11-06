@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { contactHref, Eyebrow, GENERAL_ENQUIRY, LandingFooter, LandingNav, portfolioCards } from "@/components/landing/chrome";
 import { BlurInTitle, FadeUp } from "@/components/landing/motion";
 import { PortfolioGrid } from "@/components/landing/Portfolio";
-import { getSettings } from "@/lib/server/data";
+import { getSettings } from "@/server/repositories/settings";
 
 export const revalidate = 3600;
 

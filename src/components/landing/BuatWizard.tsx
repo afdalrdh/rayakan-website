@@ -10,7 +10,7 @@ import { lastDraft, saveContent } from "@/lib/sandbox-store";
 import { DecorScene } from "@/themes/decor/art";
 import { isDecor } from "@/themes/decor/catalog";
 import { styleVars } from "@/themes/style";
-import { ThemeCatalog } from "./ThemeCatalog";
+import { ThemePicker } from "./ThemeCatalog";
 
 /* /buat — three short steps from the landing page to the free editor. */
 
@@ -150,10 +150,8 @@ export function BuatWizard({ initialTheme, consultHref }: { initialTheme?: Theme
             <h1 className="font-rk-display text-[clamp(34px,7.5vw,56px)] font-light leading-[1.02] tracking-[-0.02em]">Pilih tema {OCCASIONS[occasion].name.toLowerCase()}</h1>
             <p className="mt-3 text-[15px] text-rk-ink/65">Tenang, tema, warna, ornamen, dan tata letak tiap bagian masih bisa diganti nanti.</p>
             <div className="mt-8">
-              <ThemeCatalog
-                key={occasion}
-                initialOccasion={occasion}
-                compact
+              <ThemePicker
+                occasion={occasion}
                 onPick={(id) => {
                   setTheme(id);
                   setStep(3);
@@ -172,14 +170,12 @@ export function BuatWizard({ initialTheme, consultHref }: { initialTheme?: Theme
               }}
             >
               <h1 className="font-rk-display text-[clamp(34px,7.5vw,56px)] font-light leading-[1.02] tracking-[-0.02em]">Sedikit lagi!</h1>
-              <p className="mt-3 text-[15px] text-rk-ink/65">Isi data singkat, undanganmu langsung tampil dengan tema {THEMES[theme].name}.</p>
-              <div className="mt-6 flex rounded-xl bg-rk-cream p-1">
-                {OCCASION_IDS.map((o) => (
-                  <button key={o} type="button" onClick={() => setOccasion(o)} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition ${occasion === o ? "bg-white shadow-sm" : "text-rk-mute"}`}>
-                    {OCCASIONS[o].name}
-                  </button>
-                ))}
-              </div>
+              <p className="mt-3 text-[15px] text-rk-ink/65">
+                Isi data singkat, undangan {OCCASIONS[occasion].name.toLowerCase()}mu langsung tampil dengan tema {THEMES[theme].name}.{" "}
+                <button type="button" onClick={() => setStep(1)} className="font-semibold text-rk-ink underline underline-offset-4">
+                  Ganti acara
+                </button>
+              </p>
               <div className={`mt-5 grid gap-3 ${single ? "" : "grid-cols-2"}`}>
                 <label className="block">
                   <span className="mb-1.5 block text-[13px] font-semibold">{single ? (occasion === "khitan" ? "Nama panggilan ananda" : "Nama yang berulang tahun") : "Nama panggilan 1"}</span>
@@ -212,7 +208,7 @@ export function BuatWizard({ initialTheme, consultHref }: { initialTheme?: Theme
             <button type="button" onClick={() => setStep(2)} className="group order-first mx-auto block w-[46%] max-w-[260px] text-center md:order-none md:w-full">
               <span className="relative block aspect-[390/800] rounded-[30px] bg-[#0d0b0a] p-[6px] shadow-[0_30px_50px_-28px_rgba(60,40,20,0.7)]">
                 <span className="relative block h-full w-full overflow-hidden rounded-[24px] bg-rk-cream">
-                  <Image src={THEMES[theme].preview.mobile} alt={`Tema ${THEMES[theme].name}`} fill unoptimized className="object-cover object-top" />
+                  <Image src={THEMES[theme].preview.mobile} alt={`Tema ${THEMES[theme].name}`} fill sizes="260px" className="object-cover object-top" />
                 </span>
               </span>
               <span className="mt-3 block text-[13px] font-semibold">{THEMES[theme].name}</span>

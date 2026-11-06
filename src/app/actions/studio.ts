@@ -3,7 +3,8 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { timingSafeEqual } from "crypto";
-import { DEFAULT_LAYOUTS, FONT_PAIR_IDS, isOccasion, OCCASIONS, PALETTE_IDS, PLAN_IDS, PLANS, SECTION_KEYS, slugify, THEME_IDS, type Occasion, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
+import { DEFAULT_LAYOUTS, FONT_PAIR_IDS, isOccasion, OCCASIONS, PALETTE_IDS, PLAN_IDS, PLANS, SECTION_KEYS, THEME_IDS, type Occasion, type Plan, type PlanId, type SectionKey, type ThemeId } from "@/lib/content";
+import { computeExpiry, type AppSettings } from "@/lib/records";
 import {
   clearLoginFailures,
   clearSession,
@@ -15,28 +16,16 @@ import {
   recordLoginFailure,
   requireOwner,
   setSession,
-} from "@/lib/server/auth";
-import {
-  computeExpiry,
-  deleteReview,
-  deleteSite,
-  findSite,
-  getPlan,
-  insertReview,
-  insertSite,
-  RESERVED_SLUGS,
-  saveSettings,
-  savePlan,
-  setReviewStatus,
-  updateReview,
-  updateSiteFields,
-  type AppSettings,
-  type ReviewStatus,
-} from "@/lib/server/data";
-import { sampleContent, starterContent } from "@/lib/server/validate";
+} from "@/server/auth";
+import { TAG } from "@/server/cache";
+import { getPlan, savePlan } from "@/server/repositories/plans";
+import { saveSettings } from "@/server/repositories/settings";
+import { deleteSite, findSite, insertSite, updateSiteFields } from "@/server/repositories/sites";
+import { fail, type ActionResult } from "@/server/result";
+import { checkSiteAddress } from "@/server/services/site-address";
+import { sampleContent, starterContent } from "@/server/validate";
 
-type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
-const fail = (e: unknown): { ok: false; error: string } => ({ ok: false, error: e instanceof Error ? e.message : "Terjadi kesalahan." });
+/* Owner (Studio): login, client sites, packages and settings. Reviews live in ./reviews.ts. */
 
 const same = (a: string, b: string) => a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
 
@@ -61,13 +50,9 @@ export async function logoutOwnerAction() {
   redirect("/studio");
 }
 
-export async function checkSlugAction(raw: string): Promise<{ slug: string; available: boolean; reason?: string }> {
+export async function checkSlugAction(raw: string) {
   await requireOwner();
-  const slug = slugify(raw);
-  if (slug.length < 3) return { slug, available: false, reason: "Minimal 3 karakter." };
-  if (RESERVED_SLUGS.has(slug)) return { slug, available: false, reason: "Alamat ini dipakai sistem." };
-  const exists = await findSite(slug);
-  return { slug, available: !exists, reason: exists ? "Sudah dipakai." : undefined };
+  return checkSiteAddress(raw);
 }
 
 export async function createSiteAction(input: {
@@ -85,7 +70,7 @@ export async function createSiteAction(input: {
   /** "Custom" start: own mode, palette and font pair with standard layouts. */
   style?: { mode: string; palette: string; fonts: string };
   occasion?: Occasion;
-}): Promise<Result<{ slug: string; password: string }>> {
+}): Promise<ActionResult<{ slug: string; password: string }>> {
   try {
     await requireOwner();
     const occasion: Occasion = isOccasion(input.occasion) ? input.occasion : "nikah";
@@ -112,7 +97,7 @@ export async function createSiteAction(input: {
       clientPhone: input.clientPhone.replace(/[^\d+]/g, "").slice(0, 20),
       notes: input.notes.trim().slice(0, 500),
     });
-    updateTag(`site:${check.slug}`);
+    updateTag(TAG.site(check.slug));
     return { ok: true, slug: check.slug, password };
   } catch (e) {
     return fail(e);
@@ -120,7 +105,7 @@ export async function createSiteAction(input: {
 }
 
 /** Publishing starts the active period of the package. */
-export async function setPublishedAction(slug: string, publish: boolean): Promise<Result> {
+export async function setPublishedAction(slug: string, publish: boolean): Promise<ActionResult> {
   try {
     await requireOwner();
     const site = await findSite(slug);
@@ -131,11 +116,11 @@ export async function setPublishedAction(slug: string, publish: boolean): Promis
       const plan = await getPlan(planId);
       const start = site.publishedAt ? new Date(site.publishedAt) : new Date();
       await updateSiteFields(slug, { planId, status: "published", publishedAt: start.toISOString(), expiresAt: computeExpiry(plan, start) });
-      updateTag("stats");
+      updateTag(TAG.stats);
     } else {
       await updateSiteFields(slug, { status: "draft" });
     }
-    updateTag(`site:${slug}`);
+    updateTag(TAG.site(slug));
     return { ok: true };
   } catch (e) {
     return fail(e);
@@ -145,7 +130,7 @@ export async function setPublishedAction(slug: string, publish: boolean): Promis
 export async function updateSiteMetaAction(
   slug: string,
   f: { planId: PlanId; clientName: string; clientPhone: string; notes: string; expiresAt: string | null },
-): Promise<Result> {
+): Promise<ActionResult> {
   try {
     await requireOwner();
     const site = await findSite(slug);
@@ -160,14 +145,14 @@ export async function updateSiteMetaAction(
       notes: f.notes.trim().slice(0, 500),
       expiresAt,
     });
-    updateTag(`site:${slug}`);
+    updateTag(TAG.site(slug));
     return { ok: true };
   } catch (e) {
     return fail(e);
   }
 }
 
-export async function resetPasswordAction(slug: string): Promise<Result<{ password: string }>> {
+export async function resetPasswordAction(slug: string): Promise<ActionResult<{ password: string }>> {
   try {
     await requireOwner();
     const password = generatePassword();
@@ -178,20 +163,20 @@ export async function resetPasswordAction(slug: string): Promise<Result<{ passwo
   }
 }
 
-export async function deleteSiteAction(slug: string, confirm: string): Promise<Result> {
+export async function deleteSiteAction(slug: string, confirm: string): Promise<ActionResult> {
   try {
     await requireOwner();
     if (confirm !== slug) throw new Error("Ketik alamat undangan untuk konfirmasi.");
     await deleteSite(slug);
-    updateTag(`site:${slug}`);
-    updateTag(`guests:${slug}`);
+    updateTag(TAG.site(slug));
+    updateTag(TAG.guests(slug));
     return { ok: true };
   } catch (e) {
     return fail(e);
   }
 }
 
-export async function savePlansAction(plans: Plan[]): Promise<Result> {
+export async function savePlansAction(plans: Plan[]): Promise<ActionResult> {
   try {
     await requireOwner();
     for (const [i, id] of PLAN_IDS.entries()) {
@@ -219,14 +204,14 @@ export async function savePlansAction(plans: Plan[]): Promise<Result> {
         i,
       );
     }
-    updateTag("plans");
+    updateTag(TAG.plans);
     return { ok: true };
   } catch (e) {
     return fail(e);
   }
 }
 
-export async function saveSettingsAction(s: AppSettings): Promise<Result> {
+export async function saveSettingsAction(s: AppSettings): Promise<ActionResult> {
   try {
     await requireOwner();
     await saveSettings({
@@ -235,70 +220,7 @@ export async function saveSettingsAction(s: AppSettings): Promise<Result> {
       promoLabel: s.promoLabel.trim().slice(0, 60),
       promoEndsAt: /^\d{4}-\d{2}-\d{2}$/.test(s.promoEndsAt) ? s.promoEndsAt : "",
     });
-    updateTag("settings");
-    return { ok: true };
-  } catch (e) {
-    return fail(e);
-  }
-}
-
-/* ------------------------------ Reviews ------------------------------ */
-
-function cleanReview(f: { name: string; occasion: string; city: string; rating: number; message: string; link: string }) {
-  const name = f.name.replace(/\s+/g, " ").trim().slice(0, 60);
-  const message = f.message.trim().slice(0, 600);
-  if (!name || message.length < 5) throw new Error("Nama dan isi ulasan wajib diisi.");
-  let link: string | null = null;
-  if (f.link.trim()) {
-    try {
-      const u = new URL(f.link.trim());
-      if (u.protocol === "https:") link = u.toString().slice(0, 300);
-    } catch {
-      throw new Error("Link harus diawali https://");
-    }
-  }
-  return {
-    name,
-    occasion: isOccasion(f.occasion) ? f.occasion : "nikah",
-    city: f.city.trim().slice(0, 40) || null,
-    rating: Math.min(5, Math.max(1, Math.round(Number(f.rating) || 5))),
-    message,
-    link,
-  };
-}
-
-/** Owner adds or edits a review (e.g. copied from a client's WhatsApp message, with their permission). */
-export async function saveReviewAction(id: number | null, f: { name: string; occasion: string; city: string; rating: number; message: string; link: string; status: ReviewStatus }): Promise<Result> {
-  try {
-    await requireOwner();
-    const clean = cleanReview(f);
-    const status: ReviewStatus = ["pending", "shown", "hidden"].includes(f.status) ? f.status : "shown";
-    if (id) await updateReview(id, { ...clean, status });
-    else await insertReview(null, clean, status);
-    updateTag("reviews");
-    return { ok: true };
-  } catch (e) {
-    return fail(e);
-  }
-}
-
-export async function setReviewStatusAction(id: number, status: ReviewStatus): Promise<Result> {
-  try {
-    await requireOwner();
-    if (!["pending", "shown", "hidden"].includes(status)) throw new Error("Status tidak dikenal.");
-    await setReviewStatus(id, status);
-    updateTag("reviews");
-    return { ok: true };
-  } catch (e) {
-    return fail(e);
-  }
-}
-
-export async function deleteReviewAction(id: number): Promise<Result> {
-  try {
-    await requireOwner();
-    await deleteReview(id);
-    updateTag("reviews");
+    updateTag(TAG.settings);
     return { ok: true };
   } catch (e) {
     return fail(e);

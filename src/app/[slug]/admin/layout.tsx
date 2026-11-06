@@ -4,8 +4,10 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { AdminSiteProvider } from "@/components/admin/ui";
 import { LoginCard } from "@/components/auth/LoginCard";
 import { SITE_HOST, SITE_URL } from "@/lib/messages";
-import { canEditSite, isOwner } from "@/lib/server/auth";
-import { findSite, getPlan, getSettings } from "@/lib/server/data";
+import { canEditSite, isOwner } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
+import { getPlan } from "@/server/repositories/plans";
+import { getSettings } from "@/server/repositories/settings";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin Undangan", robots: { index: false } };

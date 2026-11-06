@@ -1,9 +1,11 @@
-"use client";
+import type { CSSProperties, ReactNode } from "react";
 
-import { motion } from "motion/react";
-import type { ReactNode } from "react";
+/*
+ * First-paint entrances for marketing pages. Pure CSS (`.rk-enter`, `.rk-lift`
+ * in globals.css), so they run before any JavaScript and never delay LCP.
+ */
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const delay = (s: number) => ({ "--d": `${s}s` }) as CSSProperties;
 
 /**
  * Headline that comes into focus word by word on load.
@@ -18,17 +20,11 @@ export function BlurInTitle({ lines, className = "" }: { lines: string[]; classN
           {line.split(" ").map((raw) => {
             const italic = raw.startsWith("*") && raw.endsWith("*");
             const word = italic ? raw.slice(1, -1) : raw;
-            const delay = 0.08 * i++;
+            const at = 0.08 * i++;
             return (
-              <motion.span
-                key={`${li}-${raw}-${delay}`}
-                initial={{ opacity: 0, y: 18, filter: "blur(12px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.9, delay, ease: EASE }}
-                className={`mr-[0.22em] inline-block last:mr-0 ${italic ? "italic text-rk-bronze" : ""}`}
-              >
+              <span key={`${li}-${raw}-${at}`} style={delay(at)} className={`rk-enter mr-[0.22em] inline-block last:mr-0 ${italic ? "italic text-rk-bronze" : ""}`}>
                 {word}
-              </motion.span>
+              </span>
             );
           })}
         </span>
@@ -37,11 +33,11 @@ export function BlurInTitle({ lines, className = "" }: { lines: string[]; classN
   );
 }
 
-/** Fades children up after the headline. */
-export function FadeUp({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
+/** Rises in after the headline (`delay` in seconds). */
+export function FadeUp({ children, delay: at = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay, ease: EASE }} className={className}>
+    <div style={delay(at)} className={`rk-lift ${className}`}>
       {children}
-    </motion.div>
+    </div>
   );
 }

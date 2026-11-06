@@ -80,3 +80,34 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
     itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: `${SITE_URL}${it.path}` })),
   };
 }
+
+/** A web page that belongs to the site (occasion pages, theme samples). */
+export function webPageLd(p: { path: string; name: string; description: string; image?: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${SITE_URL}${p.path}#webpage`,
+    url: `${SITE_URL}${p.path}`,
+    name: p.name,
+    description: p.description,
+    inLanguage: "id-ID",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    ...(p.image ? { primaryImageOfPage: { "@type": "ImageObject", url: p.image.startsWith("http") ? p.image : `${SITE_URL}${p.image}` } } : {}),
+  };
+}
+
+/** One service per occasion, with the same package prices as the landing page. */
+export function occasionServiceLd(p: { path: string; name: string; description: string }, plans: Plan[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${SITE_URL}${p.path}#service`,
+    name: p.name,
+    description: p.description,
+    serviceType: p.name,
+    provider: { "@id": `${SITE_URL}/#organization` },
+    areaServed: { "@type": "Country", name: "Indonesia" },
+    url: `${SITE_URL}${p.path}`,
+    offers: plans.map((plan) => ({ "@type": "Offer", name: `Paket ${plan.name}`, price: plan.price, priceCurrency: "IDR", availability: "https://schema.org/InStock", url: `${SITE_URL}${p.path}#harga` })),
+  };
+}

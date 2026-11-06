@@ -7,51 +7,80 @@ Panduan singkat agar menambah fitur atau tema tidak perlu membaca seluruh kode.
 1. **Satu sumber data.** Semua tata letak membaca objek `WeddingContent` yang sama (`src/lib/content/schema.ts`). Klien bisa ganti tema, warna, huruf, atau tata letak tanpa mengisi ulang.
 2. **Tampilan = gaya + tata letak.** `content.style` (mode terang/gelap, palet, pasangan huruf, aksen) dan `content.layouts` (satu id tata letak per bagian). Tema (`themes/meta.ts`) hanya preset awal untuk keduanya.
 3. **Tata letak tidak tahu soal database.** Layout hanya menerima `content` lewat `ThemeProvider` (`src/themes/shared/context.tsx`). Halaman publik, editor, admin, dan demo memakai `ThemeRenderer` yang sama.
-4. **Server selalu memvalidasi.** Apa pun yang dikirim editor dibersihkan di `src/lib/server/validate.ts` sebelum disimpan. Batas paket diterapkan lagi saat dirender untuk tamu (`components/site/PublicSite.tsx`).
+4. **Server selalu memvalidasi.** Apa pun yang dikirim editor dibersihkan di `src/server/validate.ts` sebelum disimpan. Batas paket diterapkan lagi saat dirender untuk tamu (`components/site/PublicSite.tsx`).
 5. **Satu model untuk semua acara.** `content.occasion` (`nikah` | `ultah` | `khitan`, lihat `lib/content/occasion.ts`) menentukan label, teks bawaan, dan apakah ada satu atau dua nama. Layout memakai helper `namesOf`, `peopleOf`, `useEyebrow` alih-alih menulis "The Wedding of" atau mengasumsikan dua mempelai.
 6. **Ornamen adalah bagian gaya.** `content.style.decor` memilih set ornamen & animasi (`themes/decor/`). `Section` otomatis menggambar sudut + pola, `Rule` di judul berganti jadi pemisah ornamen, dan `ThemeRenderer` menambah lapisan partikel. Layout tanpa foto (Ilustrasi, Medali, sampul beranimasi) mengambil gambarnya dari set yang sama.
 7. **Data lama tetap terbaca.** `normalizeContent()` mengisi kolom baru dengan nilai bawaan dan mengubah `palette` lama menjadi `style` + `layouts`, jadi skema bisa bertambah tanpa migrasi database.
+
+## Lapisan (frontend ↔ backend)
+
+Satu aplikasi Next.js, tapi lapisannya dipisah tegas. Panah = boleh memanggil.
+
+```
+Browser (komponen "use client")
+   │  hanya lewat server action atau route API, tidak pernah import src/server
+   ▼
+src/app/actions/*  ·  src/app/api/*       ← pintu masuk backend: cek sesi → validasi → service/repository → revalidate cache
+   ▼
+src/server/services/*                     ← aturan bisnis yang dipakai >1 tempat (alamat undangan, tambah tamu)
+   ▼
+src/server/repositories/*                 ← SATU-SATUNYA tempat SQL. Satu file per tabel, mengembalikan record bertipe
+   ▼
+src/server/db/client.ts + migrations.ts   ← koneksi Neon/PGlite + riwayat skema bernomor
+```
+
+- `src/lib/*` = kode bersama tanpa rahasia (tipe record di `lib/records.ts`, model konten di `lib/content/`, teks marketing di `lib/marketing.ts`, SEO di `lib/seo/`). Boleh dipakai server dan browser.
+- ESLint menolak `import "@/server/..."` dari `src/components`, `src/themes`, dan `src/lib` (kecuali `components/site/PublicSite.tsx`, server component). Semua file di `src/server` juga memakai `import "server-only"`, jadi build gagal bila tidak sengaja masuk ke bundel browser.
+- Tag cache ada di `src/server/cache.ts` (`TAG.site(slug)`, `TAG.reviews`, …) supaya baca & tulis memakai nama yang sama.
+- Server action mengembalikan `ActionResult` (`src/server/result.ts`): `{ ok: true, ... }` atau `{ ok: false, error }`.
 
 ## Peta folder
 
 ```
 src/
-├─ app/                       Routing (Next.js App Router)
-│  ├─ page.tsx                Landing page (bagian-bagiannya di components/landing/)
-│  ├─ buat/                   Wizard Coba Gratis: pilih acara → tema → isi 3 data → editor sandbox
-│  ├─ portofolio/             Daftar semua portofolio
-│  ├─ tema/[id]/              Contoh asli tiap tema (statis), mis. /tema/afdal
-│  ├─ demo/ · demo/admin/     Sandbox: editor & hasilnya, disimpan di browser
+├─ app/                       Routing (Next.js App Router), loading.tsx (skeleton), error.tsx, not-found.tsx
+│  ├─ page.tsx                Landing (bagian-bagiannya di components/landing/sections/)
+│  ├─ undangan-pernikahan/ …  Halaman SEO per acara (isi di lib/marketing.ts → OCCASION_PAGES)
+│  ├─ ulasan/                 Semua ulasan asli + portofolio
+│  ├─ buat/                   Wizard Coba Gratis: acara → tema → data → editor sandbox
+│  ├─ tema/[id]/              Contoh tiap tema (statis, tombol tamu dikunci) + bar "Pakai tema ini"
+│  ├─ demo/ · demo/admin/     Sandbox: hasil & editor, disimpan di browser
 │  ├─ studio/                 Dashboard pemilik
-│  ├─ [slug]/…                Undangan klien, /[slug]/[tamu], /admin, /preview
-│  ├─ canvas/                 Isi iframe pratinjau di editor
-│  ├─ actions/                Server actions: site.ts (klien), studio.ts (pemilik), draft.ts (simpan draf publik)
-│  └─ api/                    Upload, media lokal, ucapan, impor/template Excel
-├─ lib/
-│  ├─ content/                Skema, paket, helper, contoh isi (tanpa React)
-│  ├─ server/                 db (Neon/PGlite), auth, data, validate, media, excel
-│  ├─ sandbox-store.ts        Penyimpanan sandbox /demo (localStorage + IndexedDB)
-│  ├─ upload-client.ts        Kompres foto & buat gambar OG di browser
-│  └─ messages.ts             Teks WhatsApp & URL situs
-├─ themes/
-│  ├─ style.ts                Design system: 16 palet (terang & gelap), 9 pasangan huruf, token CSS
-│  ├─ decor/                  Ornamen & animasi: catalog.ts (id), art.tsx (sudut, pemisah, pola, partikel, adegan), figures.tsx (figur tanpa wajah)
-│  ├─ meta.ts                 Preset tema (gaya + tata letak awal), musik bawaan
-│  ├─ index.tsx               ThemeRenderer + LayoutPreview (satu-satunya pintu masuk)
-│  ├─ layouts/                catalog.ts (daftar & id) + satu file per bagian (hero.tsx, couple.tsx, …)
-│  └─ shared/                 Kit bersama: Section, Heading, T (placeholder teks), EmptyPhoto, HeroChrome, BankCard, hooks
+│  ├─ [slug]/…                Undangan klien, /[slug]/[tamu], /admin, /editor, /preview
+│  ├─ actions/                Server actions per fitur: site, guests, reviews, studio, draft
+│  ├─ api/                    Upload, media lokal, ucapan, impor/template Excel
+│  ├─ sitemap.ts · robots.ts · manifest.ts · icon.png · apple-icon.png
+├─ server/                    BACKEND (server-only)
+│  ├─ db/                     client.ts (query/one), migrations.ts (skema bernomor)
+│  ├─ repositories/           sites, guests, wishes, reviews, plans, settings, login-attempts
+│  ├─ services/               site-address.ts, guests.ts
+│  ├─ auth.ts · validate.ts · media.ts · excel.ts · cache.ts · result.ts
+├─ lib/                       Bersama (tanpa rahasia)
+│  ├─ content/                Skema undangan, paket, acara, helper, contoh isi
+│  ├─ records.ts              Tipe record DB + aturan murni (slug, masa aktif, nomor HP)
+│  ├─ marketing.ts            FAQ, langkah, halaman per acara
+│  ├─ seo/                    JSON-LD, metadata halaman acara
+│  ├─ sandbox-store.ts · upload-client.ts · messages.ts · portfolio.ts
+├─ themes/                    Tampilan undangan (lihat Prinsip 2 & 6)
+│  └─ shared/TrialGuard.tsx   Mengunci tombol tamu di pratinjau yang belum dibayar
 └─ components/
-   ├─ editor/                 Editor klien
-   │  ├─ EditorApp.tsx        Rangka editor (tab, panel, kanvas)
-   │  ├─ useContentStore.ts   State isi + autosave + upload
-   │  ├─ canvas/              Iframe pratinjau & protokol postMessage
-   │  ├─ blocks/              Form isian per bagian undangan (BLOCK_FORMS)
-   │  ├─ panels/              Tema & Warna, Musik, Urutan, Checklist, Terbitkan
-   │  └─ tabs/                Tamu, Ucapan, Lainnya (+ versi demo)
-   ├─ studio/                 Dashboard pemilik
-   ├─ site/PublicSite.tsx     Render undangan untuk tamu (status, masa aktif, batas paket)
-   └─ landing/                Komponen kecil landing page
+   ├─ ui/Skeleton.tsx         Skeleton bergaya brand (undangan, editor, admin, studio, marketing)
+   ├─ landing/                Nav, Hero (+HeroDevices), ThemeCatalog, Reviews, sections/*, OccasionLanding
+   ├─ editor/                 Editor (EditorApp, canvas/, blocks/, panels/, tabs/)
+   ├─ studio/                 StudioApp + satu file per tab (SitesTab, RequestsTab, ReviewsTab, PlansTab, SettingsTab, SiteModals, ui)
+   ├─ admin/                  Admin klien (GuestsManager + guests/, WishesManager, SettingsPanel…)
+   └─ site/                   PublicSite (server), ThemeSampleBar
 ```
+
+## Konvensi
+
+- **Data baru di database**: tambah migrasi baru di akhir `MIGRATIONS` (jangan ubah yang sudah rilis), lalu fungsi di repository tabelnya. Saat server pertama jalan, migrasi dijalankan sekali dan versinya dicatat di tabel `schema_meta` (selanjutnya cukup 1 query).
+- **Fitur baru di admin/studio**: action di `src/app/actions/<fitur>.ts` → repository/service; komponen di folder fiturnya. Jangan menulis SQL di action atau komponen.
+- **Loading**: halaman yang menunggu data diberi `loading.tsx` memakai komponen dari `components/ui/Skeleton.tsx`. Jangan pasang `loading.tsx` di root atau di `[slug]` (membuat alamat salah tetap berstatus 200, bukan 404).
+- **Gambar**: pakai `next/image` dengan `sizes` yang sesuai; jangan `unoptimized` untuk file lokal. Gambar tema memakai `Img` (ada shimmer sampai gambar tampil).
+- **Animasi landing**: CSS saja (`rk-enter`, `rk-lift`, `Reveal`); jangan memakai `motion` di halaman marketing. Animasi undangan boleh memakai `motion`.
+- **Ulasan**: hanya ulasan asli. Jangan menambah ulasan, angka, atau nama karangan.
+- **Musik**: hanya lagu yang boleh dipakai ulang (lihat `public/music/README.md`).
 
 ## Resep
 
@@ -103,7 +132,7 @@ Tabel `reviews`. Klien menulis dari Admin → Pengaturan (status `pending`), pem
 ### Menambah kolom isian (mis. "dress code")
 
 1. Tambahkan field di `schema.ts` dan nilai bawaannya di `withDefaults` (`helpers.ts`).
-2. Bersihkan di `sanitizeContent` (`lib/server/validate.ts`): batasi panjang, cek URL.
+2. Bersihkan di `sanitizeContent` (`src/server/validate.ts`): batasi panjang, cek URL.
 3. Tambahkan input di form bagian terkait (`components/editor/blocks/*Form.tsx`).
 4. Tampilkan di tema yang mau memakainya. Tema lain boleh mengabaikannya.
 
@@ -118,9 +147,9 @@ Tabel `reviews`. Klien menulis dari Admin → Pengaturan (status `pending`), pem
 
 Tambahkan satu entri di `src/lib/portfolio.ts` (nama pasangan, tanggal, lokasi, tema, foto sampul, dua tangkapan layar). Landing page menampilkan 3 terbaru, halaman `/portofolio` menampilkan semuanya. Kartu membuka popup detail, bukan website aslinya, jadi tidak ada undangan yang perlu tetap aktif.
 
-### Landing page
+### Landing page & halaman per acara
 
-`src/app/page.tsx` menyusun bagian-bagian dari `src/components/landing/`: `chrome.tsx` (nav, footer, judul), `DeviceShowcase.tsx` (laptop + HP di hero, klik untuk ganti fokus), `Features.tsx`, `Portfolio.tsx`, `motion.tsx` (animasi judul). Tangkapan layar ada di `public/landing/`; contoh undangan yang dipakai adalah Afdal & Putri.
+`src/app/page.tsx` hanya menyusun bagian dari `src/components/landing/sections/` (urutan: Hero → Fitur → Tema → contoh bagian → acara → portofolio & ulasan → editor → tamu → cara pesan → harga → FAQ → ajakan). Halaman `/undangan-*` memakai `OccasionLanding` dengan isi dari `OCCASION_PAGES` di `lib/marketing.ts`; menambah acara baru cukup menambah entri di sana dan satu file `page.tsx`. Gambar share (OG) ada di `public/og/` (dibuat dari template HTML, 1200×630).
 
 ### Mengubah harga atau benefit paket
 
@@ -129,10 +158,13 @@ Tidak perlu kode: Studio → **Paket & Harga**. Nilai bawaan ada di `lib/content
 ## Cache
 
 - Halaman undangan di-cache dengan tag `site:<slug>`; setiap simpan memanggil `updateTag`, sehingga tamu melihat versi baru tanpa membebani database.
-- Paket dan pengaturan di-cache dengan tag `plans` dan `settings`.
+- Paket, pengaturan, ulasan, dan angka statistik di-cache dengan tag `plans`, `settings`, `reviews`, `stats` (lihat `src/server/cache.ts`).
 
 ## Pemeriksaan sebelum deploy
 
 ```bash
-npm run check   # typecheck + eslint + next build
+npm run check   # typecheck + eslint + unit test (vitest) + next build
+npm test        # hanya unit test
 ```
+
+Unit test ada di sebelah kodenya (`*.test.ts`): aturan record, isi tema, sanitasi (setiap contoh tema harus lolos tanpa berubah), dan riwayat migrasi.

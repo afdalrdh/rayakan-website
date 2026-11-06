@@ -41,7 +41,6 @@ export const metadata: Metadata = {
   title: { default: "Rayakan.my.id · Undangan Digital Nikah, Ulang Tahun & Khitanan", template: "%s · Rayakan.my.id" },
   description: "Undangan digital pernikahan, ulang tahun, dan khitanan yang bisa kamu buat dan ubah sendiri dari HP. Coba gratis.",
   applicationName: "Rayakan.my.id",
-  icons: { icon: "/brand/logo.png", apple: "/brand/logo.png" },
   openGraph: { siteName: "Rayakan.my.id", locale: "id_ID", type: "website" },
   twitter: { card: "summary_large_image" },
   formatDetection: { telephone: false },

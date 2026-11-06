@@ -177,10 +177,10 @@ export function HeroPhoto({ className = "object-cover object-center", overlay = 
   return (
     <>
       <div className="absolute inset-0 z-0 hidden md:block">
-        {h.imageDesktop ? <Img src={h.imageDesktop} alt={alt} fill priority quality={90} sizes="100vw" className={className} /> : <EmptyPhotoDark label="Foto utama untuk laptop belum diisi" />}
+        {h.imageDesktop ? <Img src={h.imageDesktop} alt={alt} fill priority quality={85} sizes="100vw" className={className} /> : <EmptyPhotoDark label="Foto utama untuk laptop belum diisi" />}
       </div>
       <div className="absolute inset-0 z-0 md:hidden">
-        {h.imageMobile ? <Img src={h.imageMobile} alt={alt} fill priority quality={90} sizes="(max-width: 767px) 180vh, 100vw" className={className} /> : <EmptyPhotoDark label="Foto utama untuk HP belum diisi" />}
+        {h.imageMobile ? <Img src={h.imageMobile} alt={alt} fill priority quality={85} sizes="(max-width: 767px) 130vw, 100vw" className={className} /> : <EmptyPhotoDark label="Foto utama untuk HP belum diisi" />}
       </div>
       {overlay && <div className="absolute inset-0 z-[5] bg-black/20" />}
     </>
@@ -227,8 +227,10 @@ export function HeroChrome({ tone = "photo", scroll = true }: { tone?: "photo" |
       )}
       <header className={`absolute inset-x-0 top-0 z-50 px-6 pt-6 sm:px-10 md:px-12 md:pt-8 ${ink}`}>
         <nav className="mx-auto flex max-w-[1200px] items-center justify-between">
-          <a href="#welcome" aria-label="Beranda" className="block">
-            <CoupleLogo tone={onPhoto ? "light" : "dark"} className="h-auto w-[44px] md:w-[52px]" />
+          {/* On illustrated heroes the controls sit on soft pills, so ornaments behind them never hurt legibility. */}
+          <a href="#welcome" className={`block ${onPhoto ? "" : "rounded-full bg-t-bg/80 px-2.5 py-1.5 shadow-[0_4px_14px_-8px_rgba(0,0,0,0.35)] backdrop-blur-sm"}`}>
+            <span className="sr-only">Ke awal undangan</span>
+            <CoupleLogo tone={onPhoto ? "light" : "dark"} className={`h-auto ${onPhoto ? "w-[44px] md:w-[52px]" : "w-[38px] md:w-[44px]"}`} />
           </a>
           <div className="hidden items-center gap-8 md:flex">
             {nav.map((l) => (
@@ -239,11 +241,11 @@ export function HeroChrome({ tone = "photo", scroll = true }: { tone?: "photo" |
           </div>
           <div className="flex items-center gap-3 md:gap-0">
             {!c.hidden.includes("rsvp") && (
-              <a href="#rsvp" className={`rounded-[10px] border px-4 py-2 text-[14px] leading-none transition-colors md:px-6 md:py-2.5 md:text-[15px] ${onPhoto ? "border-white/75 bg-black/15 hover:bg-white hover:text-neutral-950" : "border-t-accent/50 hover:bg-t-accent hover:text-t-on-accent"}`}>
+              <a href="#rsvp" className={`rounded-[10px] border px-4 py-2 text-[14px] leading-none transition-colors md:px-6 md:py-2.5 md:text-[15px] ${onPhoto ? "border-white/75 bg-black/15 hover:bg-white hover:text-neutral-950" : "border-t-accent/50 bg-t-bg/80 backdrop-blur-sm hover:bg-t-accent hover:text-t-on-accent"}`}>
                 Kehadiran
               </a>
             )}
-            <button type="button" aria-label="Buka navigasi" onClick={() => setOpen(true)} className="flex h-9 w-9 items-center justify-center md:hidden">
+            <button type="button" aria-label="Buka navigasi" onClick={() => setOpen(true)} className={`flex h-9 w-9 items-center justify-center md:hidden ${onPhoto ? "" : "rounded-full bg-t-bg/80 backdrop-blur-sm"}`}>
               <MenuIcon />
             </button>
           </div>
@@ -258,8 +260,9 @@ export function ScrollLink({ tone = "photo" }: { tone?: "photo" | "theme" }) {
   const { content: c } = useTheme();
   const onPhoto = tone === "photo";
   return (
-    <a href="#invitation" className={`absolute inset-x-0 bottom-0 z-50 border-t ${onPhoto ? "border-white/30 text-white" : "border-t-line text-t-fg"}`}>
-      <div className="mx-auto flex h-[68px] max-w-[1200px] items-center justify-between px-6 sm:px-10 md:h-20 md:px-12">
+    <a href="#invitation" className={`absolute inset-x-0 bottom-0 z-50 border-t ${onPhoto ? "border-white/30 text-white" : "border-t-line bg-t-bg/85 text-t-fg backdrop-blur-sm"}`}>
+      {/* Extra room on the right: the music button lives in the bottom-right corner. */}
+      <div className="mx-auto flex h-[68px] max-w-[1200px] items-center justify-between gap-3 pl-6 pr-[84px] sm:pl-10 md:h-20 md:pl-12 md:pr-[108px]">
         <ArrowDownIcon className="h-5 w-4 shrink-0 animate-float-subtle" />
         <span className="text-[13px] leading-none tracking-wide sm:text-[14px] md:text-[16px]">{c.hero.scrollLabel}</span>
       </div>

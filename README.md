@@ -54,7 +54,7 @@ npm run dev
 
 Tanpa `DATABASE_URL`, aplikasi otomatis memakai database lokal (folder `.data/`). Login studio lokal: `admin` / `admin123`.
 
-Sebelum push: `npm run check` (typecheck + lint + build).
+Sebelum push: `npm install` (sekali, untuk alat tes) lalu `npm run check` (typecheck + lint + unit test + build). Struktur kode dan konvensinya ada di `ARCHITECTURE.md`.
 
 ## Tema
 

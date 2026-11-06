@@ -15,12 +15,12 @@ export function DeviceDuo({ desktop, mobile, alt, url, className = "" }: { deskt
           {url && <span className="ml-2 truncate rounded-full bg-white/[0.08] px-2.5 py-0.5 text-[9px] text-white/55">{url}</span>}
         </div>
         <div className="relative aspect-[16/10]">
-          <Image src={desktop} alt={`${alt} di laptop`} fill unoptimized className="object-cover object-top" />
+          <Image src={desktop} alt={`${alt} di laptop`} fill sizes="(min-width: 768px) 520px, 90vw" className="object-cover object-top" />
         </div>
       </div>
       <div className="absolute bottom-0 right-0 w-[27%] rounded-[16px] bg-[#0d0b0a] p-[4px] shadow-[0_26px_44px_-14px_rgba(0,0,0,0.85)] ring-1 ring-white/15">
         <div className="relative aspect-[390/844] overflow-hidden rounded-[12px]">
-          <Image src={mobile} alt={`${alt} di HP`} fill unoptimized className="object-cover object-top" />
+          <Image src={mobile} alt={`${alt} di HP`} fill sizes="160px" className="object-cover object-top" />
         </div>
       </div>
     </div>

@@ -2,7 +2,8 @@
 
 import { KeyRound, Loader2, MessageSquareText, ReceiptText, Star } from "lucide-react";
 import { useState, useTransition } from "react";
-import { changePasswordAction, saveWaTemplateAction, submitReviewAction } from "@/app/actions/site";
+import { submitReviewAction } from "@/app/actions/reviews";
+import { changePasswordAction, saveWaTemplateAction } from "@/app/actions/site";
 import { activeLabel } from "@/lib/content";
 import { DEFAULT_WA_TEMPLATE, renderWaMessage, SITE_HOST } from "@/lib/messages";
 import { btnGhost, btnPrimary, card, Field, inputCls, useAdminSite, useToast } from "./ui";

@@ -4,8 +4,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatEventDate, shareKind, shareTitle, type WeddingContent } from "@/lib/content";
 import { SITE_URL } from "@/lib/messages";
-import { canEditSite } from "@/lib/server/auth";
-import { findSite, getGuestName, getPlan, getPublicSite, getSettings, isExpired, type SiteRecord } from "@/lib/server/data";
+import { canEditSite } from "@/server/auth";
+import { findSite, getPublicSite } from "@/server/repositories/sites";
+import { getGuestName } from "@/server/repositories/guests";
+import { getPlan } from "@/server/repositories/plans";
+import { getSettings } from "@/server/repositories/settings";
+import { isExpired, type SiteRecord } from "@/lib/records";
 import { ThemeRenderer } from "@/themes";
 
 /** Apply package limits so locked sections never reach guests, whatever the editor sent. */
@@ -101,6 +105,7 @@ export async function PublicSite({ slug, guestSlug, preview = false }: { slug: s
       )}
       <ThemeRenderer
         mode="live"
+        trial={preview && (site.status !== "published" || site.planId === "gratis")}
         content={content}
         guestName={guestName ?? undefined}
         site={{ slug, guestSlug: guestName ? guestSlug : undefined, guestName: guestName ?? undefined }}

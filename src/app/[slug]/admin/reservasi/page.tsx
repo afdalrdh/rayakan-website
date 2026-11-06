@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { WishesManager } from "@/components/admin/WishesManager";
-import { canEditSite } from "@/lib/server/auth";
-import { findSite, listWishes } from "@/lib/server/data";
+import { canEditSite } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
+import { listWishes } from "@/server/repositories/wishes";
 
 export const dynamic = "force-dynamic";
 

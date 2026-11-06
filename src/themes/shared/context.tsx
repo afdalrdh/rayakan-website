@@ -1,7 +1,7 @@
 "use client";
 
 import Image, { type ImageLoader, type ImageProps } from "next/image";
-import { createContext, useContext, type CSSProperties, type ReactNode } from "react";
+import { createContext, useContext, useState, type CSSProperties, type ReactNode } from "react";
 import type { BlockKey, WeddingContent } from "@/lib/content";
 import { getFontPair, styleVars } from "../style";
 
@@ -27,6 +27,11 @@ export interface ThemeCtxValue {
   onSelect?: (key: BlockKey) => void;
   /** Present on real sites: enables live RSVP. */
   site?: SiteInfo;
+  /**
+   * Unpaid preview (theme samples, sandbox, drafts): guests' actions such as
+   * sending RSVP, copying account numbers or opening maps are switched off.
+   */
+  trial?: boolean;
 }
 
 const ThemeCtx = createContext<ThemeCtxValue | null>(null);
@@ -57,11 +62,23 @@ const cloudinaryLoader: ImageLoader = ({ src, width }) => src.replace("/image/up
  * Image for theme content. Local files go through Next's optimizer,
  * Cloudinary files through Cloudinary, anything else (Blob, sandbox blobs) as is.
  */
-export function Img({ src, alt, ...rest }: Omit<ImageProps, "src"> & { src: string }) {
+export function Img({ src, alt, className = "", onLoad, ...rest }: Omit<ImageProps, "src"> & { src: string }) {
   const url = useSrc(src);
+  // A soft sheen in the theme's colours until the photo has arrived (slow connections).
+  const [loadedUrl, setLoadedUrl] = useState("");
   if (!url) return null;
-  if (CLOUDINARY_IMAGE.test(url)) return <Image src={url} alt={alt} loader={cloudinaryLoader} {...rest} />;
-  return <Image src={url} alt={alt} unoptimized={!url.startsWith("/")} {...rest} />;
+  const props = {
+    ...rest,
+    src: url,
+    alt,
+    className: loadedUrl === url ? className : `t-skeleton ${className}`,
+    onLoad: (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      setLoadedUrl(url);
+      onLoad?.(e);
+    },
+  };
+  if (CLOUDINARY_IMAGE.test(url)) return <Image {...props} alt={alt} loader={cloudinaryLoader} />;
+  return <Image {...props} alt={alt} unoptimized={!url.startsWith("/")} />;
 }
 
 /** CSS variables for colours and fonts (see themes/style.ts and globals.css). */

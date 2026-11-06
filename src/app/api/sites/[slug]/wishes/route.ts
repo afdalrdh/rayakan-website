@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { clientIp, ipHash } from "@/lib/server/auth";
-import { findSite, insertWish, isExpired, listWishes, recentWishesFromIp, wishStats } from "@/lib/server/data";
+import { clientIp, ipHash } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
+import { insertWish, listWishes, recentWishesFromIp, wishStats } from "@/server/repositories/wishes";
+import { isExpired } from "@/lib/records";
 
 const clean = (v: unknown, max: number) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "");
 

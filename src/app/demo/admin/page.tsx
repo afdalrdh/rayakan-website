@@ -1,6 +1,7 @@
 import { EditorApp } from "@/components/editor/EditorApp";
 import { THEME_IDS, type ThemeId } from "@/lib/content";
-import { getPlans, getSettings } from "@/lib/server/data";
+import { getPlans } from "@/server/repositories/plans";
+import { getSettings } from "@/server/repositories/settings";
 
 export const metadata = { title: "Coba Editor Undangan", robots: { index: false } };
 

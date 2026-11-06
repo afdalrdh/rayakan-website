@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { canEditSite } from "@/lib/server/auth";
-import { ALLOWED_TYPES, MAX_AUDIO, MAX_IMAGE, putFile } from "@/lib/server/media";
+import { canEditSite } from "@/server/auth";
+import { ALLOWED_TYPES, MAX_AUDIO, MAX_IMAGE, putFile } from "@/server/media";
 
 export async function POST(req: Request) {
   const form = await req.formData().catch(() => null);

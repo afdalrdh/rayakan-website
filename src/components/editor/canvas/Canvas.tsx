@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { BlockKey, Plan, WeddingContent } from "@/lib/content";
+import { InvitationSkeleton } from "@/components/ui/Skeleton";
 import type { FromCanvas, ToCanvas } from "./protocol";
 
 export type Device = "hp" | "laptop";
@@ -89,9 +90,15 @@ export function Canvas({
       {size.w > 0 && (
         <div
           style={wrap}
-          className={`overflow-hidden bg-black ${isDesktopUi || device === "laptop" ? "rounded-[28px] shadow-[0_30px_60px_-20px_rgba(18,13,16,0.45)] ring-[6px] ring-rk-ink" : ""} ${device === "laptop" ? "rounded-xl ring-4" : ""}`}
+          className={`relative overflow-hidden bg-black ${isDesktopUi || device === "laptop" ? "rounded-[28px] shadow-[0_30px_60px_-20px_rgba(18,13,16,0.45)] ring-[6px] ring-rk-ink" : ""} ${device === "laptop" ? "rounded-xl ring-4" : ""}`}
         >
           <iframe ref={frame} src="/canvas" title="Pratinjau undangan" style={style} className="block border-0" />
+          {/* Until the preview has loaded and received the content, show the invitation placeholder. */}
+          {!ready && (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <InvitationSkeleton fill />
+            </div>
+          )}
         </div>
       )}
     </div>

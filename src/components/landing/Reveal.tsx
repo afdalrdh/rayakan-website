@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const HIDDEN = {
   up: "translate-y-6 opacity-0",
-  blur: "translate-y-4 opacity-0 blur-[10px]",
+  // Was a blur-in; animating `filter` repaints every frame, so it is now a softer rise.
+  blur: "translate-y-5 opacity-0",
   scale: "scale-[0.96] opacity-0",
   left: "-translate-x-8 opacity-0",
   right: "translate-x-8 opacity-0",
@@ -36,7 +37,7 @@ export function Reveal({ children, delay = 0, className = "", variant = "up" }: 
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-[opacity,transform,filter] duration-[1000ms] ease-[cubic-bezier(.2,.7,.2,1)] ${shown ? "translate-x-0 translate-y-0 scale-100 opacity-100 blur-none" : HIDDEN[variant]} motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-none motion-reduce:transition-none ${className}`}
+      className={`transition-[opacity,transform] duration-[1000ms] ease-[cubic-bezier(.2,.7,.2,1)] ${shown ? "translate-x-0 translate-y-0 scale-100 opacity-100" : HIDDEN[variant]} motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none ${className}`}
     >
       {children}
     </div>

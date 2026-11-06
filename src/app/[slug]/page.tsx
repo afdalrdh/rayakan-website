@@ -14,5 +14,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function SitePage({ params }: Props) {
+  // No Suspense here on purpose: an unknown address must answer with a real 404 status.
   return <PublicSite slug={(await params).slug} />;
 }

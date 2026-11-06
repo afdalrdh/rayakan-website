@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { GuestsManager } from "@/components/admin/GuestsManager";
-import { canEditSite } from "@/lib/server/auth";
-import { findSite, listGuests } from "@/lib/server/data";
+import { canEditSite } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
+import { listGuests } from "@/server/repositories/guests";
 
 export const dynamic = "force-dynamic";
 

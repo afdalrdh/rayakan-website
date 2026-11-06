@@ -1,9 +1,12 @@
 import { loginOwnerAction } from "@/app/actions/studio";
 import { LoginCard } from "@/components/auth/LoginCard";
 import { StudioApp, type SiteSummary } from "@/components/studio/StudioApp";
-import { isOwner, ownerCredentials } from "@/lib/server/auth";
-import { storageProvider } from "@/lib/server/media";
-import { getPlans, getSettings, listReviews, listSites } from "@/lib/server/data";
+import { isOwner, ownerCredentials } from "@/server/auth";
+import { storageProvider } from "@/server/media";
+import { getPlans } from "@/server/repositories/plans";
+import { getSettings } from "@/server/repositories/settings";
+import { listReviews } from "@/server/repositories/reviews";
+import { listSites } from "@/server/repositories/sites";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Studio", robots: { index: false } };

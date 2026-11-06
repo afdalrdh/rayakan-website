@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BuatWizard } from "@/components/landing/BuatWizard";
 import { contactHref } from "@/components/landing/chrome";
 import { isThemeId } from "@/lib/content";
-import { getSettings } from "@/lib/server/data";
+import { getSettings } from "@/server/repositories/settings";
 
 export const metadata: Metadata = {
   title: "Buat Undangan Digital Gratis",

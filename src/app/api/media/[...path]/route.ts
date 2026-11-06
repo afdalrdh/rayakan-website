@@ -1,4 +1,4 @@
-import { contentTypeOf, readLocalFile } from "@/lib/server/media";
+import { contentTypeOf, readLocalFile } from "@/server/media";
 
 /** Local development only: serves files saved to .data/uploads. */
 export async function GET(_req: Request, { params }: { params: Promise<{ path: string[] }> }) {

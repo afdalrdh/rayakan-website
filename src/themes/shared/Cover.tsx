@@ -42,6 +42,8 @@ export function CoverOverlay({ guestName, Face }: { guestName: string; Face: Cov
     window.scrollTo(0, 0);
   }, []);
   useEffect(() => {
+    // Lets page chrome outside the invitation (e.g. the theme sample bar) know the cover is gone.
+    if (open) window.dispatchEvent(new Event("rk:cover-open"));
     document.body.style.overflow = open ? "" : "hidden";
     return () => {
       document.body.style.overflow = "";
@@ -65,7 +67,7 @@ export function CoverOverlay({ guestName, Face }: { guestName: string; Face: Cov
 
   return (
     <>
-      {music && <audio ref={audioRef} loop preload="auto" src={music} />}
+      {music && <audio ref={audioRef} loop preload="none" src={music} />}
       <AnimatePresence>
         {!open && (
           <motion.div initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: "easeInOut" }} className="fixed inset-0 z-[100] overflow-y-auto">

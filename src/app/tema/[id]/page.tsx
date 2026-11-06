@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { demoContent, getOccasion, getThemeMeta, namesOf, THEME_IDS, type ThemeId } from "@/lib/content";
+import { OCCASION_PAGES } from "@/lib/marketing";
+import { breadcrumbLd, JsonLd, webPageLd } from "@/lib/seo/jsonld";
+import { ThemeSampleBar } from "@/components/site/ThemeSampleBar";
 import { ThemeRenderer } from "@/themes";
 
 /**
@@ -37,5 +40,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ThemeSample({ params }: Props) {
   const { id } = await params;
   if (!isTheme(id)) notFound();
-  return <ThemeRenderer mode="live" content={demoContent(id)} />;
+  const c = demoContent(id);
+  const meta = getThemeMeta(id);
+  const occasion = OCCASION_PAGES[meta.occasion];
+  return (
+    <>
+      <JsonLd
+        data={[
+          webPageLd({ path: `/tema/${id}`, name: `Contoh Undangan Digital Tema ${meta.name}`, description: meta.tagline, image: c.hero.ogImage || meta.preview.desktop }),
+          breadcrumbLd([
+            { name: "Beranda", path: "/" },
+            { name: occasion.name, path: occasion.path },
+            { name: `Tema ${meta.name}`, path: `/tema/${id}` },
+          ]),
+        ]}
+      />
+      <ThemeRenderer mode="live" content={c} trial />
+      <ThemeSampleBar themeId={id} themeName={meta.name} />
+    </>
+  );
 }

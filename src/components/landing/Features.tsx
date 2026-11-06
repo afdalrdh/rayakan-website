@@ -47,7 +47,7 @@ function EditArt() {
     <div className="relative w-full max-w-[176px]">
       <div className={`${ease} w-full rotate-2 translate-y-6 rounded-2xl border border-[#efe2cf] bg-white p-2.5 opacity-0 shadow-[0_18px_34px_-18px_rgba(80,50,20,0.45)] group-data-[in=true]:translate-y-0 group-data-[in=true]:opacity-100`}>
         <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
-          <Image src="/landing/afdal-desktop.webp" alt="" fill unoptimized className="object-cover object-[30%_30%]" />
+          <Image src="/landing/afdal-desktop.webp" alt="" fill sizes="260px" className="object-cover object-[30%_30%]" />
           <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 rounded-full bg-[#1d1714]/85 px-2 py-0.5 text-[9.5px] font-semibold text-white">
             <ImageIcon className="h-2.5 w-2.5" /> Ganti foto
           </span>

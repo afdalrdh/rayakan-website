@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { EditorApp } from "@/components/editor/EditorApp";
-import { canEditSite, isOwner } from "@/lib/server/auth";
-import { findSite, getPlans, getSettings } from "@/lib/server/data";
+import { canEditSite, isOwner } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
+import { getPlans } from "@/server/repositories/plans";
+import { getSettings } from "@/server/repositories/settings";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit Tampilan", robots: { index: false } };

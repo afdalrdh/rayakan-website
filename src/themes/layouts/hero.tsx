@@ -73,7 +73,7 @@ const Sinematik: Hero = () => {
         </div>
         {hasCutout && (
           <div className="pointer-events-none absolute inset-0 z-20 md:hidden">
-            <Img src={h.imageCutout} alt="" fill priority quality={90} sizes="100vw" className="object-cover object-center" />
+            <Img src={h.imageCutout} alt="" fill priority quality={85} sizes="100vw" className="object-cover object-center" />
           </div>
         )}
         <HeroChrome />
@@ -126,7 +126,7 @@ const Raksasa: Hero = () => {
         {h.imageCutout && (
           // The cut-out is made from the phone photo; on laptops it only fits when both photos are the same.
           <div className={`pointer-events-none absolute inset-0 z-40 ${bottom ? "hidden" : ""} ${h.imageDesktop === h.imageMobile ? "md:block" : "md:hidden"}`}>
-            <Img src={h.imageCutout} alt="" fill priority quality={90} sizes="(max-width: 767px) 180vh, 100vw" className="object-cover object-center" />
+            <Img src={h.imageCutout} alt="" fill priority quality={85} sizes="(max-width: 767px) 130vw, 100vw" className="object-cover object-center" />
           </div>
         )}
         <HeroChrome />
@@ -277,7 +277,7 @@ const Ilustrasi: Hero = () => {
   return (
     <Block id="hero">
       <section id="welcome" className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-t-bg px-5 pb-28 pt-24 text-t-fg md:px-12 md:pt-28">
-        <DecorFrame decor={decor} />
+        <DecorFrame decor={decor} inset="hero" />
         <div className="mx-auto grid w-full max-w-[1100px] items-center gap-6 md:grid-cols-[1fr_minmax(0,480px)] md:gap-14">
           <motion.div
             initial={still ? false : { opacity: 0, y: 24, scale: 0.97 }}
@@ -323,7 +323,7 @@ const Lukisan: Hero = () => {
         <div className="relative h-[75svh] min-h-[440px] w-full shrink-0 md:h-full md:min-h-0">
           {src ? (
             <motion.div initial={still ? false : { opacity: 0, scale: 1.06 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1.8, ease: EASE }} className="absolute inset-0">
-              <Img src={src} alt={`Ilustrasi ${namesLabel(h.firstName, h.secondName)}`} fill priority quality={88} sizes="(min-width: 768px) 55vw, 100vw" className="object-cover object-top md:object-[50%_22%]" />
+              <Img src={src} alt={`Ilustrasi ${namesLabel(h.firstName, h.secondName)}`} fill priority quality={80} sizes="(min-width: 768px) 55vw, 100vw" className="object-cover object-top md:object-[50%_22%]" />
             </motion.div>
           ) : mode === "live" ? (
             // No painting yet: the decor set's faceless illustration keeps the page complete.
@@ -394,7 +394,7 @@ const Polaroid: Hero = () => {
   return (
     <Block id="hero">
       <section id="welcome" className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-t-bg px-5 pb-28 pt-24 text-center text-t-fg">
-        <DecorFrame decor={decor} />
+        <DecorFrame decor={decor} inset="hero" />
         {/* fixed proportions, so the polaroids and the doodle line up the same on every screen */}
         <div className="relative aspect-[100/103] w-full max-w-[440px]">
           {people.length > 1 ? (

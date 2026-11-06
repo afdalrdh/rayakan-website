@@ -142,6 +142,22 @@ body { -webkit-font-smoothing: antialiased; }
 .rk-float { animation: rk-float 7s ease-in-out infinite; }
 .rk-sway { animation: rk-sway 9s ease-in-out infinite; transform-origin: 50% 100%; }
 
+/* Entrances on first paint, without JavaScript. Stagger with style={{ "--d": "0.2s" }}. */
+@keyframes rk-enter { from { opacity: 0; transform: translate3d(0, 14px, 0); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes rk-lift { from { transform: translate3d(0, 16px, 0); } to { transform: none; } }
+@keyframes rk-draw { from { stroke-dashoffset: 1600; } to { stroke-dashoffset: 0; } }
+.rk-enter { animation: rk-enter 0.75s cubic-bezier(.22,1,.36,1) var(--d, 0s) both; }
+.rk-lift { animation: rk-lift 0.8s cubic-bezier(.22,1,.36,1) var(--d, 0s) both; }
+.rk-draw { stroke-dasharray: 1600; animation: rk-draw 2.4s cubic-bezier(.65,0,.35,1) 0.3s both; }
+
+/* Brand loading placeholders: warm cream with a soft moving sheen (images, skeletons). */
+@keyframes rk-sheen { from { background-position: 160% 0; } to { background-position: -60% 0; } }
+/* Image placeholders stop after a few passes (the photo covers them by then), so they never keep repainting.
+   Full-page skeletons (loading.tsx) add .rk-shimmer-loop to keep going until the page arrives. */
+.rk-shimmer { background-color: #efe7da; background-image: linear-gradient(100deg, transparent 30%, rgba(255, 252, 245, 0.75) 50%, transparent 70%); background-size: 220% 100%; animation: rk-sheen 1.5s linear 4; }
+.rk-shimmer-dark { background-color: #2a221d; background-image: linear-gradient(100deg, transparent 30%, rgba(232, 213, 181, 0.12) 50%, transparent 70%); background-size: 220% 100%; animation: rk-sheen 1.5s linear 4; }
+.rk-shimmer-loop { animation-iteration-count: infinite; }
+
 @utility rk-type {
   animation: rk-type-in 1.8s steps(25, end) 0.4s forwards, rk-caret 0.8s step-end infinite;
 }
@@ -155,5 +171,5 @@ body { -webkit-font-smoothing: antialiased; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rk-rise, .rk-eq, .rk-kenburns, .rk-drift, .rk-march, .rk-twinkle, .rk-marquee, .rk-float, .rk-sway, .rk-parallax, .rk-zoom-in { animation: none; }
+  .rk-rise, .rk-eq, .rk-kenburns, .rk-drift, .rk-march, .rk-twinkle, .rk-marquee, .rk-float, .rk-sway, .rk-parallax, .rk-zoom-in, .rk-enter, .rk-lift, .rk-draw, .rk-shimmer, .rk-shimmer-dark { animation: none; }
 }

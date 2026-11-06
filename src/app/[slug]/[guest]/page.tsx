@@ -16,5 +16,6 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function GuestPage({ params }: Props) {
   const { slug, guest } = await params;
+  // No Suspense here on purpose: an unknown address must answer with a real 404 status.
   return <PublicSite slug={slug} guestSlug={guest} />;
 }

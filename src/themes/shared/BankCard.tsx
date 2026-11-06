@@ -30,7 +30,7 @@ export function BankCard({ account: a, validThru, className = "" }: { account: B
         </div>
         <div className="mt-auto flex items-center gap-[2.4cqw]">
           <span className="whitespace-nowrap font-sans text-[clamp(17px,6cqw,34px)] font-bold leading-none tracking-wide tabular-nums">{a.number || "0000 0000 0000"}</span>
-          <button type="button" onClick={() => copy(a.number.replace(/\s/g, ""), a.id)} aria-label={`Salin nomor rekening ${preset.name}`} className="shrink-0 rounded-md p-1.5 text-white/80 transition hover:bg-white/10 hover:text-white">
+          <button type="button" data-paid onClick={() => copy(a.number.replace(/\s/g, ""), a.id)} aria-label={`Salin nomor rekening ${preset.name}`} className="shrink-0 rounded-md p-1.5 text-white/80 transition hover:bg-white/10 hover:text-white">
             <CopyIcon />
           </button>
         </div>

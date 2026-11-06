@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
-import { canEditSite } from "@/lib/server/auth";
+import { canEditSite } from "@/server/auth";
 import { SITE_URL } from "@/lib/messages";
-import { findSite, reviewOfSite } from "@/lib/server/data";
+import { findSite } from "@/server/repositories/sites";
+import { reviewOfSite } from "@/server/repositories/reviews";
 
 export const dynamic = "force-dynamic";
 

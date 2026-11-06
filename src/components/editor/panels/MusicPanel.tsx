@@ -2,7 +2,7 @@
 
 import { Check, Lock, Music2, Pause, Play, Upload } from "lucide-react";
 import { useRef, useState } from "react";
-import { MUSIC_LIBRARY } from "@/lib/content";
+import { getOccasion, musicFor } from "@/lib/content";
 import { useEditor } from "../context";
 import { Group, UpgradeNote } from "../fields";
 
@@ -12,6 +12,7 @@ export function MusicPanel() {
   const audio = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState<string | null>(null);
   const canUpload = plan.musicUpload;
+  const tracks = musicFor(c.occasion);
   const preview = (src: string, key: string) => {
     const el = audio.current;
     if (!el) return;
@@ -26,24 +27,31 @@ export function MusicPanel() {
   return (
     <div className="space-y-6">
       <audio ref={audio} onEnded={() => setPlaying(null)} />
-      <Group title="Pilih lagu">
-        {MUSIC_LIBRARY.map((t) => {
-          const sel = c.music.mode === "library" && c.music.trackId === t.id;
-          return (
-            <div key={t.id} className={`flex items-center gap-3 rounded-2xl border p-3 ${sel ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
-              <button type="button" aria-label="Putar contoh" onClick={() => preview(t.src, t.id)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rk-ink text-white">
-                {playing === t.id ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              </button>
-              <button type="button" className="flex-1 text-left" onClick={() => update((d) => void (d.music = { ...d.music, mode: "library", trackId: t.id }))}>
-                <span className="block font-rk-sans text-[14px] font-semibold text-rk-ink">{t.title}</span>
-                <span className="block font-rk-sans text-[12px] text-rk-mute">{t.artist}</span>
-              </button>
-              {sel && <Check className="h-5 w-5 text-rk-ink" />}
-            </div>
-          );
-        })}
-        <p className="font-rk-sans text-[12px] text-rk-mute">Daftar lagu akan ditambah dari /studio.</p>
-      </Group>
+      {[
+        { title: `Cocok untuk ${getOccasion(c.occasion).name.toLowerCase()}`, list: tracks.suggested },
+        { title: "Lagu lainnya", list: tracks.others },
+      ]
+        .filter((g) => g.list.length > 0)
+        .map((g) => (
+          <Group key={g.title} title={g.title}>
+            {g.list.map((t) => {
+              const sel = c.music.mode === "library" && c.music.trackId === t.id;
+              return (
+                <div key={t.id} className={`flex items-center gap-3 rounded-2xl border p-3 ${sel ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
+                  <button type="button" aria-label={`Putar contoh ${t.title}`} onClick={() => preview(t.src, t.id)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rk-ink text-white">
+                    {playing === t.id ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                  </button>
+                  <button type="button" className="flex-1 text-left" onClick={() => update((d) => void (d.music = { ...d.music, mode: "library", trackId: t.id }))}>
+                    <span className="block font-rk-sans text-[14px] font-semibold text-rk-ink">{t.title}</span>
+                    <span className="block font-rk-sans text-[12px] text-rk-mute">{t.mood}</span>
+                  </button>
+                  {sel && <Check className="h-5 w-5 text-rk-ink" />}
+                </div>
+              );
+            })}
+          </Group>
+        ))}
+      <p className="-mt-3 font-rk-sans text-[12px] text-rk-mute">Ingin lagu favoritmu sendiri? Unggah di bawah ini.</p>
       <Group title="Lagu sendiri">
         <div className={`flex items-center gap-3 rounded-2xl border p-3 ${c.music.mode === "upload" ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rk-cream text-rk-ink">

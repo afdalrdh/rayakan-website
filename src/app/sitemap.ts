@@ -1,14 +1,18 @@
 import type { MetadataRoute } from "next";
 import { THEME_IDS } from "@/lib/content";
+import { OCCASION_PAGE_LIST } from "@/lib/marketing";
 import { SITE_URL } from "@/lib/messages";
 
-/** Only the public marketing pages. Couples' invitations are private (noindex) and never listed. */
+/** Only the public marketing pages. Clients' invitations are private (noindex) and never listed. */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const page = (path: string, priority: number, changeFrequency: "weekly" | "monthly" = "monthly") => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency, priority });
   return [
-    { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE_URL}/buat`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/portofolio`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    ...THEME_IDS.map((id) => ({ url: `${SITE_URL}/tema/${id}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
+    page("/", 1, "weekly"),
+    ...OCCASION_PAGE_LIST.map((p) => page(p.path, 0.9, "weekly")),
+    page("/buat", 0.8),
+    page("/ulasan", 0.7, "weekly"),
+    page("/portofolio", 0.7),
+    ...THEME_IDS.map((id) => page(`/tema/${id}`, 0.6)),
   ];
 }

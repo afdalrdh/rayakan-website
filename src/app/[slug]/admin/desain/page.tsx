@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { DesignOverview } from "@/components/admin/DesignOverview";
-import { canEditSite } from "@/lib/server/auth";
-import { findSite } from "@/lib/server/data";
+import { canEditSite } from "@/server/auth";
+import { findSite } from "@/server/repositories/sites";
 
 export const dynamic = "force-dynamic";
 

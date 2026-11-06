@@ -1,4 +1,4 @@
-import { guestTemplate } from "@/lib/server/excel";
+import { guestTemplate } from "@/server/excel";
 
 export async function GET() {
   const buf = await guestTemplate();

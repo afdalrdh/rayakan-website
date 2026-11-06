@@ -3,7 +3,7 @@
 import { createElement } from "react";
 import { getDecor, type BlockKey, type WeddingContent } from "@/lib/content";
 import { coverFace, sectionComponent } from "./layouts";
-import { CoverInline, CoverOverlay, DecorParticles, siteStyle, ThemeProvider, useTheme, type SiteInfo } from "./shared";
+import { CoverInline, CoverOverlay, DecorParticles, siteStyle, ThemeProvider, TrialGuard, useTheme, type SiteInfo } from "./shared";
 
 export interface ThemeRendererProps {
   content: WeddingContent;
@@ -14,6 +14,8 @@ export interface ThemeRendererProps {
   locked?: BlockKey[];
   onSelect?: (key: BlockKey) => void;
   site?: SiteInfo;
+  /** Unpaid preview: guest actions are disabled (see TrialGuard). */
+  trial?: boolean;
 }
 
 const NO_MEDIA = {};
@@ -24,9 +26,9 @@ function section(block: Exclude<BlockKey, "cover">, id: string, key: string = bl
 }
 
 function Site({ guestName }: { guestName: string }) {
-  const { content: c, mode } = useTheme();
+  const { content: c, mode, trial } = useTheme();
   const Face = coverFace(c.layouts.cover);
-  return (
+  const site = (
     <main style={siteStyle(c)} className="min-h-screen bg-t-bg font-t-body text-t-fg">
       {(mode === "edit" || mode === "preview") && <CoverInline guestName={guestName} Face={Face} />}
       {section("hero", c.layouts.hero)}
@@ -36,12 +38,13 @@ function Site({ guestName }: { guestName: string }) {
       <DecorParticles kind={getDecor(c.style.decor).particles} />
     </main>
   );
+  return trial && mode === "live" ? <TrialGuard>{site}</TrialGuard> : site;
 }
 
 /** Renders a whole site from its content. The only entry point pages need. */
-export function ThemeRenderer({ content, mode, media = NO_MEDIA, guestName = "Tamu Undangan", selected, locked, onSelect, site }: ThemeRendererProps) {
+export function ThemeRenderer({ content, mode, media = NO_MEDIA, guestName = "Tamu Undangan", selected, locked, onSelect, site, trial }: ThemeRendererProps) {
   return (
-    <ThemeProvider value={{ content, mode, media, selected, locked, onSelect, site }}>
+    <ThemeProvider value={{ content, mode, media, selected, locked, onSelect, site, trial }}>
       <Site guestName={guestName} />
     </ThemeProvider>
   );

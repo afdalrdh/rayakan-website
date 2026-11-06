@@ -2,8 +2,8 @@
 
 import { CalendarCheck, ChevronDown, Download, MessageCircleHeart, Search, Trash2, UserX } from "lucide-react";
 import { useMemo, useState } from "react";
-import { deleteWishAction } from "@/app/actions/site";
-import type { WishRecord } from "@/lib/server/data";
+import { deleteWishAction } from "@/app/actions/guests";
+import type { WishRecord } from "@/lib/records";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import { btnGhost, card, formatDateTime, inputCls, StatCard, useAdminSite, useToast } from "./ui";
 
