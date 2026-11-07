@@ -2,6 +2,16 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { HeroDevices } from "./HeroDevices";
+
+type HeroDevicesProps = Parameters<typeof HeroDevices>[0];
+
+/** The sample on the home page: Afdal & Putri, with screen recordings of /tema/afdal (made by scripts/record-hero.mjs). */
+export const HOME_DEVICES: HeroDevicesProps = {
+  url: "rayakan.my.id/namamu",
+  desktop: "/landing/afdal-desktop.webp",
+  mobile: "/landing/afdal-mobile.webp",
+  video: { desktop: "/landing/afdal-desktop.mp4", mobile: "/landing/afdal-mobile.mp4" },
+};
 import { Sparkle } from "./illustrations";
 
 const MARQUEE = ["Coba gratis tanpa daftar", "Bayar setelah jadi", "Aktif selamanya", "Tema adat Jawa & Sunda", "Lukisan & ilustrasi AI", "Animasi pembuka", "Link nama per tamu", "RSVP & buku ucapan", "Amplop digital", "Edit dari HP"];
@@ -47,13 +57,13 @@ export function Hero({
   consultHref,
   priceFrom,
   copy = HOME_COPY(priceFrom),
-  devices = { url: "rayakan.my.id/afdal-putri", desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp" },
+  devices = HOME_DEVICES,
 }: {
   tryHref: string;
   consultHref: string;
   priceFrom: string;
   copy?: HeroCopy;
-  devices?: { url: string; desktop: string; mobile: string };
+  devices?: HeroDevicesProps;
 }) {
   let word = 0;
   const words = (line: string, italic: boolean) => line.split(" ").map((w) => <Word key={`${w}-${word}`} at={0.08 + 0.07 * word++} italic={italic}>{w}</Word>);

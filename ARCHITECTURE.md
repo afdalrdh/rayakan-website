@@ -41,7 +41,7 @@ src/
 ├─ app/                       Routing (Next.js App Router), loading.tsx (skeleton), error.tsx, not-found.tsx
 │  ├─ page.tsx                Landing (bagian-bagiannya di components/landing/sections/)
 │  ├─ undangan-pernikahan/ …  Halaman SEO per acara (isi di lib/marketing.ts → OCCASION_PAGES)
-│  ├─ ulasan/                 Semua ulasan asli + portofolio
+│  ├─ ulasan/                 Alihkan (308) ke /#ulasan; ulasan tampil di beranda
 │  ├─ buat/                   Wizard Coba Gratis: acara → tema → data → editor sandbox
 │  ├─ tema/[id]/              Contoh tiap tema (statis, tombol tamu dikunci) + bar "Pakai tema ini"
 │  ├─ demo/ · demo/admin/     Sandbox: hasil & editor, disimpan di browser
@@ -84,6 +84,10 @@ src/
 
 ## Resep
 
+### Pratinjau tata letak di editor
+
+`PhonePreview` (`components/editor/LayoutPicker.tsx`) merender bagian di dalam iframe berukuran HP asli (390×760, CSS halaman disalin ke dalamnya), lalu diperkecil. Jadi breakpoint `md:`/`lg:` dan satuan `vw`/`svh` di tata letak mengikuti ukuran HP, bukan lebar jendela editor. Tata letak baru otomatis tampil benar di popup tanpa kode tambahan.
+
 ### Menambah tata letak untuk satu bagian
 
 1. `src/themes/layouts/catalog.ts`: tambahkan `{ id, name, desc, hint? }` di `LAYOUTS[bagian]`.
@@ -123,7 +127,7 @@ src/
 
 ### Ulasan
 
-Tabel `reviews`. Klien menulis dari Admin → Pengaturan (status `pending`), pemilik menyetujui/menambah di Studio → Ulasan. Landing hanya menampilkan `shown` (cache tag `reviews`). Link "Lihat website" hanya bila pemiliknya mengizinkan; selain itu tampil "Privat". Jangan memasukkan ulasan karangan.
+Tabel `reviews`. Klien menulis dari Admin → Pengaturan (status `pending`), pemilik menyetujui/menambah di Studio → Ulasan. Landing hanya menampilkan `shown` (cache tag `reviews`) di bagian `#ulasan` beranda (`TestimonialsSection`): kartu bergeser otomatis (`ReviewSlider`, CSS `rk-marquee`), tanpa aksi klik. Kurang dari 4 ulasan = kartu diam; mulai 10 ulasan = dua baris berlawanan arah; belum ada ulasan = `ReviewsEmpty`. Menu navbar "Ulasan" ke `/#ulasan`; `/ulasan` lama dialihkan ke sana. Jangan memasukkan ulasan karangan.
 
 ### Menambah palet atau pasangan huruf
 
@@ -149,7 +153,9 @@ Tambahkan satu entri di `src/lib/portfolio.ts` (nama pasangan, tanggal, lokasi, 
 
 ### Landing page & halaman per acara
 
-`src/app/page.tsx` hanya menyusun bagian dari `src/components/landing/sections/` (urutan: Hero → Fitur → Tema → contoh bagian → acara → portofolio & ulasan → editor → tamu → cara pesan → harga → FAQ → ajakan). Halaman `/undangan-*` memakai `OccasionLanding` dengan isi dari `OCCASION_PAGES` di `lib/marketing.ts`; menambah acara baru cukup menambah entri di sana dan satu file `page.tsx`. Gambar share (OG) ada di `public/og/` (dibuat dari template HTML, 1200×630).
+`src/app/page.tsx` hanya menyusun bagian dari `src/components/landing/sections/` (urutan: Hero → Fitur → Tema → contoh bagian → portofolio → ulasan → editor → tamu → cara pesan → harga → FAQ → ajakan). Halaman `/undangan-*` memakai `OccasionLanding` dengan isi dari `OCCASION_PAGES` di `lib/marketing.ts`; menambah acara baru cukup menambah entri di sana dan satu file `page.tsx`. Gambar share (OG) ada di `public/og/` (dibuat dari template HTML, 1200×630).
+
+Laptop & HP di hero (`HeroDevices`) menampilkan tangkapan layar lalu memutar rekaman layar (`devices.video`, MP4 tanpa suara, diunduh setelah halaman selesai dimuat; tidak diputar untuk reduced motion / hemat data). Rekaman dibuat dari `/tema/<id>` dengan `node scripts/record-hero.mjs <id>` (sampul → klik "Buka Undangan" → scroll), hasilnya `public/landing/<id>-desktop.mp4` & `-mobile.mp4`.
 
 ### Mengubah harga atau benefit paket
 

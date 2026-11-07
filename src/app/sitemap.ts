@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/", 1, "weekly"),
     ...OCCASION_PAGE_LIST.map((p) => page(p.path, 0.9, "weekly")),
     page("/buat", 0.8),
-    page("/ulasan", 0.7, "weekly"),
     page("/portofolio", 0.7),
     ...THEME_IDS.map((id) => page(`/tema/${id}`, 0.6)),
   ];

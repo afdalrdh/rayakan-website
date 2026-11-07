@@ -139,6 +139,9 @@ body { -webkit-font-smoothing: antialiased; }
 .rk-march { animation: rk-march 14s linear infinite; }
 .rk-twinkle { animation: rk-twinkle 4.5s ease-in-out infinite; }
 .rk-marquee { animation: rk-marquee 38s linear infinite; }
+.rk-marquee-rev { animation-direction: reverse; }
+/* Soft fade at both sides of a sliding row. */
+.rk-fade-x { mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); }
 .rk-float { animation: rk-float 7s ease-in-out infinite; }
 .rk-sway { animation: rk-sway 9s ease-in-out infinite; transform-origin: 50% 100%; }
 

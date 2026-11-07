@@ -1,4 +1,4 @@
-import { THEMES, type ThemeId } from "@/themes/meta";
+import { libraryTrackId, THEMES, type ThemeId } from "@/themes/meta";
 import { legacyStyle } from "@/themes/style";
 import { withDefaults } from "./helpers";
 import { DEMO_EXTRA } from "./demo-extra";
@@ -15,7 +15,7 @@ export const DEMO_ARYA: WeddingContent = {
   style: { ...THEMES.arya.style, accent: "" },
   layouts: { ...THEMES.arya.layouts },
   logo: { mode: "image", image: "/demo/arya/logo.png" },
-  music: { mode: "library", trackId: "arya-background", upload: "", uploadName: "" },
+  music: { mode: "library", trackId: THEMES.arya.defaultTrack, upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
   cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
@@ -139,7 +139,7 @@ export const DEMO_AFDAL: WeddingContent = {
   style: { ...THEMES.afdal.style, accent: "" },
   layouts: { ...THEMES.afdal.layouts },
   logo: { mode: "image", image: "/demo/afdal/logo.png" },
-  music: { mode: "library", trackId: "afdal-background", upload: "", uploadName: "" },
+  music: { mode: "library", trackId: THEMES.afdal.defaultTrack, upload: "", uploadName: "" },
   order: [...SECTION_KEYS],
   hidden: [],
   cover: { greeting: "Kepada Yth. Bapak/Ibu/Saudara/i", buttonLabel: "Buka Undangan", kicker: "", title: "", bubbleA: "", bubbleB: "", photo: "" },
@@ -386,8 +386,12 @@ export const DEMO_NAVY: WeddingContent = {
     mapsUrl: "https://maps.google.com/?q=Senayan+Jakarta",
     image: "/demo/navy/venue.webp",
     schedules: [
-      { id: "j1", label: "Pemberkatan / Akad", time: "16.00 – 17.30 WIB" },
-      { id: "j2", label: "Resepsi Malam", time: "18.30 – 21.30 WIB" },
+      { id: "j1", label: "Pemberkatan / Akad", time: "16.00 – 17.00 WIB" },
+      { id: "j2", label: "Sesi Foto Keluarga", time: "17.00 – 17.45 WIB" },
+      { id: "j3", label: "Welcome Drink & Ramah Tamah", time: "18.00 – 18.30 WIB" },
+      { id: "j4", label: "Grand Entrance", time: "18.30 WIB" },
+      { id: "j5", label: "Resepsi & Jamuan Makan Malam", time: "18.45 – 20.30 WIB" },
+      { id: "j6", label: "First Dance & Potong Kue", time: "20.30 – 21.30 WIB" },
     ],
     note: "Dress code: Black Tie / formal dengan nuansa biru tua.",
   },
@@ -445,5 +449,8 @@ export function normalizeContent(content: unknown): WeddingContent {
   };
   delete (migrated as Record<string, unknown>).palette;
   delete (migrated as Record<string, unknown>).customAccent;
-  return withDefaults(migrated, DEMO_ARYA);
+  const out = withDefaults(migrated, DEMO_ARYA);
+  // Songs removed from the library (Nov 2026) become the occasion's own song.
+  out.music.trackId = libraryTrackId(out.music.trackId, out.occasion);
+  return out;
 }

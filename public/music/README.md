@@ -11,6 +11,17 @@ Lagu populer (mis. lagu pernikahan dari penyanyi terkenal) dilindungi hak cipta.
 Klien yang ingin memakai lagu seperti itu bisa mengunggahnya sendiri lewat
 editor → Musik → Lagu sendiri.
 
+## Lagu yang ada
+
+| File | Untuk acara | id |
+| --- | --- | --- |
+| `nikah.mp3` | Pernikahan | `nikah` |
+| `ulang-tahun.mp3` | Ulang tahun | `ulang-tahun` |
+| `khitanan.mp3` | Khitanan | `khitanan` |
+
+Lagu bawaan tiap acara diatur di `DEFAULT_TRACK` (`src/themes/meta.ts`). Situs lama yang
+masih memakai lagu yang sudah dihapus otomatis memakai lagu sesuai acaranya.
+
 ## Menambah lagu
 
 1. Simpan file `.mp3` (atau `.m4a`) di folder ini, ukuran ideal di bawah 3 MB

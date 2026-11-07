@@ -1,4 +1,5 @@
 import { layoutOf } from "@/themes/layouts/catalog";
+import { DEFAULT_TRACK, MUSIC_LIBRARY } from "@/themes/meta";
 import { getOccasion, OCCASION_IDS, OCCASIONS, type Occasion } from "./occasion";
 import { BLOCK_LABELS, type BlockKey, type Person, type WeddingContent } from "./schema";
 
@@ -108,6 +109,9 @@ export function applyOccasion(c: WeddingContent, next: Occasion) {
     c.venue.schedules = o.schedules.map((label, i) => ({ id: c.venue.schedules[i]?.id ?? `j${i + 1}`, label, time: c.venue.schedules[i]?.time ?? "" }));
   }
   c.rsvp.askCity = next === "nikah" ? c.rsvp.askCity : false;
+  // Each occasion has its own song: swap it unless the client picked another one themselves.
+  const ownPick = MUSIC_LIBRARY.some((t) => t.id === c.music.trackId) && !Object.values(DEFAULT_TRACK).includes(c.music.trackId);
+  if (c.music.mode === "library" && !ownPick) c.music.trackId = DEFAULT_TRACK[next];
   if (o.single) c.closing.displayName = c.closing.displayName.includes("&") ? c.hero.firstName : c.closing.displayName;
 }
 

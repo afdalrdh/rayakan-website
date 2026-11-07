@@ -11,6 +11,7 @@ import {
   DEMO_ARYA,
   demoContent,
   getThemeMeta,
+  libraryTrackId,
   SECTION_KEYS,
   THEME_IDS,
   type SectionKey,
@@ -88,6 +89,7 @@ export function sanitizeContent(input: unknown): WeddingContent {
   c.hero.heartSize = pick(c.hero.heartSize, ["s", "m", "l"], "m");
   c.logo.mode = pick(c.logo.mode, ["monogram", "image", "none"], "monogram");
   c.music.mode = pick(c.music.mode, ["library", "upload", "none"], "library");
+  c.music.trackId = libraryTrackId(String(c.music.trackId ?? ""), c.occasion);
   c.hero.namePosition = pick(c.hero.namePosition, ["top", "bottom"], "top");
   c.event.timezone = pick(c.event.timezone, ["WIB", "WITA", "WIT"], "WIB");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(c.event.date)) c.event.date = "";

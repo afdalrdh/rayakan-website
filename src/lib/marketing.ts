@@ -61,7 +61,7 @@ export interface OccasionPage {
   description: string;
   hero: { badge: string; title: [string, string]; lead: string };
   /** Sample shown on the hero laptop and phone. */
-  devices: { url: string; desktop: string; mobile: string };
+  devices: { url: string; desktop: string; mobile: string; video?: { desktop: string; mobile: string } };
   ogImage: string;
   intro: { title: string; body: string };
   /** What makes the invitation fit this occasion. */
@@ -81,7 +81,7 @@ export const OCCASION_PAGES: Record<Occasion, OccasionPage> = {
       title: ["Undangan nikah", "seindah harinya."],
       lead: "Tema elegan, adat Jawa & Sunda, sampai lukisan cat air untuk yang tidak punya foto prewedding. Atur sendiri dari HP, kirim ke setiap tamu dengan namanya.",
     },
-    devices: { url: "rayakan.my.id/afdal-putri", desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp" },
+    devices: { url: "rayakan.my.id/namamu", desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp", video: { desktop: "/landing/afdal-desktop.mp4", mobile: "/landing/afdal-mobile.mp4" } },
     ogImage: "/og/undangan-pernikahan.jpg",
     intro: {
       title: "Semua yang dibutuhkan undangan nikah, dalam satu link.",

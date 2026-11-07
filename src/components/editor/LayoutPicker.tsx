@@ -1,7 +1,8 @@
 "use client";
 
 import { Check, Laptop, LayoutTemplate, Smartphone, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { blockLabel, DEMO_NAVY, DEMO_SAGE, LAYOUTS, layoutOf, type BlockKey, type WeddingContent } from "@/lib/content";
 import { LayoutPreview } from "@/themes";
 import { useEditor } from "./context";
@@ -133,46 +134,108 @@ export function ScaledPreview({ content, media, block, layout, height, className
   );
 }
 
+const FRAME_DOC = '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>';
+
 /**
- * A section rendered at phone width (390px) inside a phone-shaped frame.
+ * Renders `children` inside a same-origin iframe with a real viewport of
+ * `width` × `height`, scaled down to fit. Inside it, CSS breakpoints and
+ * vw/vh/svh units resolve against that viewport (a phone), not against the
+ * editor window, so a "HP" preview on a laptop shows the true phone layout
+ * instead of the desktop one squeezed into a phone frame.
+ * The editor page's stylesheets and font variables are copied in.
+ */
+function FrameViewport({ width, height, scale, onMeasure, children }: { width: number; height: number; scale: number; onMeasure: (contentHeight: number, background: string) => void; children: React.ReactNode }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [body, setBody] = useState<HTMLElement | null>(null);
+  const measure = useRef(onMeasure);
+  useEffect(() => {
+    measure.current = onMeasure;
+  });
+
+  const attach = useCallback(() => {
+    const doc = frame.current?.contentDocument;
+    // Before srcDoc loads, the iframe holds a throwaway about:blank document.
+    if (!doc || doc.URL !== "about:srcdoc" || !doc.body || doc.body.dataset.rk) return;
+    doc.documentElement.className = document.documentElement.className;
+    doc.documentElement.lang = document.documentElement.lang;
+    document.head.querySelectorAll('link[rel="stylesheet"], style').forEach((n) => doc.head.appendChild(n.cloneNode(true)));
+    Object.assign(doc.body.style, { margin: "0", background: "transparent", overflow: "hidden" });
+    doc.body.dataset.rk = "1";
+    setBody(doc.body);
+  }, []);
+  // The load event can fire before React attaches onLoad.
+  useEffect(attach, [attach]);
+
+  useEffect(() => {
+    const win = body?.ownerDocument.defaultView;
+    const el = body?.firstElementChild as HTMLElement | null;
+    if (!win || !el) return;
+    const ro = new win.ResizeObserver(() => {
+      const section = el.querySelector("section, footer");
+      const col = section ? win.getComputedStyle(section).backgroundColor : "";
+      measure.current(el.offsetHeight, col && col !== "rgba(0, 0, 0, 0)" ? col : win.getComputedStyle(el.firstElementChild ?? el).backgroundColor);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [body]);
+
+  return (
+    <>
+      <iframe
+        ref={frame}
+        srcDoc={FRAME_DOC}
+        onLoad={attach}
+        title="Pratinjau tata letak"
+        tabIndex={-1}
+        aria-hidden
+        scrolling="no"
+        style={{ width, height, transform: `scale(${scale})`, transformOrigin: "top left", border: 0 }}
+        className="absolute left-0 top-0 block"
+      />
+      {body && createPortal(<div>{children}</div>, body)}
+    </>
+  );
+}
+
+/** Phone viewport used for previews (an average phone screen). */
+const PHONE = { w: 390, h: 760 };
+
+/**
+ * A section rendered on a real phone-sized viewport inside a phone-shaped frame.
  * Full-screen sections are centred; others start at their top, like a guest
  * scrolling to them. Most visitors open invitations on a phone, so this is
  * the preview that matters.
  */
 export function PhonePreview({ content, media, block, layout, className = "" }: { content: WeddingContent; media: Record<string, string>; block: BlockKey; layout: string; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
-  const inner = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [w, setW] = useState(0);
   const [innerH, setInnerH] = useState(0);
   const [bg, setBg] = useState("");
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const ro = new ResizeObserver(([e]) => setSize({ w: e.contentRect.width, h: e.contentRect.height }));
+    const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  useEffect(() => {
-    const el = inner.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => {
-      setInnerH(el.offsetHeight);
-      const section = el.querySelector("section, footer");
-      const col = section ? getComputedStyle(section).backgroundColor : "";
-      setBg(col && col !== "rgba(0, 0, 0, 0)" ? col : getComputedStyle(el.firstElementChild ?? el).backgroundColor);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [size.w]);
-  const scale = size.w / 390;
-  const shown = innerH * scale;
-  const top = FULL_SCREEN.includes(block) ? Math.min(0, (size.h - shown) / 2) : shown < size.h ? (size.h - shown) / 2 : 0;
+  const scale = w / PHONE.w;
+  const top = !innerH ? 0 : FULL_SCREEN.includes(block) ? Math.min(0, (PHONE.h - innerH) / 2) : innerH < PHONE.h ? (PHONE.h - innerH) / 2 : 0;
   return (
     <div ref={box} style={{ background: bg || undefined }} className={`pointer-events-none relative aspect-[390/760] w-full overflow-hidden bg-rk-cream ${className}`} aria-hidden>
       {scale > 0 && (
-        <div ref={inner} style={{ width: 390, transform: `translate(0px, ${top}px) scale(${scale})`, transformOrigin: "top left" }} className="absolute left-0 top-0">
-          <LayoutPreview content={content} block={block} layout={layout} media={media} />
-        </div>
+        <FrameViewport
+          width={PHONE.w}
+          height={PHONE.h}
+          scale={scale}
+          onMeasure={(h, col) => {
+            setInnerH(h);
+            setBg(col);
+          }}
+        >
+          <div style={{ transform: `translateY(${top}px)` }}>
+            <LayoutPreview content={content} block={block} layout={layout} media={media} />
+          </div>
+        </FrameViewport>
       )}
     </div>
   );

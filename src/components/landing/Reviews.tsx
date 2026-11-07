@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Star } from "lucide-react";
+import { ArrowRight, Check, Star, User } from "lucide-react";
 import Link from "next/link";
 import { getOccasion, isOccasion, type Occasion } from "@/lib/content";
 import { TRUST } from "@/lib/marketing";
@@ -6,127 +6,93 @@ import type { ReviewRecord } from "@/lib/records";
 
 /*
  * Reviews from real clients (written in Admin → Pengaturan, approved in
- * Studio → Ulasan). Avatars are small illustrations, never photos, so nobody's
- * face is shown. Invitations are private by default; only owners who allowed
- * it get a "Lihat undangan" link. Never add made-up reviews.
+ * Studio → Ulasan), shown on the home page as two slowly moving rows of cards.
+ * The cards are not clickable on purpose: the section is something to read in
+ * passing, not to navigate. Never add made-up reviews.
  */
-
-const TINTS = ["#F1D9C7", "#D9E6D6", "#E1DAF0", "#F4E1B7", "#F3D2DA", "#D3E2EE"];
 
 function Stars({ n, className = "h-4 w-4" }: { n: number; className?: string }) {
   return (
     <span className="inline-flex gap-0.5" role="img" aria-label={`${n} dari 5 bintang`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} aria-hidden className={`${className} ${i <= n ? "fill-[#E9A23B] text-[#E9A23B]" : "text-rk-line"}`} />
+        <Star key={i} aria-hidden className={`${className} ${i <= n ? "fill-[#E9A23B] text-[#E9A23B]" : "fill-rk-line text-rk-line"}`} />
       ))}
     </span>
   );
 }
 
-/** Faceless illustrated avatar: a couple, a birthday child, or a boy in a peci. */
-export function ReviewAvatar({ occasion, seed, className = "h-10 w-10" }: { occasion: Occasion; seed: number; className?: string }) {
-  const bg = TINTS[seed % TINTS.length];
-  const skin = ["#E8B998", "#D9A07B", "#C98B65"][seed % 3];
-  const hair = "#3A2A22";
+const occasionOf = (r: ReviewRecord): Occasion => (isOccasion(r.occasion) ? r.occasion : "nikah");
+const shortDate = (iso: string) => new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+
+/** One review: who wrote it, the stars, their words, and when. */
+function ReviewCard({ r, hidden = false }: { r: ReviewRecord; hidden?: boolean }) {
   return (
-    <svg viewBox="0 0 40 40" aria-hidden className={`shrink-0 rounded-full ${className}`}>
-      <rect width="40" height="40" rx="20" fill={bg} />
-      {occasion === "nikah" ? (
-        <>
-          {/* groom */}
-          <path d="M5 40 C 5 30, 10 27, 15 27 C 20 27, 24 30, 24 40 Z" fill="#3F4659" />
-          <circle cx="14.5" cy="19" r="5.6" fill={skin} />
-          <path d="M8.8 18 C 9 12.5, 20 12, 20.2 17.6 C 17 15.6, 12 15.8, 8.8 18 Z" fill={hair} />
-          {/* bride with hijab */}
-          <path d="M17 40 C 17 29, 22 26, 27 26 C 32 26, 36 29, 36 40 Z" fill="#FFFFFF" />
-          <path d="M20.2 23.5 C 20 15, 33.8 15, 33.6 23.5 C 33.4 28.5, 20.4 28.5, 20.2 23.5 Z" fill="#F6E7DD" />
-          <circle cx="26.9" cy="21.4" r="4.6" fill={skin} />
-        </>
-      ) : occasion === "ultah" ? (
-        <>
-          <path d="M9 40 C 9 30, 14 27, 20 27 C 26 27, 31 30, 31 40 Z" fill="#F2C14E" />
-          <circle cx="20" cy="20" r="6.4" fill={skin} />
-          <path d="M13.6 19.4 C 13.4 13.4, 26.6 13.4, 26.4 19.4 C 23.5 16.8, 16.5 16.8, 13.6 19.4 Z" fill={hair} />
-          <path d="M15.5 13.4 L20 3.8 L24.5 13.4 Z" fill="#E86A6A" />
-          <circle cx="20" cy="3.8" r="1.8" fill="#FFFFFF" />
-        </>
-      ) : (
-        <>
-          <path d="M9 40 C 9 30, 14 27, 20 27 C 26 27, 31 30, 31 40 Z" fill="#FFFFFF" />
-          <circle cx="20" cy="20.5" r="6.2" fill={skin} />
-          <rect x="13.4" y="11.2" width="13.2" height="6.4" rx="1.6" fill="#1F2A2A" />
-          <path d="M14 31 L26 31 L25 40 L15 40 Z" fill="#2F7A5A" opacity="0.85" />
-        </>
-      )}
-    </svg>
+    <article aria-hidden={hidden || undefined} className="flex w-[290px] shrink-0 flex-col rounded-[20px] border border-rk-line/80 bg-[#fffdf9] p-6 shadow-[0_16px_32px_-28px_rgba(60,40,20,0.55)] sm:w-[320px]">
+      <div className="flex items-center gap-3.5">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f3e7d7] text-rk-bronze">
+          <User aria-hidden className="h-[22px] w-[22px]" strokeWidth={1.6} />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate font-rk-serif text-[19px] leading-tight text-rk-ink">{r.name}</span>
+          <span className="mt-0.5 block truncate text-[13px] text-rk-ink/55">
+            {getOccasion(occasionOf(r)).name}
+            {r.city ? ` · ${r.city}` : ""}
+          </span>
+        </span>
+      </div>
+      <Stars n={r.rating} className="mt-5 h-[18px] w-[18px]" />
+      <p className="mt-3.5 line-clamp-6 whitespace-pre-line text-[15px] leading-relaxed text-rk-ink/85">&ldquo;{r.message}&rdquo;</p>
+      <time dateTime={r.createdAt} className="mt-auto pt-5 text-[13px] text-rk-ink/50">
+        {shortDate(r.createdAt)}
+      </time>
+    </article>
   );
 }
 
-const monthYear = (iso: string) => new Date(iso).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
-const occasionOf = (r: ReviewRecord): Occasion => (isOccasion(r.occasion) ? r.occasion : "nikah");
+/** Below this many reviews a moving row would just repeat the same cards, so they sit still. */
+const MIN_FOR_SLIDER = 4;
+/** From this many reviews they split into two rows moving in opposite directions. */
+const MIN_FOR_TWO_ROWS = 10;
 
-/** Average rating, count and a stack of avatars. Only rendered when there are real reviews. */
-export function ReviewSummary({ reviews, made }: { reviews: ReviewRecord[]; made: number }) {
-  const avg = reviews.reduce((n, r) => n + r.rating, 0) / Math.max(1, reviews.length);
+/**
+ * One endlessly moving row. The cards are repeated until one copy is wider
+ * than a large screen, then that copy is rendered twice and the track slides
+ * by exactly one copy (translateX -50%), so the loop has no visible seam.
+ */
+function MarqueeRow({ items, reverse = false }: { items: ReviewRecord[]; reverse?: boolean }) {
+  const repeat = Math.max(1, Math.ceil(7 / items.length));
+  const copy = Array.from({ length: repeat }, () => items).flat();
   return (
-    <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-      <div className="flex items-center gap-3">
-        <p className="font-rk-display text-[52px] font-light leading-none tracking-[-0.03em]">{avg.toFixed(1)}</p>
-        <div>
-          <Stars n={Math.round(avg)} />
-          <p className="mt-1 text-[13px] text-rk-ink/65">dari {reviews.length} ulasan klien</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="flex -space-x-2.5">
-          {reviews.slice(0, 5).map((r, i) => (
-            <span key={r.id} className="rounded-full ring-[3px] ring-[#efe7da]">
-              <ReviewAvatar occasion={occasionOf(r)} seed={i} className="h-9 w-9" />
-            </span>
-          ))}
-        </span>
-        {made >= 25 && <p className="text-[13px] leading-tight text-rk-ink/70">{made}+ undangan sudah dibuat di Rayakan.my.id</p>}
+    <div className="overflow-hidden motion-reduce:overflow-x-auto">
+      <div className={`rk-marquee flex w-max ${reverse ? "rk-marquee-rev" : ""}`} style={{ animationDuration: `${copy.length * 9}s` }}>
+        {[0, 1].map((half) => (
+          <div key={half} className="flex items-stretch gap-5 pr-5">
+            {copy.map((r, i) => (
+              <ReviewCard key={`${half}-${i}`} r={r} hidden={half === 1 || i >= items.length} />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-/** One review card: stars, the words, then who wrote it. */
-function ReviewCard({ r, i }: { r: ReviewRecord; i: number }) {
-  const occasion = occasionOf(r);
-  return (
-    <article className="mb-4 break-inside-avoid rounded-[22px] border border-rk-line/80 bg-[#fffdf9] p-5 shadow-[0_18px_36px_-30px_rgba(60,40,20,0.6)] sm:p-6">
-      <div className="flex items-center justify-between gap-2">
-        <Stars n={r.rating} className="h-3.5 w-3.5" />
-        <time dateTime={r.createdAt} className="text-[12px] text-rk-ink/55">
-          {monthYear(r.createdAt)}
-        </time>
+/** Approved reviews: a still row when there are only a few, otherwise one or two auto-sliding rows. */
+export function ReviewSlider({ reviews }: { reviews: ReviewRecord[] }) {
+  if (reviews.length < MIN_FOR_SLIDER) {
+    return (
+      <div className="flex flex-wrap items-stretch justify-center gap-5 px-4">
+        {reviews.map((r) => (
+          <ReviewCard key={r.id} r={r} />
+        ))}
       </div>
-      <p className="mt-3.5 whitespace-pre-line font-rk-display text-[18px] font-light italic leading-[1.45] text-rk-ink/90">&ldquo;{r.message}&rdquo;</p>
-      <div className="mt-5 flex items-center gap-3 border-t border-rk-line/70 pt-4">
-        <ReviewAvatar occasion={occasion} seed={i} />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[14px] font-semibold">{r.name}</span>
-          <span className="block truncate text-[12px] text-rk-ink/60">
-            {getOccasion(occasion).name}
-            {r.city ? ` · ${r.city}` : ""}
-          </span>
-        </span>
-        {r.link && (
-          <a href={r.link} target="_blank" rel="noreferrer" className="shrink-0 text-[12px] font-semibold text-rk-bronze underline-offset-4 hover:underline">
-            Lihat undangan
-          </a>
-        )}
-      </div>
-    </article>
-  );
-}
-
-export function ReviewGrid({ reviews }: { reviews: ReviewRecord[] }) {
+    );
+  }
+  const rows = reviews.length >= MIN_FOR_TWO_ROWS ? [reviews.filter((_, i) => i % 2 === 0), reviews.filter((_, i) => i % 2 === 1)] : [reviews];
   return (
-    <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-      {reviews.map((r, i) => (
-        <ReviewCard key={r.id} r={r} i={i} />
+    <div className="rk-fade-x space-y-5">
+      {rows.map((row, i) => (
+        <MarqueeRow key={i} items={row} reverse={i === 1} />
       ))}
     </div>
   );

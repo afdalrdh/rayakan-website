@@ -6,8 +6,7 @@ import { EditorPromoSection } from "@/components/landing/sections/EditorPromo";
 import { FaqSection } from "@/components/landing/sections/Faq";
 import { FinalCtaSection } from "@/components/landing/sections/FinalCta";
 import { GuestsPromoSection } from "@/components/landing/sections/GuestsPromo";
-import { OccasionLinksSection } from "@/components/landing/sections/Occasions";
-import { PortfolioReviewsSection } from "@/components/landing/sections/PortfolioReviews";
+import { PortfolioSection, TestimonialsSection } from "@/components/landing/sections/PortfolioReviews";
 import { PricingSection } from "@/components/landing/sections/Pricing";
 import { ShowcaseSection } from "@/components/landing/sections/Showcase";
 import { StepsSection } from "@/components/landing/sections/Steps";
@@ -18,7 +17,6 @@ import { faqLd, JsonLd, organizationLd, serviceLd, websiteLd } from "@/lib/seo/j
 import { getPlans } from "@/server/repositories/plans";
 import { getShownReviews } from "@/server/repositories/reviews";
 import { getSettings } from "@/server/repositories/settings";
-import { countSites } from "@/server/repositories/sites";
 
 export const revalidate = 3600;
 
@@ -36,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Landing() {
-  const [plans, settings, reviews, made] = await Promise.all([getPlans(), getSettings(), getShownReviews(), countSites()]);
+  const [plans, settings, reviews] = await Promise.all([getPlans(), getSettings(), getShownReviews()]);
   const cheapest = Math.min(...plans.filter((p) => p.price > 0).map((p) => p.price));
   const consult = contactHref(settings, "Halo Rayakan.my.id, saya mau konsultasi undangan digital.");
 
@@ -49,8 +47,8 @@ export default async function Landing() {
         <Features />
         <ThemesSection />
         <ShowcaseSection />
-        <OccasionLinksSection />
-        <PortfolioReviewsSection portfolio={portfolioCards(settings).slice(0, 4)} reviews={reviews} made={made} />
+        <PortfolioSection portfolio={portfolioCards(settings).slice(0, 4)} />
+        <TestimonialsSection reviews={reviews} />
         <EditorPromoSection />
         <GuestsPromoSection />
         <StepsSection />

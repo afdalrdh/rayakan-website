@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 const LINKS = [
   ["/#tema", "Tema"],
   ["/#harga", "Harga"],
-  ["/ulasan", "Ulasan"],
+  ["/#ulasan", "Ulasan"],
   ["/#faq", "FAQ"],
   ["/buat", "Coba gratis"],
 ] as const;

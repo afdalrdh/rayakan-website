@@ -39,7 +39,7 @@ export function VenueForm() {
             </div>
           </ItemCard>
         ))}
-        <AddButton disabled={v.schedules.length >= 4} onClick={() => update((d) => void d.venue.schedules.push({ id: uid(), label: "", time: "" }))}>
+        <AddButton disabled={v.schedules.length >= 6} onClick={() => update((d) => void d.venue.schedules.push({ id: uid(), label: "", time: "" }))}>
           + Tambah acara
         </AddButton>
       </Group>

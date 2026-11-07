@@ -2,7 +2,7 @@
 
 import { ArrowLeftRight } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Device = "desktop" | "mobile";
 
@@ -15,10 +15,54 @@ const SPOTS = {
 const MOVE = "transition-[left,top,width,filter] duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none";
 
 /**
- * The sample invitation on a laptop and a phone; tapping one brings it to the
- * front. Plain CSS transitions, so the only JavaScript here is one state flag.
+ * Screen recording of the invitation (cover → "Buka Undangan" → scrolling) that
+ * fades in over the screenshot. The file only starts downloading after the page
+ * has loaded, so it never slows the first paint; visitors who prefer reduced
+ * motion or save data keep the still screenshot.
  */
-export function HeroDevices({ url, desktop, mobile }: { url: string; desktop: string; mobile: string }) {
+function ScreenVideo({ src }: { src: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (saveData || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let idle = 0;
+    const start = () => {
+      idle = window.setTimeout(() => {
+        v.src = src;
+        v.play().catch(() => {});
+      }, 600);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      window.clearTimeout(idle);
+    };
+  }, [src]);
+  return (
+    <video
+      ref={ref}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden="true"
+      tabIndex={-1}
+      onPlaying={() => setReady(true)}
+      className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+    />
+  );
+}
+
+/**
+ * The sample invitation on a laptop and a phone; tapping one brings it to the
+ * front. Plain CSS transitions; each screen can play a short recording of the
+ * invitation being opened and scrolled (like a GIF).
+ */
+export function HeroDevices({ url, desktop, mobile, video }: { url: string; desktop: string; mobile: string; video?: { desktop: string; mobile: string } }) {
   const [focus, setFocus] = useState<Device>("desktop");
   const place = (d: Device) => {
     const front = focus === d;
@@ -43,6 +87,7 @@ export function HeroDevices({ url, desktop, mobile }: { url: string; desktop: st
           </span>
           <span className="rk-shimmer-dark relative block aspect-[16/10]">
             <Image src={desktop} alt="Tampilkan contoh undangan di laptop" fill priority sizes="(min-width: 768px) 480px, 80vw" className="object-cover object-top" />
+            {video && <ScreenVideo src={video.desktop} />}
           </span>
         </button>
 
@@ -55,6 +100,7 @@ export function HeroDevices({ url, desktop, mobile }: { url: string; desktop: st
         >
           <span className="rk-shimmer-dark relative block h-full w-full overflow-hidden rounded-[16px] md:rounded-[24px]">
             <Image src={mobile} alt="Tampilkan contoh undangan di HP" fill sizes="(min-width: 768px) 210px, 34vw" className="object-cover object-top" />
+            {video && <ScreenVideo src={video.mobile} />}
           </span>
         </button>
       </div>

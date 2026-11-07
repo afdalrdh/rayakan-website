@@ -2,7 +2,7 @@
 
 import { Check, Lock, Music2, Pause, Play, Upload } from "lucide-react";
 import { useRef, useState } from "react";
-import { getOccasion, musicFor } from "@/lib/content";
+import { getOccasion, libraryTrackId, musicFor } from "@/lib/content";
 import { useEditor } from "../context";
 import { Group, UpgradeNote } from "../fields";
 
@@ -13,6 +13,7 @@ export function MusicPanel() {
   const [playing, setPlaying] = useState<string | null>(null);
   const canUpload = plan.musicUpload;
   const tracks = musicFor(c.occasion);
+  const chosen = libraryTrackId(c.music.trackId, c.occasion);
   const preview = (src: string, key: string) => {
     const el = audio.current;
     if (!el) return;
@@ -35,7 +36,7 @@ export function MusicPanel() {
         .map((g) => (
           <Group key={g.title} title={g.title}>
             {g.list.map((t) => {
-              const sel = c.music.mode === "library" && c.music.trackId === t.id;
+              const sel = c.music.mode === "library" && chosen === t.id;
               return (
                 <div key={t.id} className={`flex items-center gap-3 rounded-2xl border p-3 ${sel ? "border-rk-ink ring-2 ring-rk-ink" : "border-rk-line"}`}>
                   <button type="button" aria-label={`Putar contoh ${t.title}`} onClick={() => preview(t.src, t.id)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rk-ink text-white">

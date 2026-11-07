@@ -15,6 +15,9 @@ import type { Occasion } from "@/lib/content/occasion";
 import { DEFAULT_LAYOUTS, type SiteLayouts } from "./layouts/catalog";
 import { getFontPair, getPalette, type SiteStyle } from "./style";
 
+/** The library track each occasion starts with (new sites, sample themes, switching occasion). */
+export const DEFAULT_TRACK: Record<Occasion, string> = { nikah: "nikah", ultah: "ulang-tahun", khitan: "khitanan" };
+
 export const THEME_IDS = ["arya", "afdal", "sage", "navy", "jawa", "sunda", "sejoli", "lukis", "kecil", "konfeti", "angkasa", "khitan"] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 
@@ -48,7 +51,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     tags: ["Elegan"],
     style: { mode: "dark", palette: "emas", fonts: "klasik", decor: "none" },
     layouts: { ...DEFAULT_LAYOUTS },
-    defaultTrack: "arya-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: { desktop: "/landing/arya-desktop.webp", mobile: "/landing/arya-mobile.webp", backdrop: "/demo/arya/hero-desktop.jpg" },
   },
   afdal: {
@@ -59,7 +62,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     tags: ["Elegan"],
     style: { mode: "light", palette: "marun", fonts: "tegas", decor: "none" },
     layouts: { cover: "kaca", hero: "raksasa", couple: "ringkas", story: "bab", event: "kotak", venue: "berdampingan", gallery: "rapi", rsvp: "berdampingan", gift: "samping", closing: "foto" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: { desktop: "/landing/afdal-desktop.webp", mobile: "/landing/afdal-mobile.webp", backdrop: "/demo/afdal/hero.webp" },
   },
   sage: {
@@ -70,7 +73,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     tags: ["Elegan"],
     style: { mode: "light", palette: "sage", fonts: "romantis", decor: "none" },
     layouts: { cover: "lengkung", hero: "lengkung", couple: "bulat", story: "zigzag", event: "kalender", venue: "tengah", gallery: "masonry", rsvp: "tengah", gift: "daftar", closing: "lengkung" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: { desktop: "/landing/sage-desktop.webp", mobile: "/landing/sage-mobile.webp", backdrop: "/demo/sage/venue.webp" },
   },
   navy: {
@@ -81,7 +84,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     tags: ["Elegan"],
     style: { mode: "dark", palette: "navy", fonts: "mewah", decor: "none" },
     layouts: { cover: "sinema", hero: "editorial", couple: "editorial", story: "geser", event: "angka", venue: "linimasa", gallery: "geser", rsvp: "tab", gift: "amplop", closing: "belah" },
-    defaultTrack: "arya-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: { desktop: "/landing/navy-desktop.webp", mobile: "/landing/navy-mobile.webp", backdrop: "/demo/navy/venue.webp" },
   },
   jawa: {
@@ -93,7 +96,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "sogan", fonts: "agung", decor: "jawa" },
     layouts: { cover: "gerbang", hero: "lukisan", couple: "medali", story: "linimasa", event: "kalender", venue: "kartu", gallery: "rapi", rsvp: "tengah", gift: "kartu", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: preview("jawa"),
   },
   sunda: {
@@ -105,7 +108,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "padi", fonts: "klasik", decor: "sunda" },
     layouts: { cover: "surat", hero: "lukisan", couple: "medali", story: "zigzag", event: "kotak", venue: "tengah", gallery: "mozaik", rsvp: "tab", gift: "daftar", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: preview("sunda"),
   },
   sejoli: {
@@ -117,7 +120,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "blush", fonts: "romantis", decor: "doodle" },
     layouts: { cover: "surat", hero: "lukisan", couple: "medali", story: "linimasa", event: "kalender", venue: "kartu", gallery: "rapi", rsvp: "obrolan", gift: "amplop", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: preview("sejoli"),
   },
   lukis: {
@@ -129,7 +132,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "rose", fonts: "elegan", decor: "bunga" },
     layouts: { cover: "surat", hero: "lukisan", couple: "medali", story: "geser", event: "angka", venue: "tengah", gallery: "masonry", rsvp: "tengah", gift: "kartu", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: preview("lukis"),
   },
   kecil: {
@@ -141,7 +144,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "permen", fonts: "romantis", decor: "doodle" },
     layouts: { cover: "stiker", hero: "polaroid", couple: "bulat", story: "linimasa", event: "kotak", venue: "kartu", gallery: "masonry", rsvp: "obrolan", gift: "samping", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.nikah,
     preview: preview("kecil"),
   },
   konfeti: {
@@ -153,7 +156,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "ceria", fonts: "ceria", decor: "pesta" },
     layouts: { cover: "kado", hero: "lukisan", couple: "medali", story: "linimasa", event: "kotak", venue: "kartu", gallery: "rapi", rsvp: "obrolan", gift: "amplop", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.ultah,
     preview: preview("konfeti"),
   },
   angkasa: {
@@ -165,7 +168,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "dark", palette: "angkasa", fonts: "ceria", decor: "angkasa" },
     layouts: { cover: "gerbang", hero: "lukisan", couple: "medali", story: "linimasa", event: "angka", venue: "linimasa", gallery: "geser", rsvp: "tab", gift: "daftar", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.ultah,
     preview: preview("angkasa"),
   },
   khitan: {
@@ -177,7 +180,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
     badge: "Baru",
     style: { mode: "light", palette: "zamrud", fonts: "ceria", decor: "islami" },
     layouts: { cover: "gerbang", hero: "lukisan", couple: "medali", story: "linimasa", event: "kalender", venue: "kartu", gallery: "rapi", rsvp: "tengah", gift: "kartu", closing: "polos" },
-    defaultTrack: "afdal-background",
+    defaultTrack: DEFAULT_TRACK.khitan,
     preview: preview("khitan"),
   },
 };
@@ -217,9 +220,15 @@ export interface MusicTrack {
  * copyrighted: clients who want one upload it themselves. See public/music/README.md.
  */
 export const MUSIC_LIBRARY: MusicTrack[] = [
-  { id: "arya-background", title: "Piano Romantis", artist: "Instrumental", src: "/music/arya-background.m4a", occasions: ["nikah"], mood: "Piano · romantis" },
-  { id: "afdal-background", title: "Akustik Hangat", artist: "Instrumental", src: "/music/afdal-background.mp3", occasions: ["nikah", "ultah", "khitan"], mood: "Gitar akustik · hangat" },
+  { id: "nikah", title: "Lagu Pernikahan", artist: "Instrumental", src: "/music/nikah.mp3", occasions: ["nikah"], mood: "Untuk undangan pernikahan" },
+  { id: "ulang-tahun", title: "Lagu Ulang Tahun", artist: "Instrumental", src: "/music/ulang-tahun.mp3", occasions: ["ultah"], mood: "Untuk undangan ulang tahun" },
+  { id: "khitanan", title: "Lagu Khitanan", artist: "Instrumental", src: "/music/khitanan.mp3", occasions: ["khitan"], mood: "Untuk undangan khitanan" },
 ];
+
+/** A library track id that still exists; removed tracks (older sites) fall back to the occasion's song. */
+export function libraryTrackId(id: string, occasion: Occasion) {
+  return MUSIC_LIBRARY.some((t) => t.id === id) ? id : DEFAULT_TRACK[occasion];
+}
 
 /** Tracks for an occasion first, then the rest. */
 export function musicFor(occasion: Occasion) {

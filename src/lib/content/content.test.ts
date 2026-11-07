@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyOccasion, blockStatus, demoContent, namesOf, samplePhotos, slugify, THEME_IDS, THEMES } from "./index";
+import { applyOccasion, blockStatus, DEFAULT_TRACK, demoContent, MUSIC_LIBRARY, namesOf, normalizeContent, samplePhotos, slugify, THEME_IDS, THEMES } from "./index";
 import { cleanLayouts } from "@/themes/layouts/catalog";
 
 describe("slugify", () => {
@@ -16,6 +16,25 @@ describe("occasions", () => {
     const nikah = structuredClone(c);
     applyOccasion(nikah, "nikah");
     expect(nikah.occasion).toBe("nikah");
+  });
+});
+
+describe("music", () => {
+  it("every theme starts with a song that exists, matching its occasion", () => {
+    for (const id of THEME_IDS) {
+      const t = THEMES[id];
+      expect(MUSIC_LIBRARY.some((m) => m.id === t.defaultTrack)).toBe(true);
+      expect(t.defaultTrack).toBe(DEFAULT_TRACK[t.occasion]);
+    }
+  });
+  it("sites saved with a removed song get their occasion's song", () => {
+    const old = { ...demoContent("konfeti"), music: { mode: "library", trackId: "afdal-background", upload: "", uploadName: "" } };
+    expect(normalizeContent(old).music.trackId).toBe(DEFAULT_TRACK.ultah);
+  });
+  it("switching occasion switches to that occasion's song", () => {
+    const c = demoContent("konfeti");
+    applyOccasion(c, "khitan");
+    expect(c.music.trackId).toBe(DEFAULT_TRACK.khitan);
   });
 });
 

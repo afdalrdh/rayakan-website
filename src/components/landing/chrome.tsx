@@ -69,7 +69,7 @@ export function LandingFooter({ settings, orderHref }: { settings: Pick<AppSetti
               </Link>
             </li>
             <li>
-              <Link href="/ulasan" prefetch={false} className={link}>
+              <Link href="/#ulasan" prefetch={false} className={link}>
                 Ulasan
               </Link>
             </li>

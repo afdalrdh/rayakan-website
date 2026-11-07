@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MUSIC_LIBRARY } from "@/lib/content";
+import { libraryTrackId, MUSIC_LIBRARY } from "@/lib/content";
 import { Block } from "./Block";
 import { useSrc, useTheme } from "./context";
 
@@ -29,7 +29,8 @@ function useMusicSrc() {
   const upload = useSrc(c.music.mode === "upload" ? c.music.upload : "");
   if (c.music.mode === "none") return "";
   if (c.music.mode === "upload") return upload;
-  return MUSIC_LIBRARY.find((t) => t.id === c.music.trackId)?.src ?? "";
+  const id = libraryTrackId(c.music.trackId, c.occasion);
+  return MUSIC_LIBRARY.find((t) => t.id === id)?.src ?? "";
 }
 
 export function CoverOverlay({ guestName, Face }: { guestName: string; Face: CoverFace }) {
